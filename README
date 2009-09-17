@@ -1,1 +1,14 @@
+CiderCMS is a flexible CMS for small to mid sized websites.
+
+The basic idea is that the user can define "types" which can be thought equal
+to database tables (which get created) consisting of attributes (columns)
+with a template for output and an auto-generated (but customizable) management
+interface.
+
+Data is stored in a hierarchical tree like a folder/document/text structure
+which reflects the organization of a typical website.
+
 Run script/cidercms_server.pl to test the application.
+
+Start with http://localhost:3000/system/create to create the first instance.
+The test suite creates a full test instance named test.example and populates it.
