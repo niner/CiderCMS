@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xml:lang="en"
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderCMS">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Create new instance</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/management.css" />
+    </head>
+    <body>
+        <form method="post">
+            <label>
+                <span>ID</span>
+                <input name="id"/>
+            </label>
+            <label>
+                <span>Title</span>
+                <input name="title"/>
+            </label>
+            <button type="submit">Create</button>
+        </form>
+    </body>
+</html>
+

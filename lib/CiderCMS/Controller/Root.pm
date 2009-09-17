@@ -29,14 +29,31 @@ CiderCMS::Controller::Root - Root Controller for CiderCMS
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
     $c->response->body( $c->welcome_message );
 }
+
+=head2 default
+
+Tries to render a custom layout. Throws a 404 if none could be found.
+
+=cut
 
 sub default :Path {
     my ( $self, $c ) = @_;
     $c->response->body( 'Page not found' );
     $c->response->status(404);
+}
+
+=head2 manage
+
+Shows the management interface.
+
+=cut
+
+sub manage :Regex('/manage\z') {
+    my ( $self, $c) = @_;
+
+    $c->stash({ template => 'manage.zpt' });
 }
 
 =head2 end

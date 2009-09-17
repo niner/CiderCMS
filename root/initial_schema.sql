@@ -72,15 +72,6 @@ ALTER TABLE site ALTER COLUMN id SET DEFAULT nextval('site_id_seq'::regclass);
 
 ALTER TABLE sys_object ALTER COLUMN id SET DEFAULT nextval('sys_object_id_seq'::regclass);
 
-COPY sys_attrs (type, id, name, sort_id, data_type, repetitive, default_value) FROM stdin;
-\.
-
-COPY sys_object (id, parent, sort_id, type, active_start, active_end) FROM stdin;
-\.
-
-COPY sys_types (id, name, type) FROM stdin;
-\.
-
 ALTER TABLE ONLY site
     ADD CONSTRAINT site_pkey PRIMARY KEY (id);
 

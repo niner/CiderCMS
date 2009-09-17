@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# cleanup
+rm -Rf root/instances/test.example
+echo 'drop schema "test.example" cascade;' | psql cidercms
+
+# to make Test::POD work
+make
+
+# Test!
+echo
+TEST_POD=1 cover -test

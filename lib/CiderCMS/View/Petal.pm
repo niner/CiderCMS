@@ -35,8 +35,8 @@ sub process {
     );
 
     $c->stash({
-        uri_root                 => $c->uri_for('/'),
-        uri_static               => $c->uri_for('/static'),
+        uri_root    => $c->uri_for('/'),
+        uri_static  => $c->uri_for('/static'),
     });
 
     $c->res->content_type('text/xml') if ($c->req->param('layout') or '') eq 'ajax';

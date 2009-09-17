@@ -46,7 +46,21 @@ CiderCMS - Catalyst based application
 
 =head1 DESCRIPTION
 
-[enter your description here]
+CiderCMS is a very flexible CMS.
+
+=head1 METHODS
+
+=head2 uri_for_instance(@path)
+
+Creates an URI relative to the current instance's root
+
+=cut
+
+sub uri_for_instance {
+    my ($self, @path) = @_;
+
+    return join '/', $self->uri_for('/'), $self->stash->{instance}, @path;
+}
 
 =head1 SEE ALSO
 

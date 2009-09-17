@@ -17,6 +17,7 @@ requires 'Catalyst::Model::DBI';
 requires 'Catalyst::View::Petal';
 requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
+requires 'File::Slurp';
 catalyst;
 
 install_script glob('script/*.pl');
