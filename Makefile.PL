@@ -13,6 +13,10 @@ requires 'Catalyst::Action::RenderView';
 requires 'parent';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
+requires 'Catalyst::Model::DBI';
+requires 'Catalyst::View::Petal';
+requires 'Petal::Utils';
+requires 'Catalyst::Plugin::FormValidator';
 catalyst;
 
 install_script glob('script/*.pl');
