@@ -9,4 +9,9 @@ make
 
 # Test!
 echo
-TEST_POD=1 cover -test
+
+if [ "$1" == "cover" ] ; then
+	TEST_POD=1 cover -test
+else
+	TEST_POD=1 prove -l t
+fi

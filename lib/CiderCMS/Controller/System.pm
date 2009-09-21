@@ -14,7 +14,19 @@ Meta operations of the instance, e.g. everything not related to content manipula
 
 =head1 METHODS
 
+=head2 init
+
+PathPart that sets up the current instance.
+
 =cut
+
+sub init : Chained('/') PathPart('') CaptureArgs(1) {
+    my ( $self, $c, $instance ) = @_;
+
+    $c->stash->{instance} = $instance;
+
+    $c->model('DB')->initialize($c);
+}
 
 =head2 create
 

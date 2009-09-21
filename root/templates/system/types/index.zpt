@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xml:lang="en"
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderCMS">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Create new type</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/management.css" />
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Page element</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="type type_list">
+                    <td tal:content="type/id"/>
+                    <td><a tal:attributes="href type/uri_edit" tal:content="type/name"/></td>
+                    <td tal:condition="true:type/page_element">yes</td>
+                    <td tal:condition="false:type/page_element">no</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
+
