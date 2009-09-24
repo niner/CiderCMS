@@ -26,6 +26,8 @@ sub init : Chained('/') PathPart('') CaptureArgs(1) {
     $c->stash->{instance} = $instance;
 
     $c->model('DB')->initialize($c);
+
+    return;
 }
 
 =head2 create
@@ -43,11 +45,13 @@ sub create :Local :Args(0) {
     if ($valid) {
         $c->model->create_instance($c, scalar $valid->valid());
         $c->stash({ instance => $valid->valid('id') });
-        $c->res->redirect($c->uri_for_instance('/manage'));
+        return $c->res->redirect($c->uri_for_instance('/manage'));
     }
     else {
         $c->stash({ template => 'system/create.zpt' });
     }
+
+    return;
 }
 
 =head1 AUTHOR

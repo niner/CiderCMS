@@ -33,8 +33,67 @@ sub index : PathPart('system/types') Chained('/system/init') {
         type_list  => [sort {$a->{name} cmp $b->{name}} values %{ $c->stash->{types} }],
         uri_create => $c->uri_for_instance('system/create_type'),
     });
+
+    return;
 }
 
+=head2 create
+
+Create a new type
+
+=cut
+
+sub create : PathPart('system/create_type') Chained('/system/init') {
+    my ( $self, $c ) = @_;
+
+    my $params = $c->req->params;
+
+    if (delete $params->{save}) {
+        $c->model('DB')->create_type($c, $params);
+        return $c->res->redirect($c->uri_for_instance("system/types/$params->{id}/edit"));
+    }
+
+    $c->stash({
+        template => 'system/types/create.zpt',
+        type     => $params,
+    });
+
+    return;
+}
+
+=head2 setup_type
+
+Chain part setting up a requested type
+
+=cut
+
+sub setup_type : PathPart('system/types') CaptureArgs(1) Chained('/system/init') {
+    my ( $self, $c, $id ) = @_;
+
+    $c->stash({
+        type => $c->stash->{types}{$id},
+    });
+
+    return;
+}
+
+=head2 edit
+
+Edit an existing type.
+
+=cut
+
+sub edit : PathPart('') Chained('setup_type') {
+    my ( $self, $c ) = @_;
+
+    $c->stash({
+        template          => 'system/types/edit.zpt',
+        uri_save          => $c->uri_for('save'),
+        uri_new_attribute => $c->uri_for('new_attribute'),
+    });
+
+    return;
+}
 
 =head1 AUTHOR
 

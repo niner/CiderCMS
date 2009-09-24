@@ -14,20 +14,23 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/management.css" />
     </head>
     <body>
-        <form method="post">
-            <label>
-                <span>ID</span>
-                <input name="id"/>
-            </label>
-            <label>
-                <span>Name</span>
-                <input name="name"/>
-            </label>
-            <label>
-                <input type="checkbox" name="page_element"/>
-                <span>Page element</span>
-            </label>
-            <button type="submit">Create</button>
+        <form tal:attributes="action uri_create" method="post" metal:define-macro="create">
+            <fieldset>
+                <legend>New type</legend>
+                <label>
+                    <span>ID</span>
+                    <input name="id"/>
+                </label>
+                <label>
+                    <span>Name</span>
+                    <input name="name"/>
+                </label>
+                <label>
+                    <input type="checkbox" name="page_element"/>
+                    <span>Page element</span>
+                </label>
+                <button type="submit" name="save" value="1">Create</button>
+            </fieldset>
         </form>
     </body>
 </html>

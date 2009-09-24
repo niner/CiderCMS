@@ -30,6 +30,8 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     $c->response->body( $c->welcome_message );
+
+    return;
 }
 
 =head2 default
@@ -42,6 +44,8 @@ sub default :Path {
     my ( $self, $c ) = @_;
     $c->response->body( 'Page not found' );
     $c->response->status(404);
+
+    return;
 }
 
 =head2 manage
@@ -54,6 +58,8 @@ sub manage :Regex('/manage\z') {
     my ( $self, $c) = @_;
 
     $c->stash({ template => 'manage.zpt' });
+
+    return;
 }
 
 =head2 end
@@ -62,7 +68,9 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('RenderView') {
+    return;
+}
 
 =head1 AUTHOR
 

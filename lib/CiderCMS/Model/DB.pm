@@ -1,8 +1,11 @@
 package CiderCMS::Model::DB;
 
 use strict;
+use warnings;
+
 use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
+use Carp qw(croak);
 
 __PACKAGE__->config(
     dsn           => 'dbi:Pg:dbname=cidercms',
@@ -32,7 +35,7 @@ sub create_instance {
 
     my $dbh = $self->dbh;
 
-    my $instance_path = $c->config->{root} . '/instances/' . $data->{id}; 
+    my $instance_path = $c->config->{root} . '/instances/' . $data->{id};
 
     mkdir $instance_path;
     mkdir "$instance_path/static";
@@ -40,13 +43,15 @@ sub create_instance {
     mkdir "$instance_path/templates/layout";
     mkdir "$instance_path/templates/content";
 
-    $dbh->do(qq(create schema "$data->{id}")) or die qq(could not create schema "$data->{id}");
-    $dbh->do(qq(set search_path="$data->{id}",public)) or die qq(could not set search path "$data->{id}",public!?);
+    $dbh->do(qq(create schema "$data->{id}")) or croak qq(could not create schema "$data->{id}");
+    $dbh->do(qq(set search_path="$data->{id}",public)) or croak qq(could not set search path "$data->{id}",public!?);
 
-    $dbh->do(scalar read_file($c->config->{root} . '/initial_schema.sql')) or die 'could not import initial schema';
+    $dbh->do(scalar read_file($c->config->{root} . '/initial_schema.sql')) or croak 'could not import initial schema';
 
     $self->create_type($c, {id => 'site', name => 'Site', page_element => 0});
     $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'string', repetitive => 0, mandatory => 1, default_value => ''});
+
+    return;
 }
 
 =head2 initialize($c)
@@ -82,10 +87,10 @@ sub initialize {
 
     my $dbh = $self->dbh;
     my $instance = $c->stash->{instance};
-    $dbh->do(qq(set search_path="$instance",public)) or die qq(could not set search path "$instance",public);
+    $dbh->do(qq(set search_path="$instance",public)) or croak qq(could not set search path "$instance",public);
 
-    my $types = $dbh->selectall_arrayref("select * from sys_types", {Slice => {}});
-    my $attrs = $dbh->selectall_arrayref("select * from sys_attributes order by sort_id", {Slice => {}});
+    my $types = $dbh->selectall_arrayref('select * from sys_types', {Slice => {}});
+    my $attrs = $dbh->selectall_arrayref('select * from sys_attributes order by sort_id', {Slice => {}});
 
     my %types = map {$_->{id} => $_} @$types;
 
@@ -97,6 +102,8 @@ sub initialize {
     $c->stash({
         types => \%types,
     });
+
+    return;
 }
 
 =head2 create_type($c, {id => 'type1', name => 'Type 1', page_element => 0})
@@ -122,6 +129,8 @@ sub create_type {
     $dbh->do(qq/create trigger "${id}_ad" after  delete on "$id" for each row execute procedure sys_objects_ad()/);
 
     $dbh->do('commit');
+
+    return;
 }
 
 =head2 create_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'string', repetitive => 0, mandatory => 1, default_value => ''})
@@ -149,6 +158,8 @@ sub create_attribute {
     }
 
     $dbh->do('commit');
+
+    return;
 }
 
 =head1 SYNOPSIS
