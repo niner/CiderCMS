@@ -33,7 +33,31 @@
                 <button type="submit">Save</button>
             </fieldset>
         </form>
-        <form tal:attributes="action uri_new_attribute" method="post">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Repetitive</th>
+                    <th>Mandatory</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="attribute type/attributes">
+                    <td tal:content="attribute/id"/>
+                    <td tal:content="attribute/name"/>
+                    <td tal:content="attribute/data_type"/>
+                    <td tal:condition="true: attribute/repetitive">yes</td>
+                    <td tal:condition="false:attribute/repetitive">no</td>
+                    <td tal:condition="true: attribute/mandatory">yes</td>
+                    <td tal:condition="false:attribute/mandatory">no</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form tal:attributes="action uri_create_attribute" method="post">
             <fieldset>
                 <legend>Add an attribute</legend>
                 <label>

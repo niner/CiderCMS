@@ -83,16 +83,37 @@ Edit an existing type.
 
 =cut
 
-sub edit : PathPart('') Chained('setup_type') {
+sub edit : PathPart Chained('setup_type') {
     my ( $self, $c ) = @_;
 
+    my $id = $c->stash->{type}{id};
+
     $c->stash({
-        template          => 'system/types/edit.zpt',
-        uri_save          => $c->uri_for('save'),
-        uri_new_attribute => $c->uri_for('new_attribute'),
+        template             => 'system/types/edit.zpt',
+        uri_save             => $c->uri_for_instance("system/types/$id/save"),
+        uri_create_attribute => $c->uri_for_instance("system/types/$id/create_attribute"),
     });
 
     return;
+}
+
+=head2 create_attribute
+
+Add a new attribute to a type.
+
+=cut
+
+sub create_attribute : PathPart Chained('setup_type') {
+    my ( $self, $c ) = @_;
+
+    my $type = $c->stash->{type}{id};
+    my $params = $c->req->params;
+    $_ = $_ ? 1 : 0 foreach @$params{qw(mandatory repetitive)};
+    $params->{type} = $type;
+
+    $c->model('DB')->create_attribute($c, $params);
+
+    return $c->res->redirect($c->uri_for_instance("system/types/$type/edit"));
 }
 
 =head1 AUTHOR

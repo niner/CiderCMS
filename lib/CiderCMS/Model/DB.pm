@@ -92,7 +92,7 @@ sub initialize {
     my $types = $dbh->selectall_arrayref('select * from sys_types', {Slice => {}});
     my $attrs = $dbh->selectall_arrayref('select * from sys_attributes order by sort_id', {Slice => {}});
 
-    my %types = map {$_->{id} => $_} @$types;
+    my %types = map { $_->{id} => { %$_, attributes => [], attr => {} } } @$types;
 
     foreach (@$attrs) {
         push @{ $types{$_->{type}}{attributes} }, $_;
@@ -148,7 +148,7 @@ sub create_attribute {
 
     $dbh->do('begin');
 
-    $dbh->do('insert into sys_attributes (type, id, name, sort_id, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name sort_id data_type repetitive mandatory default_value)});
+    $dbh->do('insert into sys_attributes (type, id, name, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name data_type repetitive mandatory default_value)});
 
     if (exists $data_types{$data->{data_type}}) {
         my $query = qq/alter table "$data->{type}" add column "$data->{id}" $data_types{$data->{data_type}}/;

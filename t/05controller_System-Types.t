@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 12 );
+    : ( tests => 16 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -31,3 +31,16 @@ $mech->title_is('Edit type Textarea');
 $mech->content_like(qr/value="textarea"/, 'ID field correct');
 $mech->content_like(qr/value="Textarea"/, 'name field correct');
 $mech->content_like(qr/checked="checked"/, 'page_element checked');
+
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'text',
+        name      => 'Text',
+        data_type => 'string',
+        mandatory => 1,
+    },
+}, 'Create the text attribute');
+
+$mech->content_like(qr!<td>text</td>!, 'new attribute present');
+$mech->content_like(qr!<td>Text</td>!, 'new attribute name correct');
+$mech->content_like(qr!<td>string</td>!, 'new attribute type correct');
