@@ -46,8 +46,6 @@ CREATE SEQUENCE sys_object_id_seq
 
 ALTER SEQUENCE sys_object_id_seq OWNED BY sys_object.id;
 
-SELECT pg_catalog.setval('sys_object_id_seq', 1, false);
-
 ALTER TABLE sys_object ALTER COLUMN id SET DEFAULT nextval('sys_object_id_seq'::regclass);
 
 CREATE OR REPLACE FUNCTION sys_objects_bi() RETURNS TRIGGER AS
@@ -55,9 +53,9 @@ $BODY$
 DECLARE
 BEGIN
     IF NEW.id IS NOT NULL THEN
-        insert into sys_object (id, parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.id, NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning zms_db_id into NEW.zms_db_id;
+        insert into sys_object (id, parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.id, NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
     ELSE
-        insert into sys_object (parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning zms_db_id into NEW.zms_db_id;
+        insert into sys_object (parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
     END IF;
     RETURN NEW;
 END;
