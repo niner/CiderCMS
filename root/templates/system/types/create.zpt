@@ -6,14 +6,15 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    i18n:domain="CiderCMS">
+    i18n:domain="CiderCMS"
+    metal:use-macro="manage_layout.zpt#layout">
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Create new type</title>
+        <title metal:fill-slot="title">Create new type</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/management.css" />
     </head>
-    <body>
+    <body metal:fill-slot="content" tal:omit-tag="">
         <form tal:attributes="action uri_create" method="post" metal:define-macro="create">
             <fieldset>
                 <legend>New type</legend>
