@@ -7,6 +7,8 @@ use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
 use Carp qw(croak);
 
+use CiderCMS::Object;
+
 __PACKAGE__->config(
     dsn           => 'dbi:Pg:dbname=cidercms',
     user          => '',
@@ -24,7 +26,7 @@ CiderCMS::Model::DB - DBI Model Class
 
 =head1 METHODS
 
-=head2 create_instance($c, {id => 'test.example', name => 'Testsite'})
+=head2 create_instance($c, {id => 'test.example', title => 'Testsite'})
 
 Creates a new instance including schema and instance directory
 
@@ -49,7 +51,12 @@ sub create_instance {
     $dbh->do(scalar read_file($c->config->{root} . '/initial_schema.sql')) or croak 'could not import initial schema';
 
     $self->create_type($c, {id => 'site', name => 'Site', page_element => 0});
-    $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'string', repetitive => 0, mandatory => 1, default_value => ''});
+    $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''});
+
+    $c->stash({instance => $data->{id}});
+    $self->initialize($c);
+
+    CiderCMS::Object->new({c => $c, type => 'site', data => {title => $data->{title}}})->insert;
 
     return;
 }
@@ -68,10 +75,11 @@ Fetches type and attribute information from the DB and puts it on the stash:
             attrs        => {
                 attr1 => {
                     type          => 'type1',
+                    class         => 'CiderCMS::Attribute::String',
                     id            => 'attr1',
                     name          => 'Attribute 1',
                     sort_id       => 0,
-                    data_type     => 'string',
+                    data_type     => 'String',
                     repetitive    => 0,
                     mandatory     => 1,
                     default_value => '',
@@ -79,6 +87,8 @@ Fetches type and attribute information from the DB and puts it on the stash:
             },
         },
     }
+
+Should be called after every change to the schema.
 
 =cut
 
@@ -97,6 +107,8 @@ sub initialize {
     foreach (@$attrs) {
         push @{ $types{$_->{type}}{attributes} }, $_;
         $types{$_->{type}}{attr}{$_->{id}} = $_;
+
+        $_->{class} = "CiderCMS::Attribute::$_->{data_type}";
     }
 
     $c->stash({
@@ -133,13 +145,13 @@ sub create_type {
     return;
 }
 
-=head2 create_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'string', repetitive => 0, mandatory => 1, default_value => ''})
+=head2 create_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''})
 
 Adds a new attribute to a type by creating the column in the type's table and an entry in the sys_attributes table.
 
 =cut
 
-my %data_types = (string => 'varchar');
+my %data_types = (String => 'varchar');
 
 sub create_attribute {
     my ($self, $c, $data) = @_;
@@ -160,6 +172,33 @@ sub create_attribute {
     $dbh->do('commit');
 
     return;
+}
+
+=head2 insert_object($c, $object)
+
+Inserts a CiderCMS::Object into the database.
+
+=cut
+
+my @sys_object_columns = qw(id parent sort_id type active_start active_end dcid);
+
+sub insert_object {
+    my ($self, $c, $object) = @_;
+
+    my $dbh = $self->dbh;
+    my $type = $object->{type};
+    
+    my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
+
+    my $insert_statement = qq{insert into "$type" (} . join (q{, }, map qq{"$_"}, @sys_object_columns, @$columns) . ') values (' . join (q{, }, map '?', @sys_object_columns, @$columns) . ')';
+
+    if (my $retval = $dbh->do($insert_statement, undef, (map $object->{$_}, @sys_object_columns), @$values)) {
+        $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
+        return $retval;
+    }
+    else {
+        croak $dbh->errstr;
+    }
 }
 
 =head1 SYNOPSIS
