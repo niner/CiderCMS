@@ -118,6 +118,64 @@ sub initialize {
     return;
 }
 
+=head2 traverse_path($c, $path)
+
+Traverses a path (given as hashref) and returns the objects found
+
+=cut
+
+sub traverse_path {
+    my ($self, $c, $path) = @_;
+
+    my @objects;
+    my $object;
+    my $dbh = $self->dbh;
+
+    foreach (@$path) {
+        my $may_be_id = /\A\d+\z/;
+        $object = $dbh->selectrow_hashref(
+            'select id, type from sys_object where parent '
+            . (@objects ? ' = ?' : ' is null')
+            . ' and ' . ($may_be_id ? '(id=? or dcid=?)' : 'dcid=?'),
+            undef,
+            (@objects ? $objects[-1]->{id} : ()),
+            $_,
+            ($may_be_id ? $_ : ()),
+        ) or die "node $_ not found";
+
+        push @objects, $self->inflate_object($c, $object);
+    }
+
+    return @objects;
+}
+
+=head2 get_object($c, $id)
+
+Returns a content object for the given ID.
+
+=cut
+
+#TODO great point to add some caching
+sub get_object {
+    my ($self, $c, $id) = @_;
+
+    return $self->inflate_object($c, $self->dbh->selectrow_hashref('select id, type from sys_object where id=?', undef, $id));
+}
+
+=head2 inflate_object($c, $object)
+
+Takes a stub object (consisting of id and type information) and inflates it to a full blown and initialized CiderCMS::Object.
+
+=cut
+
+sub inflate_object {
+    my ($self, $c, $object) = @_;
+
+    $object = $self->dbh->selectrow_hashref(qq(select * from "$object->{type}" where id=?), undef, $object->{id});
+
+    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, parent => $object->{parent}, sort_id => $object->{sort_id}, data => $object});
+}
+
 =head2 create_type($c, {id => 'type1', name => 'Type 1', page_element => 0})
 
 Creates a new type by creating a database table for it and an entry in the sys_types table.

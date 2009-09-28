@@ -37,8 +37,11 @@ sub new {
 
     my $self = bless {
         c          => $params->{c},
+        id         => $params->{id},
+        parent     => $params->{parent},
         type       => $type,
         sort_id    => $params->{sort_id} || 0,
+        dcid       => $params->{dcid} || '',
         attr       => $stash->{types}{$type}{attr},
         attributes => $stash->{types}{$type}{attributes},
     }, $class;
@@ -55,6 +58,57 @@ sub new {
     return $self;
 }
 
+=head2 parent
+
+Returns the parent of this object, if any.
+
+=cut
+
+sub parent {
+    my ($self) = @_;
+
+    return unless $self->{parent};
+
+    $self->{c}->model('DB')->get_object($self->{c}, $self->{parent});
+}
+
+=head2 uri
+
+Returns an URI without a file name for this object
+
+=cut
+
+sub uri {
+    my ($self) = @_;
+
+    my $parent = $self->parent;
+    return ( ($parent ? $parent->uri : $self->{c}->uri_for_instance()) . '/' . ($self->{dcid} or $self->{id}) );
+}
+
+=head2 uri_index()
+
+Returns an URI to the index action for this object
+
+=cut
+
+sub uri_index {
+    my ($self) = @_;
+
+    return $self->uri . '/index.html';
+}
+
+=head2 uri_management()
+
+Returns an URI to the management interface for this object
+
+=cut
+
+sub uri_management {
+    my ($self) = @_;
+
+    return $self->uri . '/manage';
+}
+
 =head2 edit_form($uri_action)
 
 Renders the form for editing this object.
@@ -63,6 +117,8 @@ Renders the form for editing this object.
 
 sub edit_form {
     my ($self, $uri_action) = @_;
+
+    return '';
 }
 
 =head2 insert()

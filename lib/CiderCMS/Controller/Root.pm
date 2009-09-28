@@ -20,47 +20,21 @@ CiderCMS::Controller::Root - Root Controller for CiderCMS
 
 =head1 METHODS
 
-=cut
-
-=head2 index
-
-=cut
-
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->response->body( $c->welcome_message );
-
-    return;
-}
-
 =head2 default
 
-Tries to render a custom layout. Throws a 404 if none could be found.
+Just throw a 404.
 
 =cut
 
 sub default :Path {
     my ( $self, $c ) = @_;
+
     $c->response->body( 'Page not found' );
     $c->response->status(404);
 
     return;
 }
 
-=head2 manage
-
-Shows the management interface.
-
-=cut
-
-sub manage :Regex('/manage\z') {
-    my ( $self, $c) = @_;
-
-    $c->stash({ template => 'manage.zpt' });
-
-    return;
-}
 
 =head2 end
 
