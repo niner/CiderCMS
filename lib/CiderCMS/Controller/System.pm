@@ -45,7 +45,7 @@ sub create :Local :Args(0) {
     if ($valid) {
         $c->model->create_instance($c, scalar $valid->valid());
         $c->stash({ instance => $valid->valid('id') });
-        return $c->res->redirect($c->uri_for_instance('/manage'));
+        return $c->res->redirect($c->uri_for_instance('manage'));
     }
     else {
         $c->stash({ template => 'system/create.zpt' });

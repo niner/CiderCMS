@@ -59,7 +59,7 @@ Creates an URI relative to the current instance's root
 sub uri_for_instance {
     my ($self, @path) = @_;
 
-    return join '/', $self->uri_for('/'), $self->stash->{instance}, @path;
+    return $self->uri_for('/') . join '/', $self->stash->{instance}, @path;
 }
 
 =head1 SEE ALSO
