@@ -25,7 +25,13 @@ sub init : Chained('/') PathPart('') CaptureArgs(1) {
 
     $c->stash->{instance} = $instance;
 
-    $c->model('DB')->initialize($c);
+    my $model = $c->model('DB');
+    $model->initialize($c);
+
+    $c->stash({
+        uri_manage_types   => $c->uri_for_instance('system/types'),
+        uri_manage_content => $model->get_object($c, 1)->uri_management,
+    });
 
     return;
 }

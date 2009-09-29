@@ -141,7 +141,7 @@ sub traverse_path {
             (@objects ? $objects[-1]->{id} : ()),
             $_,
             ($may_be_id ? $_ : ()),
-        ) or die "node $_ not found";
+        ) or die qq{node "$_" not found};
 
         push @objects, $self->inflate_object($c, $object);
     }

@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 16 );
+    : ( tests => 17 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -44,3 +44,5 @@ $mech->submit_form_ok({
 $mech->content_like(qr!<td>text</td>!, 'new attribute present');
 $mech->content_like(qr!<td>Text</td>!, 'new attribute name correct');
 $mech->content_like(qr!<td>string</td>!, 'new attribute type correct');
+
+$mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');

@@ -1,10 +1,14 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
 
-BEGIN { use_ok 'Catalyst::Test', 'CiderCMS' }
-BEGIN { use_ok 'CiderCMS::Controller::Content::Management' }
+eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
+plan $@
+    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
+    : ( tests => 3 );
 
-ok( request('/test.example/manage')->is_success, 'Request should succeed' );
+ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
+$mech->get_ok( 'http://localhost/test.example/manage' );
 
+$mech->follow_link_ok({ url_regex => qr{textarea} }, 'Add a textarea');

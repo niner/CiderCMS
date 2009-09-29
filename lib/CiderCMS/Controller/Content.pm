@@ -23,7 +23,9 @@ Sets up context information according to the current path
 sub auto : Private {
     my ( $self, $c ) = @_;
 
-    my @path = split m!/!, $c->req->path;
+    my $path = $c->req->path;
+    $path =~ s!/+!/!g;
+    my @path = split m!/!, $path;
     my $instance = shift @path;
     unshift @path, '';
     $c->stash->{instance} = $instance;
@@ -48,6 +50,10 @@ Renders the page.
 
 sub index : Regex('/(?:index\.html)?\z') {
     my ( $self, $c ) = @_;
+
+    $c->stash({
+        template => 'index.zpt',
+    });
 }
 
 

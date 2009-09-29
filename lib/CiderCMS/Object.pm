@@ -82,7 +82,8 @@ sub uri {
     my ($self) = @_;
 
     my $parent = $self->parent;
-    return ( ($parent ? $parent->uri : $self->{c}->uri_for_instance()) . '/' . ($self->{dcid} or $self->{id}) );
+    my $dcid = ($self->{dcid} // $self->{id});
+    return ( ($parent ? $parent->uri : $self->{c}->uri_for_instance()) . ($dcid ? "/$dcid" : '') );
 }
 
 =head2 uri_index()
