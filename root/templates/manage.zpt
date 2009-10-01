@@ -14,7 +14,7 @@
         <title metal:fill-slot="title" tal:content="string:Edit ${context/type}">Manage</title>
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
-        <div tal:content="content"/>
+        <div tal:content="structure content"/>
     </body>
 </html>
 

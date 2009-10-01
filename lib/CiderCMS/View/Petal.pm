@@ -29,11 +29,10 @@ sub process {
     my ($self, $c) = @_;
 
     my $root = $c->config->{root};
+    my $instance = $c->stash->{instance};
 
-    my $base_dir = ["$root/templates", $root];
-    unshift @$base_dir, "$root/ajax" if ($c->req->param('layout') or '') eq 'ajax';
     $self->config(
-        base_dir => $base_dir,
+        base_dir => ["$root/static/instances/$instance/templates", "$root/templates"],
     );
 
     $c->stash({
@@ -41,9 +40,32 @@ sub process {
         uri_static  => $c->uri_for('/static'),
     });
 
-    $c->res->content_type('text/xml') if ($c->req->param('layout') or '') eq 'ajax';
-
     return $self->SUPER::process($c);
+}
+
+=head2 render_template
+
+Renders a Petal template and returns the result as string.
+
+=cut
+
+sub render_template {
+    my ($self, $c, $stash) = @_;
+
+    my $root = $c->config->{root};
+    my $instance = $c->stash->{instance};
+
+    my $template = Petal->new(
+        base_dir => ["$root/static/instances/$instance/templates", "$root/templates"],
+        file => $stash->{template},
+        %{ $self->config },
+    );
+
+    return $template->process({
+        c          => $c,
+        uri_static => $c->uri_for('/static'),
+        %$stash,
+    });
 }
 
 =head1 AUTHOR

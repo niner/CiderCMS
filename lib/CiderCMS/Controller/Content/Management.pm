@@ -43,6 +43,7 @@ sub manage : Regex('/manage\z') {
     $c->stash({
         template => 'manage.zpt',
         content  => $c->stash->{context}->edit_form(),
+        uri_add  => $c->stash->{context}->uri . '/manage_add',
     });
 }
 

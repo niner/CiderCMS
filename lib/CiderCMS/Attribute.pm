@@ -56,6 +56,29 @@ sub data {
     return $self->{data};
 }
 
+=head2 input_field
+
+Renders an input field for this attribute.
+Uses this attribute's class name for selecting the template.
+Override for anything more complicated than a simple input field.
+
+=cut
+
+sub input_field {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    my $template = ref $self;
+    $template =~ s/CiderCMS::Attribute:://;
+    $template = lc $template;
+
+    $c->view()->render_template($c, {
+        template => "attributes/$template.zpt",
+        self => $self,
+    });
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

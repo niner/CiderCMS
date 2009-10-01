@@ -50,9 +50,7 @@ sub new {
 
     foreach my $attr (@{ $self->{attributes} }) {
         my $id = $attr->{id};
-        if (exists $data->{$id} and defined $data->{$id} and $data->{$id} ne '') {
-            $self->{data}{$id} = $attr->{class}->new({c => $c, object => $self, id => $id, data => $data->{$id}});
-        }
+        $self->{data}{$id} = $attr->{class}->new({c => $c, object => $self, data => $data->{$id}, %$attr});
     }
 
     return $self;
@@ -119,7 +117,14 @@ Renders the form for editing this object.
 sub edit_form {
     my ($self, $uri_action) = @_;
 
-    return '';
+    return $self->{c}->view()->render_template($self->{c}, {
+        template   => 'edit.zpt',
+        uri_action => $uri_action,
+        self       => $self,
+        attributes => [
+            map $self->{data}{$_->{id}}->input_field, @{ $self->{attributes} },
+        ],
+    });
 }
 
 =head2 insert()
