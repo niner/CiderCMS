@@ -36,13 +36,13 @@ $mech->submit_form_ok({
     with_fields => {
         id        => 'text',
         name      => 'Text',
-        data_type => 'string',
+        data_type => 'String',
         mandatory => 1,
     },
 }, 'Create the text attribute');
 
 $mech->content_like(qr!<td>text</td>!, 'new attribute present');
 $mech->content_like(qr!<td>Text</td>!, 'new attribute name correct');
-$mech->content_like(qr!<td>string</td>!, 'new attribute type correct');
+$mech->content_like(qr!<td>String</td>!, 'new attribute type correct');
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');

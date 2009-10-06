@@ -1,3 +1,5 @@
 <form xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="action uri_action">
+    <input tal:condition="true: type" type="hidden" name="type" tal:attributes="value type"/>
     <div tal:repeat="attribute attributes" tal:replace="structure attribute" />
+    <button type="submit" name="save" value="1">Save</button>
 </form>

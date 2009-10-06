@@ -52,6 +52,7 @@ sub create_instance {
 
     $self->create_type($c, {id => 'site', name => 'Site', page_element => 0});
     $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''});
+    $self->create_attribute($c, {type => 'site', id => 'children', name => 'Children', sort_id => 1, data_type => 'Object', repetitive => 1, mandatory => 0, default_value => ''});
 
     $c->stash({instance => $data->{id}});
     $self->initialize($c);
@@ -159,7 +160,7 @@ Returns a content object for the given ID.
 sub get_object {
     my ($self, $c, $id) = @_;
 
-    return $self->inflate_object($c, $self->dbh->selectrow_hashref('select id, type from sys_object where id=?', undef, $id));
+    return $self->inflate_object($c, $self->dbh->selectrow_hashref('select id, type from sys_object where id = ?', undef, $id));
 }
 
 =head2 inflate_object($c, $object)
@@ -174,6 +175,22 @@ sub inflate_object {
     $object = $self->dbh->selectrow_hashref(qq(select * from "$object->{type}" where id=?), undef, $object->{id});
 
     return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, parent => $object->{parent}, sort_id => $object->{sort_id}, data => $object});
+}
+
+=head2 object_children
+
+Returns the children of an object as list in list context and as array ref in scalar context.
+
+=cut
+
+sub object_children {
+    my ($self, $c, $object) = @_;
+
+    my @children = map {
+        $self->inflate_object($c, $_)
+    } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ?', {Slice => {}}, $object->{id}) };
+
+    return wantarray ? @children : \@children;
 }
 
 =head2 create_type($c, {id => 'type1', name => 'Type 1', page_element => 0})

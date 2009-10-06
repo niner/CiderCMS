@@ -4,14 +4,15 @@
 rm -Rf root/instances/test.example
 echo 'drop schema "test.example" cascade;' | psql cidercms
 
-# to make Test::POD work
-make
-
-# Test!
-echo
-
 if [ "$1" == "cover" ] ; then
+	make clean
+	perl Makefile.PL
+	make
+	echo
 	TEST_POD=1 cover -test
 else
+	# to make Test::POD work
+	make
+	echo
 	TEST_POD=1 prove -l t
 fi

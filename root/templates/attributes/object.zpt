@@ -1,0 +1,10 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" al:attributes="action uri_action">
+    <ul>
+        <li tal:condition="true: addable_types" tal:repeat="type addable_types">
+            <a tal:attributes="href string:${uri_add}?type=${type/id}" tal:content="string: Add ${type/name}"/>
+        </li>
+    </ul>
+    <div>
+        <div tal:condition="true: children" tal:repeat="child children" tal:content="child/render"/>
+    </div>
+</div>

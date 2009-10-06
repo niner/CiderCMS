@@ -70,7 +70,7 @@
                     <input name="name"/>
                 </label>
                 <select name="data_type">
-                    <option value="string">string</option>
+                    <option value="String">string</option>
                 </select>
                 <label>
                     <span>Repetitive</span>

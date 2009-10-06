@@ -1,4 +1,4 @@
-<label xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" al:attributes="action uri_action">
+<label xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS">
     <span tal:content="self/name"/>
     <input type="text" tal:attributes="name self/id; value self/data"/>
 </label>

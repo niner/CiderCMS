@@ -32,7 +32,7 @@ sub process {
     my $instance = $c->stash->{instance};
 
     $self->config(
-        base_dir => ["$root/static/instances/$instance/templates", "$root/templates"],
+        base_dir => [$instance ? "$root/static/instances/$instance/templates" : (), "$root/templates"],
     );
 
     $c->stash({

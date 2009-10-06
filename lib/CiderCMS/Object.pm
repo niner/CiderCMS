@@ -7,6 +7,7 @@ use Scalar::Util qw(weaken);
 
 use CiderCMS::Attribute;
 use CiderCMS::Attribute::String;
+use CiderCMS::Attribute::Object;
 
 =head1 NAME
 
@@ -70,6 +71,18 @@ sub parent {
     $self->{c}->model('DB')->get_object($self->{c}, $self->{parent});
 }
 
+=head2 children
+
+Returns the children of this object, if any.
+
+=cut
+
+sub children {
+    my ($self) = @_;
+
+    return $self->{c}->model('DB')->object_children($self->{c}, $self);
+}
+
 =head2 uri
 
 Returns an URI without a file name for this object
@@ -117,7 +130,10 @@ Renders the form for editing this object.
 sub edit_form {
     my ($self, $uri_action) = @_;
 
-    return $self->{c}->view()->render_template($self->{c}, {
+    my $c = $self->{c};
+
+    return $c->view()->render_template($c, {
+        %{ $c->stash },
         template   => 'edit.zpt',
         uri_action => $uri_action,
         self       => $self,
@@ -125,6 +141,18 @@ sub edit_form {
             map $self->{data}{$_->{id}}->input_field, @{ $self->{attributes} },
         ],
     });
+}
+
+=head2 render()
+
+Returns an HTML representation of this object.
+
+=cut
+
+sub render {
+    my ($self) = @_;
+
+    return join '<br/>', map "$_->{name} => " . $self->{data}{$_->{id}}->{data}, @{ $self->{attributes } };
 }
 
 =head2 insert()

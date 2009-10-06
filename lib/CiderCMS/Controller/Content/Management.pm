@@ -40,13 +40,43 @@ sub auto : Private {
 sub manage : Regex('/manage\z') {
     my ( $self, $c ) = @_;
 
+    $c->stash({ # values used by edit_form()
+        uri_add  => $c->stash->{context}->uri . '/manage_add',
+    });
+
     $c->stash({
         template => 'manage.zpt',
         content  => $c->stash->{context}->edit_form(),
-        uri_add  => $c->stash->{context}->uri . '/manage_add',
     });
 }
 
+=head2 manage_add
+
+=cut
+
+sub manage_add : Regex('/manage_add\z') {
+    my ( $self, $c ) = @_;
+
+    my %params = %{ $c->req->params };
+    my $type = delete $params{type};
+    my $save = delete $params{save};
+
+    my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $c->stash->{context}->{id}, data => \%params});
+
+    if ($save) {
+        $object->insert();
+        $c->res->redirect($c->stash->{context}->uri_management());
+    }
+
+    $c->stash({
+        type     => $type,
+    });
+
+    $c->stash({
+        template => 'manage.zpt',
+        content  => $object->edit_form(),
+    });
+}
 
 =head1 AUTHOR
 

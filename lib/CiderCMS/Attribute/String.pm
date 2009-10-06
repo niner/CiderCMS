@@ -7,7 +7,7 @@ use base qw(CiderCMS::Attribute);
 
 =head1 NAME
 
-CiderCMS::Attribute::String - Base class for attributes
+CiderCMS::Attribute::String - String attribute
 
 =head1 SYNOPSIS
 
