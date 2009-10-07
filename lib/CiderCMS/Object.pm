@@ -152,7 +152,13 @@ Returns an HTML representation of this object.
 sub render {
     my ($self) = @_;
 
-    return join '<br/>', map "$_->{name} => " . $self->{data}{$_->{id}}->{data}, @{ $self->{attributes } };
+    my $c = $self->{c};
+
+    $c->view()->render_template($c, {
+        %{ $c->stash },
+        template => "types/$self->{type}.zpt",
+        self     => $self,
+    });
 }
 
 =head2 insert()

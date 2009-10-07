@@ -13,7 +13,7 @@
         <title>CiderCMS</title>
     </head>
     <body>
-        WIN!
+        <div tal:replace="structure content"/>
     </body>
 </html>
 

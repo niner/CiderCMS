@@ -53,6 +53,7 @@ sub index : Regex('/(?:index\.html)?\z') {
 
     $c->stash({
         template => 'index.zpt',
+        content  => $c->stash->{context}->render,
     });
 }
 
