@@ -57,7 +57,7 @@ sub create_instance {
     $c->stash({instance => $data->{id}});
     $self->initialize($c);
 
-    CiderCMS::Object->new({c => $c, type => 'site', data => {title => $data->{title}}})->insert;
+    CiderCMS::Object->new({c => $c, type => 'site', dcid => '', data => {title => $data->{title}}})->insert;
 
     return;
 }
@@ -174,7 +174,7 @@ sub inflate_object {
 
     $object = $self->dbh->selectrow_hashref(qq(select * from "$object->{type}" where id=?), undef, $object->{id});
 
-    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, parent => $object->{parent}, sort_id => $object->{sort_id}, data => $object});
+    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, dcid => $object->{dcid}, parent => $object->{parent}, sort_id => $object->{sort_id}, data => $object});
 }
 
 =head2 object_children
@@ -269,6 +269,30 @@ sub insert_object {
 
     if (my $retval = $dbh->do($insert_statement, undef, (map $object->{$_}, @sys_object_columns), @$values)) {
         $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
+        return $retval;
+    }
+    else {
+        croak $dbh->errstr;
+    }
+}
+
+=head2 update_object($c, $object)
+
+Updates a CiderCMS::Object in the database.
+
+=cut
+
+sub update_object {
+    my ($self, $c, $object) = @_;
+
+    my $dbh = $self->dbh;
+    my $type = $object->{type};
+    
+    my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
+
+    my $update_statement = qq{update "$type" set } . join (q{, }, map qq{"$_" = ?}, @sys_object_columns, @$columns) . ' where id = ?';
+
+    if (my $retval = $dbh->do($update_statement, undef, (map $object->{$_}, @sys_object_columns), @$values, $object->{id})) {
         return $retval;
     }
     else {

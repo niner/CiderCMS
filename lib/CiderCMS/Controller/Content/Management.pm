@@ -40,6 +40,14 @@ sub auto : Private {
 sub manage : Regex('/manage\z') {
     my ( $self, $c ) = @_;
 
+    my %params = %{ $c->req->params };
+    my $save = delete $params{save};
+
+    if ($save) {
+        $c->stash->{context}->update({data => \%params});
+        $c->res->redirect($c->stash->{context}->uri_management());
+    }
+
     $c->stash({ # values used by edit_form()
         uri_add  => $c->stash->{context}->uri . '/manage_add',
     });

@@ -4,7 +4,12 @@
             <a tal:attributes="href string:${uri_add}?type=${type/id}" tal:content="string: Add ${type/name}"/>
         </li>
     </ul>
-    <div>
-        <div tal:condition="true: children" tal:repeat="child children" tal:content="child/render"/>
+    <div class="children">
+        <div tal:condition="true: children" tal:repeat="child children" class="child">
+            <div class="actions">
+                <a tal:attributes="href child/uri_management">Edit</a>
+            </div>
+            <div tal:content="structure child/render"/>
+        </div>
     </div>
 </div>

@@ -69,7 +69,7 @@ BEGIN
     IF NEW.id <> OLD.id THEN
         RAISE EXCEPTION 'Changing ids is forbidden.';
     END IF;
-    update sys_object set id=NEW.id, parent=NEW.parent, sort_id=NEW.sort_id, changed=NEW.changed, changed_tree=NEW.changed_tree, active=NEW.active, active_start=NEW.active_start, active_end=NEW.active_end, dcid=NEW.dcid where id=NEW.id;
+    update sys_object set id=NEW.id, parent=NEW.parent, sort_id=NEW.sort_id, changed=NEW.changed, tree_changed=NEW.tree_changed, active_start=NEW.active_start, active_end=NEW.active_end, dcid=NEW.dcid where id=NEW.id;
     RETURN NEW;
 END;
 $BODY$

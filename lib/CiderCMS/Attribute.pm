@@ -57,6 +57,18 @@ sub data {
     return $self->{data};
 }
 
+=head2 set_data($data)
+
+Sets this attributes data to the given value.
+
+=cut
+
+sub set_data {
+    my ($self, $data) = @_;
+
+    return $self->{data} = $data;
+}
+
 =head2 input_field
 
 Renders an input field for this attribute.
@@ -74,7 +86,7 @@ sub input_field {
     $template =~ s/CiderCMS::Attribute:://;
     $template = lc $template;
 
-    $c->view()->render_template($c, {
+    return $c->view()->render_template($c, {
         template => "attributes/$template.zpt",
         self => $self,
     });

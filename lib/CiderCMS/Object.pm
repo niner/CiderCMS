@@ -42,7 +42,7 @@ sub new {
         parent     => $params->{parent},
         type       => $type,
         sort_id    => $params->{sort_id} || 0,
-        dcid       => $params->{dcid} || '',
+        dcid       => $params->{dcid},
         attr       => $stash->{types}{$type}{attr},
         attributes => $stash->{types}{$type}{attributes},
     }, $class;
@@ -59,12 +59,42 @@ sub new {
 
 =head2 property($property)
 
+Returns the data of the named attribute
+
 =cut
 
 sub property {
     my ($self, $property) = @_;
 
     return $self->{data}{$property}->data;
+}
+
+=head2 set_property($property, $data)
+
+Sets the named attribute to the given value
+
+=cut
+
+sub set_property {
+    my ($self, $property, $data) = @_;
+
+    return $self->{data}{$property}->set_data($data);
+}
+
+=head2 update_data($data)
+
+Updates this object's data from a hashref.
+
+=cut
+
+sub update_data {
+    my ($self, $data) = @_;
+
+    foreach (keys %$data) {
+        $self->set_property($_, $data->{$_});
+    }
+
+    return;
 }
 
 =head2 parent
@@ -78,7 +108,7 @@ sub parent {
 
     return unless $self->{parent};
 
-    $self->{c}->model('DB')->get_object($self->{c}, $self->{parent});
+    return $self->{c}->model('DB')->get_object($self->{c}, $self->{parent});
 }
 
 =head2 children
@@ -104,6 +134,7 @@ sub uri {
 
     my $parent = $self->parent;
     my $dcid = ($self->{dcid} // $self->{id});
+
     return ( ($parent ? $parent->uri : $self->{c}->uri_for_instance()) . ($dcid ? "/$dcid" : '') );
 }
 
@@ -164,7 +195,7 @@ sub render {
 
     my $c = $self->{c};
 
-    $c->view()->render_template($c, {
+    return $c->view()->render_template($c, {
         %{ $c->stash },
         template => "types/$self->{type}.zpt",
         self     => $self,
@@ -181,6 +212,22 @@ sub insert {
     my ($self) = @_;
 
     return $self->{c}->model('DB')->insert_object($self->{c}, $self);
+}
+
+=head2 update()
+
+Updates the object in the database.
+
+=cut
+
+sub update {
+    my ($self, $params) = @_;
+
+    if ($params->{data}) {
+        $self->update_data($params->{data});
+    }
+
+    return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }
 
 =head2 get_dirty_columns()
