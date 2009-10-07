@@ -10,7 +10,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>CiderCMS</title>
+        <title tal:content="context/property --title">CiderCMS</title>
     </head>
     <body>
         <div tal:replace="structure content"/>

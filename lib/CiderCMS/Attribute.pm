@@ -53,6 +53,7 @@ Returns the data
 
 sub data {
     my ($self) = @_;
+
     return $self->{data};
 }
 

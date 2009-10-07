@@ -57,6 +57,16 @@ sub new {
     return $self;
 }
 
+=head2 property($property)
+
+=cut
+
+sub property {
+    my ($self, $property) = @_;
+
+    return $self->{data}{$property}->data;
+}
+
 =head2 parent
 
 Returns the parent of this object, if any.

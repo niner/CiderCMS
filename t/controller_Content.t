@@ -1,10 +1,15 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
 
-BEGIN { use_ok 'Catalyst::Test', 'CiderCMS' }
-BEGIN { use_ok 'CiderCMS::Controller::Content' }
+eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
+plan $@
+    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
+    : ( tests => 4 );
 
-ok( request('/test.example/index.html')->is_success, 'Request should succeed' );
+ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
+$mech->get_ok( 'http://localhost/test.example/index.html' );
 
+$mech->title_like(qr/Testsite/, 'Title correct');
+$mech->content_like(qr/Foo bar baz!/, 'Textarea present');
