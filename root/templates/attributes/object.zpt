@@ -8,6 +8,7 @@
         <div tal:condition="true: children" tal:repeat="child children" class="child">
             <div class="actions">
                 <a tal:attributes="href child/uri_management">Edit</a>
+                <a tal:attributes="href string:${uri_delete}?id=${child/id}">Delete</a>
             </div>
             <div tal:content="structure child/render"/>
         </div>

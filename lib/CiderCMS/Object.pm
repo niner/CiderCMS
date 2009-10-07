@@ -230,6 +230,22 @@ sub update {
     return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }
 
+=head2 delete()
+
+Deletes the object and it's children.
+
+=cut
+
+sub delete {
+    my ($self) = @_;
+
+    foreach ($self->children) {
+        $_->delete;
+    }
+
+    $self->{c}->model('DB')->delete_object($self->{c}, $self);
+}
+
 =head2 get_dirty_columns()
 
 Returns two array refs with column names and corresponding values.

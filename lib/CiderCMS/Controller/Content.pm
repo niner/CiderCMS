@@ -40,6 +40,8 @@ sub auto : Private {
         parents => \@objects,
         context => $objects[-1],
     });
+
+    return 1;
 }
 
 =head2 index

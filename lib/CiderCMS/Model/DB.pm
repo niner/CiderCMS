@@ -300,6 +300,26 @@ sub update_object {
     }
 }
 
+=head2 delete_object($c, $object)
+
+Deletes a CiderCMS::Object from the database.
+
+=cut
+
+sub delete_object {
+    my ($self, $c, $object) = @_;
+
+    my $dbh = $self->dbh;
+    my $type = $object->{type};
+
+    if (my $retval = $dbh->do(qq{delete from "$type" where id = ?}, undef, $object->{id})) {
+        return $retval;
+    }
+    else {
+        croak $dbh->errstr;
+    }
+}
+
 =head1 SYNOPSIS
 
 See L<CiderCMS>

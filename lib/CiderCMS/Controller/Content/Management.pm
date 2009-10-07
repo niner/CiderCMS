@@ -30,10 +30,14 @@ sub auto : Private {
         uri_manage_content => $model->get_object($c, 1)->uri_management,
         uri_view           => $c->stash->{context}->uri_index,
     });
+
+    return 1;
 }
 
 
 =head2 manage
+
+Shows a management interface for the current node.
 
 =cut
 
@@ -42,14 +46,16 @@ sub manage : Regex('/manage\z') {
 
     my %params = %{ $c->req->params };
     my $save = delete $params{save};
+    my $context = $c->stash->{context};
 
     if ($save) {
-        $c->stash->{context}->update({data => \%params});
-        $c->res->redirect($c->stash->{context}->uri_management());
+        $context->update({data => \%params});
+        return $c->res->redirect(($context->parent or $context)->uri_management());
     }
 
     $c->stash({ # values used by edit_form()
-        uri_add  => $c->stash->{context}->uri . '/manage_add',
+        uri_add     => $context->uri . '/manage_add',
+        uri_delete  => $context->uri . '/manage_delete',
     });
 
     $c->stash({
@@ -59,6 +65,8 @@ sub manage : Regex('/manage\z') {
 }
 
 =head2 manage_add
+
+Adds a new object as child of the current node.
 
 =cut
 
@@ -73,7 +81,7 @@ sub manage_add : Regex('/manage_add\z') {
 
     if ($save) {
         $object->insert();
-        $c->res->redirect($c->stash->{context}->uri_management());
+        return $c->res->redirect($c->stash->{context}->uri_management());
     }
 
     $c->stash({
@@ -84,6 +92,24 @@ sub manage_add : Regex('/manage_add\z') {
         template => 'manage.zpt',
         content  => $object->edit_form(),
     });
+}
+
+=head2 manage_delete
+
+Deletes a child of the current node.
+
+=cut
+
+sub manage_delete : Regex('/manage_delete\z') {
+    my ( $self, $c ) = @_;
+
+    my $id = $c->req->param('id');
+
+    my $object = $c->model('DB')->get_object($c, $id);
+
+    $object->delete;
+
+    return $c->res->redirect($c->stash->{context}->uri_management());
 }
 
 =head1 AUTHOR
