@@ -226,8 +226,6 @@ Adds a new attribute to a type by creating the column in the type's table and an
 
 =cut
 
-my %data_types = (String => 'varchar');
-
 sub create_attribute {
     my ($self, $c, $data) = @_;
 
@@ -237,8 +235,8 @@ sub create_attribute {
 
     $dbh->do('insert into sys_attributes (type, id, name, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name data_type repetitive mandatory default_value)});
 
-    if (exists $data_types{$data->{data_type}}) {
-        my $query = qq/alter table "$data->{type}" add column "$data->{id}" $data_types{$data->{data_type}}/;
+    if (my $data_type = "CiderCMS::Attribute::$data->{data_type}"->db_type) {
+        my $query = qq/alter table "$data->{type}" add column "$data->{id}" $data_type/;
         $query .= ' not null' if $data->{mandatory};
         $query .= ' default ' . $dbh->quote($data->{default}) if defined $data->{default} and $data->{default} ne '';
         $dbh->do($query);
