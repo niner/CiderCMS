@@ -29,15 +29,19 @@ sub process {
     my ($self, $c) = @_;
 
     my $root = $c->config->{root};
-    my $instance = $c->stash->{instance};
 
-    $self->config(
-        base_dir => [$instance ? "$root/static/instances/$instance/templates" : (), "$root/templates"],
-    );
+    if (my $instance = $c->stash->{instance}) {
+        $self->config(base_dir => ["$root/instances/$instance/templates", "$root/templates"]);
+        $c->stash({
+            uri_static => $c->uri_for('/') . join('/', 'instances', $instance, 'static'),
+        });
+    }
+    else {
+        $self->config(base_dir => "root/templates");
+    }
 
     $c->stash({
         uri_root    => $c->uri_for('/'),
-        uri_static  => $c->uri_for('/static'),
     });
 
     return $self->SUPER::process($c);

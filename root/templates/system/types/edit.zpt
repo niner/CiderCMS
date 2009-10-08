@@ -71,6 +71,8 @@
                 </label>
                 <select name="data_type">
                     <option value="String">String</option>
+                    <option value="Text">Text</option>
+                    <option value="Object">Object</option>
                 </select>
                 <label>
                     <span>Repetitive</span>

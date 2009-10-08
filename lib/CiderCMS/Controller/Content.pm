@@ -39,6 +39,7 @@ sub auto : Private {
     $c->stash({
         parents => \@objects,
         context => $objects[-1],
+        site    => $objects[0],
     });
 
     return 1;
