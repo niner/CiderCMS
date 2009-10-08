@@ -8,6 +8,9 @@ interface.
 Data is stored in a hierarchical tree like a folder/document/text structure
 which reflects the organization of a typical website.
 
+This app needs Module::Install for installation. Then install via standard
+perl Makefile.PL && make
+
 Run script/cidercms_server.pl to test the application.
 
 Start with http://localhost:3000/system/create to create the first instance.

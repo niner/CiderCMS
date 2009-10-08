@@ -27,7 +27,7 @@
                     <input name="name"/>
                 </label>
                 <label>
-                    <input type="checkbox" name="page_element"/>
+                    <input type="checkbox" name="page_element" value="1"/>
                     <span>Page element</span>
                 </label>
                 <button type="submit" name="save" value="1">Create</button>
