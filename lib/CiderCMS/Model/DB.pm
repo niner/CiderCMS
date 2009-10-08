@@ -204,6 +204,7 @@ sub create_type {
 
     my $dbh = $self->dbh;
     my $id = $data->{id};
+    $data->{page_element} ||= 0;
 
     $dbh->do('begin');
 

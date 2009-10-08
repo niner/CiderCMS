@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 17 );
+    : ( tests => 21 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -44,5 +44,31 @@ $mech->submit_form_ok({
 $mech->content_like(qr!<td>text</td>!, 'new attribute present');
 $mech->content_like(qr!<td>Text</td>!, 'new attribute name correct');
 $mech->content_like(qr!<td>Text</td>!, 'new attribute type correct');
+
+$mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
+
+$mech->submit_form_ok({
+    with_fields => {
+        id   => 'folder',
+        name => 'Folder',
+    },
+    button => 'save',
+}, 'Create folder type');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'title',
+        name      => 'Title',
+        data_type => 'String',
+        mandatory => 1,
+    },
+}, 'Add title attribute');
+$mech->submit_form_ok({
+    with_fields => {
+        id         => 'children',
+        name       => 'Children',
+        data_type  => 'Object',
+        repetitive => 1,
+    },
+}, 'Add title attribute');
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');

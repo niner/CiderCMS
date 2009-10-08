@@ -58,6 +58,17 @@ sub new {
     return $self;
 }
 
+=head2 type
+
+Returns the type info for this object.
+
+=cut
+
+sub type {
+    my ($self) = @_;
+    return $self->{c}->stash->{types}{$self->{type}};
+}
+
 =head2 property($property)
 
 Returns the data of the named attribute

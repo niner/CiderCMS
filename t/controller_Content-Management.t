@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 13 );
+    : ( tests => 19 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -42,3 +42,22 @@ $mech->submit_form_ok({
 $mech->content_like(qr/Delete me!/, 'New textarea content');
 $mech->follow_link_ok({ url_regex => qr{manage_delete\b.*\bid=3} }, 'Delete new textarea');
 $mech->content_unlike(qr/Delete me!/, 'Textarea gone');
+
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a folder');
+$mech->submit_form_ok({
+    with_fields => {
+        title => 'Folder 1',
+    },
+    button => 'save',
+});
+$mech->title_is('Edit Folder', 'Editing folder');
+
+# Add a textarea to our folder
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a textarea');
+$mech->submit_form_ok({
+    with_fields => {
+        text => 'Page 1',
+    },
+    button => 'save',
+});
+$mech->title_is('Edit Folder', 'Editing folder again');

@@ -11,7 +11,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title metal:fill-slot="title" tal:content="string:Edit ${context/type}">Manage</title>
+        <title metal:fill-slot="title" tal:content="string:Edit ${context/type/name}">Manage</title>
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
         <div tal:content="structure content"/>
