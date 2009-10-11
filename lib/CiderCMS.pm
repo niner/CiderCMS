@@ -62,8 +62,9 @@ sub prepare_path {
 
     $self->maybe::next::method(@_);
 
+    my $uri_raw = $self->request->uri->clone;
     if (my $instance = $ENV{CIDERCMS_INSTANCE}) {
-        my $uri = $self->request->uri->clone;
+        my $uri = $uri_raw->clone;
 
         my $path = $instance . $uri->path;
 
@@ -75,7 +76,11 @@ sub prepare_path {
         $self->stash({
             uri_instance => $uri,
             uri_static   => "$uri/static",
+            uri_raw      => $uri_raw,
         });
+    }
+    else {
+        $self->stash->{uri_raw} = $uri_raw;
     }
 }
 

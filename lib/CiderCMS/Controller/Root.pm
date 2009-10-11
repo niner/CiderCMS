@@ -28,7 +28,7 @@ Just throw a 404.
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    return $c->res->redirect($c->req->uri . 'index.html') if $c->req->uri->path =~ m!/\z!;
+    return $c->res->redirect($c->stash->{uri_raw} . 'index.html') if $c->req->uri->path =~ m!/\z!;
 
     $c->response->body( 'Page not found' );
     $c->response->status(404);
