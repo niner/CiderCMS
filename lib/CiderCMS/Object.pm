@@ -7,6 +7,7 @@ use Scalar::Util qw(weaken);
 
 use CiderCMS::Attribute;
 use CiderCMS::Attribute::String;
+use CiderCMS::Attribute::Title;
 use CiderCMS::Attribute::Text;
 use CiderCMS::Attribute::Object;
 
@@ -214,6 +215,20 @@ sub render {
     });
 }
 
+=head2 set_dcid
+
+=cut
+
+sub set_dcid {
+    my ($self) = @_;
+
+    foreach (values %{ $self->{data} }) {
+        if (defined(my $dcid = $_->dcid)) {
+            return $self->{dcid} = $dcid;
+        }
+    }
+}
+
 =head2 insert()
 
 Inserts the object into the database.
@@ -222,6 +237,8 @@ Inserts the object into the database.
 
 sub insert {
     my ($self) = @_;
+
+    $self->set_dcid;
 
     return $self->{c}->model('DB')->insert_object($self->{c}, $self);
 }
@@ -234,6 +251,8 @@ Updates the object in the database.
 
 sub update {
     my ($self, $params) = @_;
+
+    $self->set_dcid;
 
     if ($params->{data}) {
         $self->update_data($params->{data});

@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 19 );
+    : ( tests => 20 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -51,6 +51,7 @@ $mech->submit_form_ok({
     button => 'save',
 });
 $mech->title_is('Edit Folder', 'Editing folder');
+ok($mech->uri->path =~ m!/folder_1/!, 'dcid set correctly');
 
 # Add a textarea to our folder
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a textarea');

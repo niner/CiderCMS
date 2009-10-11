@@ -92,6 +92,16 @@ sub input_field {
     });
 }
 
+=head2 dcid
+
+Return a dcid
+
+=cut
+
+sub dcid {
+    return; # not implemented
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

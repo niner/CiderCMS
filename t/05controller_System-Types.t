@@ -58,7 +58,7 @@ $mech->submit_form_ok({
     with_fields => {
         id        => 'title',
         name      => 'Title',
-        data_type => 'String',
+        data_type => 'Title',
         mandatory => 1,
     },
 }, 'Add title attribute');
