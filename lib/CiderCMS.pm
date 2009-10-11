@@ -51,6 +51,34 @@ CiderCMS is a very flexible CMS.
 
 =head1 METHODS
 
+=head2 prepare_path
+
+Checks for an CIDERCMS_INSTANCE environment variable and prepends it to the path if present.
+
+=cut
+
+sub prepare_path {
+    my ($self) = @_;
+
+    $self->maybe::next::method(@_);
+
+    if (my $instance = $ENV{CIDERCMS_INSTANCE}) {
+        my $uri = $self->request->uri->clone;
+
+        my $path = $instance . $uri->path;
+
+        $uri->path($path);
+        $self->request->path($path);
+
+        $uri->path_query('');
+        $uri->fragment(undef);
+        $self->stash({
+            uri_instance => $uri,
+            uri_static   => "$uri/static",
+        });
+    }
+}
+
 =head2 uri_for_instance(@path)
 
 Creates an URI relative to the current instance's root
@@ -60,7 +88,7 @@ Creates an URI relative to the current instance's root
 sub uri_for_instance {
     my ($self, @path) = @_;
 
-    return $self->uri_for('/') . join '/', $self->stash->{instance}, @path;
+    return ($self->stash->{uri_instance} ||= $self->uri_for('/') . $self->stash->{instance}) . (@path ? join '/', '', @path : '');
 }
 
 =head1 SEE ALSO

@@ -11,6 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title tal:content="context/property --title">CiderCMS</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/styles.css" />
     </head>
     <body>
         <div tal:replace="structure content"/>
