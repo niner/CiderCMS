@@ -16,7 +16,7 @@ $mech->content_like(qr/Foo bar baz!/, 'Textarea present');
 $mech->content_like(qr(http://localhost/instances/test.example/static/css/styles.css), 'Stylesheet URI correct');
 
 # test INSTANCE environment var
-$ENV{INSTANCE} = 'test.example';
+$ENV{CIDERCMS_INSTANCE} = 'test.example';
 
 $mech->get_ok( 'http://localhost/index.html' );
 
