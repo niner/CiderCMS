@@ -26,9 +26,11 @@ sub auto : Private {
     my $path = $c->req->path;
     $path =~ s!/+!/!g;
     my @path = split m!/!, $path;
+
     my $instance = shift @path;
     unshift @path, '';
     $c->stash->{instance} = $instance;
+
     my $filename = pop @path; #FIXME what if there is no file name and no trailing slash?
 
     my $model = $c->model('DB');

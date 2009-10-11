@@ -32,9 +32,7 @@ sub process {
 
     if (my $instance = $c->stash->{instance}) {
         $self->config(base_dir => ["$root/instances/$instance/templates", "$root/templates"]);
-        $c->stash({
-            uri_static => $c->uri_for('/') . join('/', 'instances', $instance, 'static'),
-        });
+        $c->stash->{uri_static} ||= $c->uri_for('/') . join '/', 'instances', $instance, 'static';
     }
     else {
         $self->config(base_dir => "root/templates");
