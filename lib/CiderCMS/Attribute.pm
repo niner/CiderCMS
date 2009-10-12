@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(weaken);
+use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
 =head1 NAME
 
@@ -101,6 +102,16 @@ Return a dcid
 sub dcid {
     return; # not implemented
 }
+
+=head1 VARIABLES
+
+=head2 @attribute_types
+
+Contains names of all available attribute types.
+
+=cut
+
+our @attribute_types = map {s/CiderCMS::Attribute:://; $_} __PACKAGE__->plugins;
 
 =head1 AUTHOR
 

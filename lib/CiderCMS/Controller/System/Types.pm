@@ -70,11 +70,9 @@ Chain part setting up a requested type
 sub setup_type : PathPart('system/types') CaptureArgs(1) Chained('/system/init') {
     my ( $self, $c, $id ) = @_;
 
-    $c->stash({
-        type => $c->stash->{types}{$id},
-    });
+    die "Type not found: $id" unless $id and exists $c->stash->{types}{$id};
 
-    return;
+    return $c->stash->{type} = $c->stash->{types}{$id};
 }
 
 =head2 edit
@@ -89,12 +87,31 @@ sub edit : PathPart Chained('setup_type') {
     my $id = $c->stash->{type}{id};
 
     $c->stash({
+        attribute_types      => [ sort @CiderCMS::Attribute::attribute_types ],
         template             => 'system/types/edit.zpt',
         uri_save             => $c->uri_for_instance("system/types/$id/save"),
+        uri_save_attributes  => $c->uri_for_instance("system/types/$id/save_attributes"),
         uri_create_attribute => $c->uri_for_instance("system/types/$id/create_attribute"),
     });
 
     return;
+}
+
+=head2 save
+
+Saves an edited type.
+
+=cut
+
+sub save : PathPart Chained('setup_type') {
+    my ( $self, $c ) = @_;
+
+    my $id = $c->stash->{type}{id};
+    my $params = $c->req->params;
+
+    $c->model('DB')->update_type($c, $id, $params);
+
+    $c->res->redirect($c->uri_for_instance("system/types/$params->{id}/edit"));
 }
 
 =head2 create_attribute
@@ -107,12 +124,29 @@ sub create_attribute : PathPart Chained('setup_type') {
     my ( $self, $c ) = @_;
 
     my $type = $c->stash->{type}{id};
+
+    $c->model('DB')->create_attribute($c, {%{ $c->req->params }, type => $type});
+
+    return $c->res->redirect($c->uri_for_instance("system/types/$type/edit"));
+}
+
+=head2 save_attributes
+
+Updates all attributes of this type
+
+=cut
+
+sub save_attributes : PathPart Chained('setup_type') {
+    my ( $self, $c ) = @_;
+
+    my $type = $c->stash->{type}{id};
     my $params = $c->req->params;
-    $_ = $_ ? 1 : 0 foreach @$params{qw(mandatory repetitive)};
-    $params->{type} = $type;
 
-    $c->model('DB')->create_attribute($c, $params);
-
+    foreach my $attribute (@{ $c->stash->{type}{attributes} }) {
+        my %data = map {$_ => $params->{"$attribute->{id}_$_"}} grep {exists $params->{"$attribute->{id}_$_"}} keys %$attribute;
+        $c->model('DB')->update_attribute($c, $type, $attribute->{id}, \%data);
+    }
+    
     return $c->res->redirect($c->uri_for_instance("system/types/$type/edit"));
 }
 

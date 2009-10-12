@@ -6,10 +6,6 @@ use warnings;
 use Scalar::Util qw(weaken);
 
 use CiderCMS::Attribute;
-use CiderCMS::Attribute::String;
-use CiderCMS::Attribute::Title;
-use CiderCMS::Attribute::Text;
-use CiderCMS::Attribute::Object;
 
 =head1 NAME
 

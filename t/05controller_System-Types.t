@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 21 );
+    : ( tests => 26 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -13,24 +13,27 @@ $mech->get_ok( 'http://localhost/test.example/system/types' );
 
 $mech->follow_link_ok({url_regex => qr(site/edit)}, 'Edit Site');
 $mech->title_is('Edit type Site');
-$mech->content_like(qr/value="site"/, 'ID field correct');
-$mech->content_like(qr/value="Site"/, 'name field correct');
-$mech->content_unlike(qr/checked="checked"/, 'page_element not checked');
+
+$mech->form_number(1);
+ok($mech->value('id')   eq 'site', 'ID field correct');
+ok($mech->value('name') eq 'Site', 'name field correct');
+ok((not $mech->value('page_element')), 'page_element not checked');
 
 $mech->back;
 
 $mech->submit_form_ok({
     with_fields => {
-        id           => 'textarea',
-        name         => 'Textarea',
+        id           => 'textfield',
+        name         => 'Textfield',
         page_element => '1',
     },
     button => 'save',
-}, 'Create the textarea type');
-$mech->title_is('Edit type Textarea');
-$mech->content_like(qr/value="textarea"/, 'ID field correct');
-$mech->content_like(qr/value="Textarea"/, 'name field correct');
-$mech->content_like(qr/checked="checked"/, 'page_element checked');
+}, 'Create the textfield type');
+$mech->title_is('Edit type Textfield');
+$mech->form_number(1);
+ok($mech->value('id')   eq 'textfield', 'ID field correct');
+ok($mech->value('name') eq 'Textfield', 'name field correct');
+ok($mech->value('page_element'), 'page_element checked');
 
 $mech->submit_form_ok({
     with_fields => {
@@ -41,9 +44,30 @@ $mech->submit_form_ok({
     },
 }, 'Create the text attribute');
 
-$mech->content_like(qr!<td>text</td>!, 'new attribute present');
-$mech->content_like(qr!<td>Text</td>!, 'new attribute name correct');
-$mech->content_like(qr!<td>Text</td>!, 'new attribute type correct');
+$mech->form_number(2);
+ok($mech->value('text_id')        eq 'text', 'new attribute present');
+ok($mech->value('text_name')      eq 'Text', 'new attribute name correct');
+ok($mech->value('text_data_type') eq 'Text', 'new attribute type correct');
+
+$mech->submit_form_ok({
+    with_fields => {
+        id           => 'textfield',
+        name         => 'Textarea',
+        page_element => 1,
+    },
+    button => 'save',
+}, 'Rename textfield to textarea');
+$mech->submit_form_ok({
+    with_fields => {
+        id           => 'textarea',
+        name         => 'Textarea',
+        page_element => 1,
+    },
+    button => 'save',
+}, 'Rename textfield to textarea');
+
+ok($mech->get('http://localhost/test.example/system/types/textfield/edit')->is_error, 'Old type name gone');
+$mech->back;
 
 $mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
 
@@ -58,7 +82,7 @@ $mech->submit_form_ok({
     with_fields => {
         id        => 'title',
         name      => 'Title',
-        data_type => 'Title',
+        data_type => 'String',
         mandatory => 1,
     },
 }, 'Add title attribute');
@@ -70,5 +94,15 @@ $mech->submit_form_ok({
         repetitive => 1,
     },
 }, 'Add title attribute');
+
+$mech->submit_form_ok({
+    with_fields => {
+        title_data_type => 'Title',
+    },
+    button => 'save',
+});
+
+$mech->form_number(2);
+ok($mech->value('title_data_type') eq 'Title', 'title data_type now Title');
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');

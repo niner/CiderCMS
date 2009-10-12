@@ -31,32 +31,46 @@
                     <input tal:condition="false: type/page_element" type="checkbox" name="page_element" value="1"/>
                     <span>Page element</span>
                 </label>
-                <button type="submit">Save</button>
+                <button type="submit" name="save">Save</button>
             </fieldset>
         </form>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Repetitive</th>
-                    <th>Mandatory</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr tal:repeat="attribute type/attributes">
-                    <td tal:content="attribute/id"/>
-                    <td tal:content="attribute/name"/>
-                    <td tal:content="attribute/data_type"/>
-                    <td tal:condition="true: attribute/repetitive">yes</td>
-                    <td tal:condition="false:attribute/repetitive">no</td>
-                    <td tal:condition="true: attribute/mandatory">yes</td>
-                    <td tal:condition="false:attribute/mandatory">no</td>
-                </tr>
-            </tbody>
-        </table>
+        <form id="attributes" tal:attributes="action uri_save_attributes" method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Repetitive</th>
+                        <th>Mandatory</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr tal:repeat="attribute type/attributes">
+                        <td class="id"><input tal:attributes="name string:${attribute/id}_id; value attribute/id"/></td>
+                        <td class="name"><input tal:attributes="name string:${attribute/id}_name; value attribute/name"/></td>
+                        <td class="data_type">
+                            <select tal:attributes="name string:${attribute/id}_data_type">
+                                <tal:div tal:omit-tag="" tal:repeat="type attribute_types">
+                                    <option tal:condition="eq: type attribute/data_type" tal:attributes="value type" tal:content="type" selected="selected"/>
+                                    <option tal:condition="not: eq: type attribute/data_type" tal:attributes="value type" tal:content="type"/>
+                                </tal:div>
+                            </select>
+                        </td>
+                        <td class="repetitive">
+                            <input tal:condition="true:  attribute/repetitive" type="checkbox" tal:attributes="name string:${attribute/id}_repetitive" checked="checked"/>
+                            <input tal:condition="false: attribute/repetitive" type="checkbox" tal:attributes="name string:${attribute/id}_repetitive"/>
+                        </td>
+                        <td class="mandatory">
+                            <input tal:condition="true:  attribute/mandatory" type="checkbox" tal:attributes="name string:${attribute/id}_mandatory" checked="checked"/>
+                            <input tal:condition="false: attribute/mandatory" type="checkbox" tal:attributes="name string:${attribute/id}_mandatory"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="submit" name="save">Save attributes</button>
+        </form>
 
         <form tal:attributes="action uri_create_attribute" method="post">
             <fieldset>
@@ -70,9 +84,7 @@
                     <input name="name"/>
                 </label>
                 <select name="data_type">
-                    <option value="String">String</option>
-                    <option value="Text">Text</option>
-                    <option value="Object">Object</option>
+                    <option tal:repeat="type attribute_types" tal:attributes="value type" tal:content="type"/>
                 </select>
                 <label>
                     <span>Repetitive</span>

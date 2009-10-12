@@ -224,6 +224,31 @@ sub create_type {
     return;
 }
 
+=head2 update_type($c, $id, {id => 'type1', name => 'Type 1', page_element => 0})
+
+Updates an existing type.
+
+=cut
+
+sub update_type {
+    my ($self, $c, $id, $data) = @_;
+
+    my $dbh = $self->dbh;
+    $data->{page_element} ||= 0;
+
+    if ($data->{id} ne $id) {
+        $dbh->do('begin'); # can't do a simple update, because that would break foreign key constraints
+        $dbh->do('insert into sys_types (id, name, page_element) values (?, ?, ?)', undef, @$data{qw(id name page_element)});
+        $dbh->do(qq/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
+        $dbh->do(qq/alter table "$id" rename to "$data->{id}"/);
+        $dbh->do(qq/delete from sys_types where id = ?/, undef, $id);
+        $dbh->do('commit');
+    }
+    else {
+        $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
+    }
+}
+
 =head2 create_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''})
 
 Adds a new attribute to a type by creating the column in the type's table and an entry in the sys_attributes table.
@@ -235,6 +260,8 @@ sub create_attribute {
 
     my $dbh = $self->dbh;
 
+    $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
+
     $dbh->do('begin');
 
     $dbh->do('insert into sys_attributes (type, id, name, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name data_type repetitive mandatory default_value)});
@@ -245,6 +272,28 @@ sub create_attribute {
         $query .= ' default ' . $dbh->quote($data->{default}) if defined $data->{default} and $data->{default} ne '';
         $dbh->do($query);
     }
+
+    $dbh->do('commit');
+
+    return;
+}
+
+=head2 update_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''})
+
+Updates an existing attribute.
+
+=cut
+
+sub update_attribute {
+    my ($self, $c, $type, $id, $data) = @_;
+
+    my $dbh = $self->dbh;
+
+    $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
+
+    $dbh->do('begin');
+
+    $dbh->do('update sys_attributes set id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id name data_type repetitive mandatory default_value)}, $type, $id);
 
     $dbh->do('commit');
 
