@@ -19,6 +19,7 @@ requires 'Catalyst::View::Petal';
 requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
 requires 'File::Slurp';
+requires 'Module::Pluggable';
 catalyst;
 
 install_script glob('script/*.pl');
