@@ -189,7 +189,7 @@ sub object_children {
 
     my @children = map {
         $self->inflate_object($c, $_)
-    } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ?', {Slice => {}}, $object->{id}) };
+    } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ? order by sort_id', {Slice => {}}, $object->{id}) };
 
     return wantarray ? @children : \@children;
 }
@@ -300,6 +300,27 @@ sub update_attribute {
     return;
 }
 
+=head2 create_insert_aisle($c, $parent, $count, $after)
+
+Creates an aisle in the sort order of an object's children to insert new objects in between.
+
+=cut
+
+sub create_insert_aisle {
+    my ($self, $c, $parent, $count, $after) = @_;
+
+    my $dbh = $self->dbh;
+    if ($after) {
+        $after = $self->get_object($c, $after) unless ref $after;
+        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and sort_id > ?", undef, $parent, $after->{sort_id});
+        return $after->{sort_id} + 1;
+    }
+    else {
+        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ?", undef, $parent);
+        return 1;
+    }
+}
+
 =head2 insert_object($c, $object)
 
 Inserts a CiderCMS::Object into the database.
@@ -309,10 +330,15 @@ Inserts a CiderCMS::Object into the database.
 my @sys_object_columns = qw(id parent sort_id type active_start active_end dcid);
 
 sub insert_object {
-    my ($self, $c, $object) = @_;
+    my ($self, $c, $object, $params) = @_;
 
     my $dbh = $self->dbh;
     my $type = $object->{type};
+    my $after;
+
+    $dbh->do('begin');
+
+    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, 1, $params->{after});
     
     my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
 
@@ -320,6 +346,8 @@ sub insert_object {
 
     if (my $retval = $dbh->do($insert_statement, undef, (map $object->{$_}, @sys_object_columns), @$values)) {
         $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
+
+        $dbh->do('commit');
         return $retval;
     }
     else {

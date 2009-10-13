@@ -232,11 +232,11 @@ Inserts the object into the database.
 =cut
 
 sub insert {
-    my ($self) = @_;
+    my ($self, $params) = @_;
 
     $self->set_dcid;
 
-    return $self->{c}->model('DB')->insert_object($self->{c}, $self);
+    return $self->{c}->model('DB')->insert_object($self->{c}, $self, $params);
 }
 
 =head2 update()

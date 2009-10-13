@@ -78,17 +78,19 @@ sub manage_add : Regex('/manage_add\z') {
     my %params = %{ $c->req->params };
     my $type = delete $params{type};
     my $save = delete $params{save};
+    my $after = delete $params{after};
     my $context = $c->stash->{context};
 
     my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $context->{id}, data => \%params});
 
     if ($save) {
-        $object->insert();
+        $object->insert({after => $after});
         return $c->res->redirect(($object->type->{page_element} and $context or $object)->uri_management());
     }
 
     $c->stash({
         type     => $type,
+        after    => $after,
     });
 
     $c->stash({

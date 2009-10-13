@@ -11,6 +11,11 @@
                 <span tal:content="child/type/name"/>
                 <a tal:attributes="href child/uri_management">Edit</a>
                 <a tal:attributes="href string:${uri_delete}?id=${child/id}">Delete</a>
+                <ul>
+                    <li tal:condition="true: addable_types" tal:repeat="type addable_types">
+                        <a tal:attributes="href string:${uri_add}?type=${type/id}\;after=${child/id}" tal:content="string: Add ${type/name}"/>
+                    </li>
+                </ul>
             </div>
             <div tal:content="structure child/render"/>
         </div>

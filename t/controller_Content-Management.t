@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 20 );
+    : ( tests => 28 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -62,3 +62,23 @@ $mech->submit_form_ok({
     button => 'save',
 });
 $mech->title_is('Edit Folder', 'Editing folder again');
+
+$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder$} }, 'Add a folder');
+$mech->submit_form_ok({
+    with_fields => {
+        title => 'Folder 0',
+    },
+    button => 'save',
+});
+$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder}, n => 3 }, 'Add a folder');
+$mech->submit_form_ok({
+    with_fields => {
+        title => 'Folder 2',
+    },
+    button => 'save',
+});
+$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+
+$mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct order');
