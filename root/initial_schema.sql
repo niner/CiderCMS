@@ -84,3 +84,17 @@ BEGIN
 END;
 $BODY$
 LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION sys_object_au() RETURNS TRIGGER AS
+$BODY$
+DECLARE
+BEGIN
+    IF OLD.sort_id IS DISTINCT FROM NEW.sort_id THEN
+        EXECUTE 'update ' || quote_ident(NEW.type) || ' set sort_id=' || NEW.sort_id || ' where id=' || NEW.id;
+    END IF;
+    RETURN NEW;
+END;
+$BODY$
+LANGUAGE 'plpgsql';
+
+create trigger sys_object_au after update on sys_object for each row execute procedure sys_object_au();
