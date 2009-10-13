@@ -53,7 +53,7 @@ Renders the page.
 
 =cut
 
-sub index : Regex('/(?:index\.html)?\z') {
+sub index : Regex('/(?:index\.html)?$') {
     my ( $self, $c ) = @_;
 
     $c->stash({

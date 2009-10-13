@@ -28,7 +28,11 @@ Just throw a 404.
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    return $c->res->redirect($c->stash->{uri_raw} . 'index.html') if $c->req->uri->path =~ m!/\z!;
+
+    if ($c->req->uri->path =~ m!/\z!) {
+        $c->req->path($c->req->path . 'index.html');
+        return $c->go('content/index');
+    }
 
     $c->response->body( 'Page not found' );
     $c->response->status(404);
