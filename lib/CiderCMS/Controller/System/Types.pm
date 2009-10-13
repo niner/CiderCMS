@@ -70,7 +70,10 @@ Chain part setting up a requested type
 sub setup_type : PathPart('system/types') CaptureArgs(1) Chained('/system/init') {
     my ( $self, $c, $id ) = @_;
 
-    die "Type not found: $id" unless $id and exists $c->stash->{types}{$id};
+    unless ($id and exists $c->stash->{types}{$id}) {
+        $c->error("unknown type: $id");
+        $c->detach;
+    }
 
     return $c->stash->{type} = $c->stash->{types}{$id};
 }
