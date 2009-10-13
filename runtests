@@ -2,7 +2,7 @@
 
 # cleanup
 rm -Rf root/instances/test.example
-echo 'drop schema "test.example" cascade;' | psql cidercms
+echo 'set client_min_messages='"'"'warning'"'"'; drop schema "test.example" cascade;' | psql cidercms
 
 if [ "$1" == "cover" ] ; then
 	make clean
