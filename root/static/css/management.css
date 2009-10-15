@@ -23,3 +23,11 @@ div.child div.actions {
     float: left;
     width: 10em;
 }
+
+div.child div.child_content {
+    margin-left: 10em;
+}
+
+div.child div.folder a {
+    font-size: 150%;
+}

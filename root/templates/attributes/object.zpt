@@ -17,7 +17,7 @@
                     </li>
                 </ul>
             </div>
-            <div tal:content="structure child/render"/>
+            <div class="child_content" tal:content="structure child/render"/>
         </div>
     </div>
 </div>
