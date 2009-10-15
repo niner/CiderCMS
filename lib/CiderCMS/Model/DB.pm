@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
-use Carp qw(croak);
+use Carp qw(croak cluck);
 
 use CiderCMS::Object;
 
@@ -132,6 +132,7 @@ sub traverse_path {
     my @objects;
     my $object;
     my $dbh = $self->dbh;
+    my $level = 0;
 
     foreach (@$path) {
         my $may_be_id = /\A\d+\z/;
@@ -144,6 +145,7 @@ sub traverse_path {
             $_,
             ($may_be_id ? $_ : ()),
         ) or die qq{node "$_" not found};
+        $object->{level} = $level++;
 
         push @objects, $self->inflate_object($c, $object);
     }
@@ -151,31 +153,37 @@ sub traverse_path {
     return @objects;
 }
 
-=head2 get_object($c, $id)
+=head2 get_object($c, $id, $level)
 
 Returns a content object for the given ID.
+Sets the object's level to the given $level
 
 =cut
 
 #TODO great point to add some caching
 sub get_object {
-    my ($self, $c, $id) = @_;
+    my ($self, $c, $id, $level) = @_;
+    $level ||= 0;
 
-    return $self->inflate_object($c, $self->dbh->selectrow_hashref('select id, type from sys_object where id = ?', undef, $id));
+    my $object = $self->dbh->selectrow_hashref('select id, type from sys_object where id = ?', undef, $id);
+    $object->{level} = $level;
+
+    return $self->inflate_object($c, $object);
 }
 
 =head2 inflate_object($c, $object)
 
-Takes a stub object (consisting of id and type information) and inflates it to a full blown and initialized CiderCMS::Object.
+Takes a stub object (consisting of id, type and level information) and inflates it to a full blown and initialized CiderCMS::Object.
 
 =cut
 
 sub inflate_object {
     my ($self, $c, $object) = @_;
 
+    my $level = $object->{level};# or $object->{type} ne 'site' and cluck "$object->{type} has no level!";
     $object = $self->dbh->selectrow_hashref(qq(select * from "$object->{type}" where id=?), undef, $object->{id});
 
-    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, dcid => $object->{dcid}, parent => $object->{parent}, sort_id => $object->{sort_id}, data => $object});
+    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, dcid => $object->{dcid}, parent => $object->{parent}, level => $level, sort_id => $object->{sort_id}, data => $object});
 }
 
 =head2 object_children
@@ -188,7 +196,8 @@ sub object_children {
     my ($self, $c, $object) = @_;
 
     my @children = map {
-        $self->inflate_object($c, $_)
+        $_->{level} = $object->{level} + 1;
+        $self->inflate_object($c, $_);
     } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ? order by sort_id', {Slice => {}}, $object->{id}) };
 
     return wantarray ? @children : \@children;

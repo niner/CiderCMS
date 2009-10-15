@@ -38,6 +38,7 @@ sub new {
         c          => $params->{c},
         id         => $params->{id},
         parent     => $params->{parent},
+        level      => $params->{level},
         type       => $type,
         sort_id    => $params->{sort_id} || 0,
         dcid       => $params->{dcid},
@@ -118,7 +119,28 @@ sub parent {
 
     return unless $self->{parent};
 
-    return $self->{c}->model('DB')->get_object($self->{c}, $self->{parent});
+    return $self->{c}->model('DB')->get_object($self->{c}, $self->{parent}, $self->{level} - 1);
+}
+
+=head2 parent_by_level($level)
+
+Returns the parent at a certain level.
+The site object is at level 0.
+
+=cut
+
+sub parent_by_level {
+    my ($self, $level) = @_;
+
+    return if $self->{level} < $level; # already on a lower level
+
+    my $parent = $self;
+    while ($parent) {
+        return $parent if $parent->{level} == $level;
+        $parent = $parent->parent;
+    }
+
+    return;
 }
 
 =head2 children

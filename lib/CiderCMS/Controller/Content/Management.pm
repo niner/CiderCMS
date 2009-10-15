@@ -81,7 +81,7 @@ sub manage_add : Regex('/manage_add\z') {
     my $after = delete $params{after};
     my $context = $c->stash->{context};
 
-    my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $context->{id}, data => \%params});
+    my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $context->{id}, level => $context->{level}, data => \%params});
 
     if ($save) {
         $object->insert({after => $after});

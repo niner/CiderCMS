@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xml:lang="en"
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderCMS">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title tal:content="context/property --title">CiderCMS</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/styles.css" />
+    </head>
+    <body>
+        <div id="page">
+            <ul id="nav">
+                <li tal:repeat="child site/children"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
+            </ul>
+
+            <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/children" tal:condition="true: children">
+                <li tal:repeat="child children"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
+            </ul>
+            <div id="content" tal:content="structure content"/>
+        </div>
+    </body>
+</html>
+
