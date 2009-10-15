@@ -75,6 +75,7 @@ Returns the data of the named attribute
 sub property {
     my ($self, $property) = @_;
 
+    return unless exists $self->{data}{$property};
     return $self->{data}{$property}->data;
 }
 

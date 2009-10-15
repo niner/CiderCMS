@@ -3,9 +3,11 @@ use warnings;
 use Test::More;
 
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 28 );
+plan skip_all => 'Test::WWW::Mechanize::Catalyst required' if $@;
+
+eval 'use Test::XPath';
+my $xpath = not $@;
+plan tests => $xpath ? 33 : 29;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -82,3 +84,15 @@ $mech->submit_form_ok({
 $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
 
 $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct order');
+
+$mech->follow_link_ok({ url_regex => qr(folder_1/manage) }, 'Go to folder 1');
+
+if ($xpath) {
+    $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
+    $xpath->ok('//div[@id="breadcrumbs"]', 'Bread crumbs found');
+    $xpath->ok('//div[@id="breadcrumbs"]//a', 'Links in bread crumbs');
+    $xpath->ok('//div[@id="breadcrumbs"]//a[contains(text(), "Folder")]', 'Folder 1 title in breadcrumbs');
+    $xpath->ok('id("breadcrumbs")//a[contains(@href, "folder_1")]', 'Folder 1 href in breadcrumbs');
+}
+
+#$mech->get_ok($mech->uri . '_paste?

@@ -70,6 +70,8 @@ sub render_template {
     });
 }
 
+__PACKAGE__->config(input => 'XHTML', output => 'XHTML');
+
 =head1 AUTHOR
 
 Stefan Seifert
