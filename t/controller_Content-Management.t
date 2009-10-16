@@ -99,7 +99,7 @@ SKIP: {
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a subfolder');
 $mech->submit_form_ok({
     with_fields => {
-        title => 'Folder 3',
+        title => 'Földer 3',
     },
     button => 'save',
 });

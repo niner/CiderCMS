@@ -27,7 +27,7 @@ sub dcid {
     my ($self) = @_;
 
     my $dcid = lc $self->{data};
-    $dcid =~ s/\W/_/g;
+    $dcid =~ s/[^a-z0-9_\.-]/_/g;
     return $dcid;
 }
 
