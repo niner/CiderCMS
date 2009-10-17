@@ -117,6 +117,22 @@ sub manage_delete : Regex('/manage_delete\z') {
     return $c->res->redirect($c->stash->{context}->uri_management());
 }
 
+=head2 manage_paste
+
+Cut and past an object to a new location.
+
+=cut
+
+sub manage_paste : Regex('/manage_paste\z') {
+    my ( $self, $c ) = @_;
+
+    my $object = $c->model('DB')->get_object($c, $c->req->param('id'));
+
+    $object->move_to(parent => $c->stash->{context}, after => scalar $c->req->param('after'));
+
+    return $c->res->redirect($c->stash->{context}->uri_management());
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

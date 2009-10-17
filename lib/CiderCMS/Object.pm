@@ -320,6 +320,18 @@ sub get_dirty_columns {
     return \@columns, \@values;
 }
 
+=head2 move_to(parent => $parent, after => $after)
+
+Moves this object (and it's subtree) to a new parent and or sort position
+
+=cut
+
+sub move_to {
+    my ($self, %params) = @_;
+
+    $self->{c}->model('DB')->move_object($self->{c}, $self, \%params);
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

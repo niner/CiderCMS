@@ -6,7 +6,7 @@
         </li>
     </ul>
     <div class="children">
-        <div tal:condition="true: children" tal:repeat="child children" class="child">
+        <div tal:condition="true: children" tal:repeat="child children" class="child" tal:attributes="class string:child ${child/type/id}; id string:child_${child/id}">
             <div class="actions">
                 <span tal:content="child/type/name"/>
                 <a tal:attributes="href child/uri_management">Edit</a>

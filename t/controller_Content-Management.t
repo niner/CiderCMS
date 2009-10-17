@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
+use utf8;
 
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 35 );
+    : ( tests => 37 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -83,25 +84,34 @@ $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top lev
 
 $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct order');
 
-$mech->follow_link_ok({ url_regex => qr(folder_1/manage) }, 'Go to folder 1');
-
 SKIP: {
     eval { require Test::XPath; };
     skip 'Test::XPath not installed', 4 if $@;
 
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
+    $xpath->like('//div[@class="child folder"][3]/@id', qr/\A child_(\d+) \z/x);
+    my $xpc = $xpath->xpc;
+    my $child_id = $xpc->findvalue('//div[@class="child folder"][3]/@id');
+
+    $mech->follow_link_ok({ url_regex => qr(folder_1/manage) }, 'Go to folder 1');
+
+    $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->ok('id("breadcrumbs")', 'Bread crumbs found');
     $xpath->ok('id("breadcrumbs")//a', 'Links in bread crumbs');
     $xpath->ok('id("breadcrumbs")//a[contains(text(), "Folder")]', 'Folder 1 title in breadcrumbs');
     $xpath->ok('id("breadcrumbs")//a[contains(@href, "folder_1")]', 'Folder 1 href in breadcrumbs');
+
+    $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a subfolder');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => 'Földer 3', # try some umlauts
+        },
+        button => 'save',
+    });
+
+    skip 'Test::XPath not installed', 1 unless $child_id;
+
+    my ($id) = $child_id =~ /child_(\d+)/;
+    $mech->get_ok($mech->uri . '_paste?id=' . $id);
+    $mech->follow_link_ok({ url_regex => qr{folder_2/manage} }, 'Folder 2 works');
 }
-
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a subfolder');
-$mech->submit_form_ok({
-    with_fields => {
-        title => 'Földer 3',
-    },
-    button => 'save',
-});
-
-#$mech->get_ok($mech->uri . '_paste?
