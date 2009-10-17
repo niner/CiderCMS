@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 14 );
+    : ( tests => 15 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -42,3 +42,5 @@ SKIP: {
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->ok('id("subnav")', 'subnav found');
 }
+
+$mech->follow_link_ok({ url_regex => qr(folder_3) });

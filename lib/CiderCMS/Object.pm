@@ -35,15 +35,16 @@ sub new {
     my $data  = $params->{data};
 
     my $self = bless {
-        c          => $params->{c},
-        id         => $params->{id},
-        parent     => $params->{parent},
-        level      => $params->{level},
-        type       => $type,
-        sort_id    => $params->{sort_id} || 0,
-        dcid       => $params->{dcid},
-        attr       => $stash->{types}{$type}{attr},
-        attributes => $stash->{types}{$type}{attributes},
+        c           => $params->{c},
+        id          => $params->{id},
+        parent      => $params->{parent},
+        parent_attr => $params->{parent_attr},
+        level       => $params->{level},
+        type        => $type,
+        sort_id     => $params->{sort_id} || 0,
+        dcid        => $params->{dcid},
+        attr        => $stash->{types}{$type}{attr},
+        attributes  => $stash->{types}{$type}{attributes},
     }, $class;
 
     weaken($self->{c});
@@ -143,9 +144,12 @@ sub parent_by_level {
     return;
 }
 
-=head2 children
+=head2 children()
 
-Returns the children of this object, if any.
+Returns the children of this object regardless to which attribute they belong.
+Usually one should use $object->property('my_attribute') to only get the children of a certain attribute.
+
+Returns a list in list context and an array ref in scalar context.
 
 =cut
 
@@ -155,7 +159,7 @@ sub children {
     return $self->{c}->model('DB')->object_children($self->{c}, $self);
 }
 
-=head2 uri
+=head2 uri()
 
 Returns an URI without a file name for this object
 
@@ -234,7 +238,9 @@ sub render {
     });
 }
 
-=head2 set_dcid
+=head2 set_dcid()
+
+Tries to get a dcid for this object from it's attributes and sets it.
 
 =cut
 
@@ -246,6 +252,8 @@ sub set_dcid {
             return $self->{dcid} = $dcid;
         }
     }
+
+    # $self->{dcid} = $self->{id}; #TODO figure out what to do about node 1
 }
 
 =head2 insert()
@@ -271,11 +279,11 @@ Updates the object in the database.
 sub update {
     my ($self, $params) = @_;
 
-    $self->set_dcid;
-
     if ($params->{data}) {
         $self->update_data($params->{data});
     }
+
+    $self->set_dcid;
 
     return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }

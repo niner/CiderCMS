@@ -6,7 +6,7 @@ use utf8;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 37 );
+    : ( tests => 40 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -37,7 +37,7 @@ $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a
 $mech->submit_form_ok({
     with_fields => {
         text => 'Delete me!',
-    },
+    }      ,
     button => 'save',
 });
 $mech->content_like(qr/Delete me!/, 'New textarea content');
@@ -65,7 +65,7 @@ $mech->submit_form_ok({
 $mech->title_is('Edit Folder', 'Editing folder again');
 
 $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder$} }, 'Add a folder');
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a folder');
 $mech->submit_form_ok({
     with_fields => {
         title => 'Folder 0',
@@ -108,6 +108,13 @@ SKIP: {
         },
         button => 'save',
     });
+    $mech->submit_form_ok({
+        with_fields => {
+            title => 'Folder 3', # correct it
+        },
+        button => 'save',
+    });
+    ok($mech->value('title') eq 'Folder 3', 'Title updated');
 
     skip 'Test::XPath not installed', 1 unless $child_id;
 

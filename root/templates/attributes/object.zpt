@@ -2,7 +2,7 @@
     <h2 tal:content="self/name"/>
     <ul>
         <li tal:condition="true: addable_types" tal:repeat="type addable_types">
-            <a tal:attributes="href string:${uri_add}?type=${type/id}" tal:content="string: Add ${type/name}"/>
+            <a tal:attributes="href string:${uri_add}?type=${type/id}\;parent_attr=${self/id}" tal:content="string: Add ${type/name}"/>
         </li>
     </ul>
     <div class="children">
@@ -13,7 +13,7 @@
                 <a tal:attributes="href string:${uri_delete}?id=${child/id}">Delete</a>
                 <ul>
                     <li tal:condition="true: addable_types" tal:repeat="type addable_types">
-                        <a tal:attributes="href string:${uri_add}?type=${type/id}\;after=${child/id}" tal:content="string: Add ${type/name}"/>
+                        <a tal:attributes="href string:${uri_add}?type=${type/id}\;parent_attr=${self/id}\;after=${child/id}" tal:content="string: Add ${type/name}"/>
                     </li>
                 </ul>
             </div>

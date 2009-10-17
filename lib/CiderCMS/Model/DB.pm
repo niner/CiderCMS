@@ -183,22 +183,22 @@ sub inflate_object {
     my $level = $object->{level};# or $object->{type} ne 'site' and cluck "$object->{type} has no level!";
     $object = $self->dbh->selectrow_hashref(qq(select * from "$object->{type}" where id=?), undef, $object->{id});
 
-    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, dcid => $object->{dcid}, parent => $object->{parent}, level => $level, sort_id => $object->{sort_id}, data => $object});
+    return CiderCMS::Object->new({c => $c, id => $object->{id}, type => $object->{type}, dcid => $object->{dcid}, parent => $object->{parent}, parent_attr => $object->{parent_attr}, level => $level, sort_id => $object->{sort_id}, data => $object});
 }
 
-=head2 object_children
+=head2 object_children($c, $object, $attr)
 
 Returns the children of an object as list in list context and as array ref in scalar context.
 
 =cut
 
 sub object_children {
-    my ($self, $c, $object) = @_;
+    my ($self, $c, $object, $attr) = @_;
 
     my @children = map {
         $_->{level} = $object->{level} + 1;
         $self->inflate_object($c, $_);
-    } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ? order by sort_id', {Slice => {}}, $object->{id}) };
+    } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ?' . ($attr ? ' and parent_attr = ?' : '') . ' order by sort_id', {Slice => {}}, $object->{id}, ($attr ? $attr : ())) };
 
     return wantarray ? @children : \@children;
 }
@@ -221,7 +221,7 @@ sub create_type {
     $dbh->do('insert into sys_types (id, name, page_element) values (?, ?, ?)', undef, $id, $data->{name}, $data->{page_element});
 
     $dbh->do(q/set client_min_messages='warning'/); # avoid the CREATE TABLE / PRIMARY KEY will create implicit index NOTICE
-    $dbh->do(qq/create table "$id" (id integer not null, parent integer, sort_id integer default 0 not null, type varchar not null references sys_types (id) default '$id', changed timestamp not null default now(), tree_changed timestamp not null default now(), active_start timestamp, active_end timestamp, dcid varchar)/);
+    $dbh->do(qq/create table "$id" (id integer not null, parent integer, parent_attr varchar, sort_id integer default 0 not null, type varchar not null references sys_types (id) default '$id', changed timestamp not null default now(), tree_changed timestamp not null default now(), active_start timestamp, active_end timestamp, dcid varchar)/);
     $dbh->do(q/set client_min_messages='notice'/); # back to full information
 
     $dbh->do(qq/create trigger "${id}_bi" before insert on "$id" for each row execute procedure sys_objects_bi()/);
@@ -309,23 +309,23 @@ sub update_attribute {
     return;
 }
 
-=head2 create_insert_aisle($c, $parent, $count, $after)
+=head2 create_insert_aisle($c, $parent, $attr, $count, $after)
 
 Creates an aisle in the sort order of an object's children to insert new objects in between.
 
 =cut
 
 sub create_insert_aisle {
-    my ($self, $c, $parent, $count, $after) = @_;
+    my ($self, $c, $parent, $attr, $count, $after) = @_;
 
     my $dbh = $self->dbh;
     if ($after) {
         $after = $self->get_object($c, $after) unless ref $after;
-        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and sort_id > ?", undef, $parent, $after->{sort_id});
+        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
         return $after->{sort_id} + 1;
     }
     else {
-        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ?", undef, $parent);
+        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and parent_attr = ?", undef, $parent, $attr);
         return 1;
     }
 }
@@ -336,7 +336,7 @@ Inserts a CiderCMS::Object into the database.
 
 =cut
 
-my @sys_object_columns = qw(id parent sort_id type active_start active_end dcid);
+my @sys_object_columns = qw(id parent parent_attr sort_id type active_start active_end dcid);
 
 sub insert_object {
     my ($self, $c, $object, $params) = @_;
@@ -347,10 +347,10 @@ sub insert_object {
 
     $dbh->do('begin');
 
-    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, 1, $params->{after});
+    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, $object->{parent_attr}, 1, $params->{after});
     
     my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
-
+ 
     my $insert_statement = qq{insert into "$type" (} . join (q{, }, map qq{"$_"}, @sys_object_columns, @$columns) . ') values (' . join (q{, }, map '?', @sys_object_columns, @$columns) . ')';
 
     if (my $retval = $dbh->do($insert_statement, undef, (map $object->{$_}, @sys_object_columns), @$values)) {

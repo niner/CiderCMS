@@ -19,6 +19,18 @@ Attribute representing a slot for child objects
 
 =head1 METHODS
 
+=head2 data
+
+Returns the child objects for this attribute
+
+=cut
+
+sub data {
+    my ($self) = @_;
+
+    return $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+}
+
 =head2 input_field
 
 Renders a list of children for this attribute with links for adding more.
@@ -34,7 +46,7 @@ sub input_field {
         %{ $c->stash },
         template      => "attributes/object.zpt",
         addable_types => [values %{ $c->stash->{types} }],
-        children      => scalar $self->{object}->children,
+        children      => scalar $self->data,
         self          => $self,
     });
 }

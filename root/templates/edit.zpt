@@ -9,6 +9,7 @@
     <h1 tal:content="string: Edit ${self/type/name}"/>
 
     <input tal:condition="true: type"  type="hidden" name="type"  tal:attributes="value type"/>
+    <input tal:condition="true: parent_attr" type="hidden" name="parent_attr" tal:attributes="value parent_attr"/>
     <input tal:condition="true: after" type="hidden" name="after" tal:attributes="value after"/>
     <fieldset>
         <legend>Attributes</legend>

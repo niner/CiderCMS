@@ -52,7 +52,7 @@ sub manage : Regex('/manage\z') {
     if ($save) {
         $context->update({data => \%params});
         # return to the parent for page_elements and stay at the element for pages.
-        return $c->res->redirect(($context->type->{page_element} and $context->parent or $context)->uri_management());
+        return $c->res->redirect(($context->type->{page_element} ? $context->parent : $context)->uri_management());
     }
 
     $c->stash({ # values used by edit_form()
@@ -76,21 +76,23 @@ sub manage_add : Regex('/manage_add\z') {
     my ( $self, $c ) = @_;
 
     my %params = %{ $c->req->params };
-    my $type = delete $params{type};
-    my $save = delete $params{save};
-    my $after = delete $params{after};
+    my $type        = delete $params{type};
+    my $parent_attr = delete $params{parent_attr};
+    my $save        = delete $params{save};
+    my $after       = delete $params{after};
     my $context = $c->stash->{context};
 
-    my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $context->{id}, level => $context->{level}, data => \%params});
+    my $object = CiderCMS::Object->new({c => $c, type => $type, parent => $context->{id}, parent_attr => $parent_attr, level => $context->{level}, data => \%params});
 
     if ($save) {
         $object->insert({after => $after});
-        return $c->res->redirect(($object->type->{page_element} and $context or $object)->uri_management());
+        return $c->res->redirect(($object->type->{page_element} ? $context : $object)->uri_management());
     }
 
     $c->stash({
         type     => $type,
         after    => $after,
+        parent_attr => $parent_attr,
     });
 
     $c->stash({

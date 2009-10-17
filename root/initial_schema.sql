@@ -28,6 +28,7 @@ CREATE TABLE sys_attributes (
 CREATE TABLE sys_object (
     id integer NOT NULL primary key,
     parent integer,
+    parent_attr varchar,
     sort_id integer DEFAULT 0 NOT NULL,
     type character varying NOT NULL references sys_types (id),
     changed timestamp not null default now(),
@@ -53,9 +54,9 @@ $BODY$
 DECLARE
 BEGIN
     IF NEW.id IS NOT NULL THEN
-        insert into sys_object (id, parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.id, NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
+        insert into sys_object (id, parent, parent_attr, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.id, NEW.parent, NEW.parent_attr, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
     ELSE
-        insert into sys_object (parent, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.parent, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
+        insert into sys_object (parent, parent_attr, sort_id, type, changed, tree_changed, active_start, active_end, dcid) values (NEW.parent, NEW.parent_attr, NEW.sort_id, TG_TABLE_NAME, NEW.changed, NEW.tree_changed, NEW.active_start, NEW.active_end, NEW.dcid) returning id into NEW.id;
     END IF;
     RETURN NEW;
 END;
@@ -69,7 +70,7 @@ BEGIN
     IF NEW.id <> OLD.id THEN
         RAISE EXCEPTION 'Changing ids is forbidden.';
     END IF;
-    update sys_object set id=NEW.id, parent=NEW.parent, sort_id=NEW.sort_id, changed=NEW.changed, tree_changed=NEW.tree_changed, active_start=NEW.active_start, active_end=NEW.active_end, dcid=NEW.dcid where id=NEW.id;
+    update sys_object set id=NEW.id, parent=NEW.parent, parent_attr=NEW.parent_attr, sort_id=NEW.sort_id, changed=NEW.changed, tree_changed=NEW.tree_changed, active_start=NEW.active_start, active_end=NEW.active_end, dcid=NEW.dcid where id=NEW.id;
     RETURN NEW;
 END;
 $BODY$
@@ -89,8 +90,8 @@ CREATE OR REPLACE FUNCTION sys_object_au() RETURNS TRIGGER AS
 $BODY$
 DECLARE
 BEGIN
-    IF OLD.sort_id IS DISTINCT FROM NEW.sort_id THEN
-        EXECUTE 'update ' || quote_ident(NEW.type) || ' set sort_id=' || NEW.sort_id || ' where id=' || NEW.id;
+    IF OLD.sort_id IS DISTINCT FROM NEW.sort_id OR OLD.parent IS DISTINCT FROM NEW.parent OR OLD.parent_attr IS DISTINCT FROM NEW.parent_attr THEN
+        EXECUTE 'update ' || quote_ident(NEW.type) || ' set sort_id=' || NEW.sort_id || ', parent=' || NEW.parent || ', parent_attr=''' || NEW.parent_attr || ''' where id=' || NEW.id;
     END IF;
     RETURN NEW;
 END;
