@@ -330,6 +330,20 @@ sub create_insert_aisle {
     }
 }
 
+=head2 close_aisle($c, $parent, $attr, $sort_id)
+
+Closes an aisle in the sort order of an object's children after removing a child.
+
+=cut
+
+sub close_aisle {
+    my ($self, $c, $parent, $attr, $sort_id) = @_;
+
+    my $dbh = $self->dbh;
+    $dbh->do('update sys_object set sort_id = sort_id - 1 where parent = ? and parent_attr = ? and sort_id > ?', undef, $parent->{id}, $attr, $sort_id);
+    return;
+}
+
 =head2 insert_object($c, $object)
 
 Inserts a CiderCMS::Object into the database.
@@ -406,6 +420,36 @@ sub delete_object {
     else {
         croak $dbh->errstr;
     }
+}
+
+=head2 move_object($c, $object, $params)
+
+Moves a CiderCMS::Object to a new parent and or sort position
+
+=cut
+
+sub move_object {
+    my ($self, $c, $object, $params) = @_;
+
+    my ($old_parent, $old_parent_attr, $old_sort_id);
+    if ($params->{parent} and $params->{parent} != $object->{parent} or $params->{parent_attr} and $params->{parent_attr} ne $object->{parent_attr}) {
+        $old_parent = $object->parent;
+        $old_parent_attr = $object->{parent_attr};
+        $old_sort_id = $object->{sort_id};
+
+        $object->{parent} = $params->{parent}{id};
+        $object->{parent_attr} = $params->{parent_attr};
+    }
+
+    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, $object->{parent_attr}, 1, $params->{after});
+
+    my $result = $self->update_object($c, $object);
+
+    if ($old_parent) {
+        $self->close_aisle($c, $old_parent, $old_parent_attr, $old_sort_id);
+    }
+
+    return $result;
 }
 
 =head1 SYNOPSIS

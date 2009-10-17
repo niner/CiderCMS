@@ -130,7 +130,7 @@ sub manage_paste : Regex('/manage_paste\z') {
 
     my $object = $c->model('DB')->get_object($c, $c->req->param('id'));
 
-    $object->move_to(parent => $c->stash->{context}, after => scalar $c->req->param('after'));
+    $object->move_to(parent => $c->stash->{context}, parent_attr => scalar $c->req->param('attribute'), after => scalar $c->req->param('after'));
 
     return $c->res->redirect($c->stash->{context}->uri_management());
 }

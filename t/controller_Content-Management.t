@@ -119,6 +119,6 @@ SKIP: {
     skip 'Test::XPath not installed', 1 unless $child_id;
 
     my ($id) = $child_id =~ /child_(\d+)/;
-    $mech->get_ok($mech->uri . '_paste?id=' . $id);
+    $mech->get_ok($mech->uri . '_paste?attribute=children;id=' . $id);
     $mech->follow_link_ok({ url_regex => qr{folder_2/manage} }, 'Folder 2 works');
 }
