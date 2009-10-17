@@ -415,6 +415,7 @@ sub delete_object {
     my $type = $object->{type};
 
     if (my $retval = $dbh->do(qq{delete from "$type" where id = ?}, undef, $object->{id})) {
+        $self->close_aisle($c, $object->parent, $object->{parent_attr}, $object->{sort_id});
         return $retval;
     }
     else {
