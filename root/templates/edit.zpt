@@ -1,8 +1,7 @@
 <form xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="action uri_action">
     <div id="breadcrumbs" tal:condition="true: parents">
         <span tal:repeat="node parents">
-            <a tal:attributes="href node/uri_management" tal:content="node/property --title"/>
-            <span tal:condition="false: repeat/end" tal:replace="string:»"/>
+            » <a tal:attributes="href node/uri_management" tal:content="node/property --title"/>
         </span>
     </div>
 

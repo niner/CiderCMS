@@ -1,33 +1,125 @@
+body {
+    margin: 0;
+}
+
 #navigation {
     list-style: none;
     margin: 0;
-    padding: 0.5em 0;
+    padding: 0.1em 0;
     overflow: auto;
+    background-color: #e8e8e8;
+    border-width: 0 2px 2px 0;
+    border-style: solid;
+    border-color: #70a0ff;
+    border-bottom-right-radius: 8px;
+    -khtml-border-bottom-right-radius: 8px;
+    -moz-border-radius-bottomright: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    float: left;
 }
 
 #navigation li {
     float: left;
-    border: 1px solid gray;
     padding: 0 0.5em;
     margin-right: 0.5em;
+    border: 1px solid transparent;
+}
+
+#navigation li:hover {
+    border: 1px solid #80c0ff;
+    border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#navigation li a {
+    color: black;
+    text-decoration: none;
+}
+
+#content {
+    clear: left;
+    padding: 1em;
+}
+
+fieldset {
+    margin-top: 1em;
+    border: 1px solid gray;
+    border-radius: 8px;
+    -khtml-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+a img {
+    border: none;
 }
 
 div.child {
-    border: 1px solid black;
-    margin-bottom: 1em;
-    overflow: auto;
+    border: 1px solid #80c0ff;
+    margin-bottom: 0.5em;
     padding: 0.5em;
+    min-height: 2em;
 }
 
 div.child div.actions {
     float: left;
-    width: 10em;
+    width: 8em;
+}
+
+div.child div.actions > .icon {
+    border: 1px solid transparent;
+    border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    padding: 0 2px;
+}
+
+div.child div.actions > .icon:hover {
+    border-color: #80c0ff;
+}
+
+div.child div.actions > .icon img {
+    vertical-align: middle;
 }
 
 div.child div.child_content {
-    margin-left: 10em;
+    margin-left: 9em;
 }
 
 div.child div.folder a {
     font-size: 150%;
+}
+
+.add_child {
+    display: inline;
+    position: relative;
+}
+
+.add_child ul {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    top: 0.9em;
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0.2em 0.3em;
+    background-color: white;
+    border: 1px solid #80c0ff;
+    border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    white-space: nowrap;
+}
+
+.add_child:hover ul {
+    display: block;
+}
+
+.add_child ul a {
+    text-decoration: none;
 }

@@ -39,7 +39,8 @@ sub process {
     }
 
     $c->stash({
-        uri_root    => $c->uri_for('/'),
+        uri_root       => $c->uri_for('/'),
+        uri_sys_static => $c->uri_for($ENV{CIDERCMS_INSTANCE} ? '/sys_static' : '/static'),
     });
 
     return $self->SUPER::process($c);
@@ -64,8 +65,9 @@ sub render_template {
     );
 
     return $template->process({
-        c          => $c,
-        uri_static => $c->uri_for('/static'),
+        c              => $c,
+        uri_static     => $c->uri_for('/static'),
+        uri_sys_static => $c->uri_for($ENV{CIDERCMS_INSTANCE} ? '/sys_static' : '/static'),
         %$stash,
     });
 }
