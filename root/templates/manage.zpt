@@ -12,6 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title metal:fill-slot="title" tal:content="string:Edit ${context/type/name}">Manage</title>
+        <script metal:fill-slot="scripts" type="text/javascript" tal:attributes="src string:${uri_sys_static}/js/scripts.js"/>
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
         <div tal:content="structure content"/>
