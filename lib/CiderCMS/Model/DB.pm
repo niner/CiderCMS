@@ -321,7 +321,7 @@ sub create_insert_aisle {
         $after = $self->get_object($c, $after) unless ref $after;
         # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
         $dbh->do("update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
-        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
+        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ? and sort_id < 0", undef, $parent, $attr);
         return $after->{sort_id} + 1;
     }
     else {
