@@ -246,11 +246,11 @@ sub update_type {
     $data->{page_element} ||= 0;
 
     if ($data->{id} ne $id) {
-        $dbh->do('begin'); # can't do a simple update, because that would break foreign key constraints
-        $dbh->do('insert into sys_types (id, name, page_element) values (?, ?, ?)', undef, @$data{qw(id name page_element)});
+        $dbh->do('begin');
+        $dbh->do('set constraints "sys_attributes_type_fkey" deferred');
+        $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
         $dbh->do(qq/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
         $dbh->do(qq/alter table "$id" rename to "$data->{id}"/);
-        $dbh->do(qq/delete from sys_types where id = ?/, undef, $id);
         $dbh->do('commit');
     }
     else {
@@ -301,9 +301,7 @@ sub update_attribute {
     $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
 
     $dbh->do('begin');
-
     $dbh->do('update sys_attributes set id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id name data_type repetitive mandatory default_value)}, $type, $id);
-
     $dbh->do('commit');
 
     return;
@@ -321,11 +319,15 @@ sub create_insert_aisle {
     my $dbh = $self->dbh;
     if ($after) {
         $after = $self->get_object($c, $after) unless ref $after;
-        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
+        # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
+        $dbh->do("update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
+        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
         return $after->{sort_id} + 1;
     }
     else {
-        $dbh->do("update sys_object set sort_id = sort_id + $count where parent = ? and parent_attr = ?", undef, $parent, $attr);
+        # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
+        $dbh->do("update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ?", undef, $parent, $attr);
+        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ?", undef, $parent, $attr);
         return 1;
     }
 }

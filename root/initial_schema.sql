@@ -14,7 +14,7 @@ CREATE TABLE sys_types (
 );
 
 CREATE TABLE sys_attributes (
-    type character varying NOT NULL references sys_types (id),
+    type character varying NOT NULL references sys_types (id) deferrable,
     id character varying NOT NULL,
     name character varying NOT NULL,
     sort_id integer DEFAULT 0 NOT NULL,
@@ -35,7 +35,9 @@ CREATE TABLE sys_object (
     tree_changed timestamp not null default now(),
     active_start timestamp without time zone,
     active_end timestamp without time zone,
-    dcid character varying
+    dcid character varying,
+    constraint unique_dcid unique (parent, dcid),
+    constraint unique_sort_id unique (parent, parent_attr, sort_id)
 );
 
 CREATE SEQUENCE sys_object_id_seq

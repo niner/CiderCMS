@@ -6,7 +6,7 @@ use utf8;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 40 );
+    : ( tests => 42 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -76,17 +76,24 @@ $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top lev
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder}, n => 3 }, 'Add a folder');
 $mech->submit_form_ok({
     with_fields => {
-        title => 'Folder 2',
+        title => 'Földer 2', # try some umlaut
     },
     button => 'save',
 });
+$mech->submit_form_ok({
+    with_fields => {
+        title => 'Folder 2', # correct it
+    },
+    button => 'save',
+});
+ok($mech->value('title') eq 'Folder 2', 'Title updated');
 $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
 
 $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct order');
 
 SKIP: {
     eval { require Test::XPath; };
-    skip 'Test::XPath not installed', 4 if $@;
+    skip 'Test::XPath not installed', 9 if $@;
 
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->like('//div[@class="child folder"][3]/@id', qr/\A child_(\d+) \z/x);
@@ -104,21 +111,19 @@ SKIP: {
     $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a subfolder');
     $mech->submit_form_ok({
         with_fields => {
-            title => 'Földer 3', # try some umlauts
+            title => 'Folder 3',
         },
         button => 'save',
     });
-    $mech->submit_form_ok({
-        with_fields => {
-            title => 'Folder 3', # correct it
-        },
-        button => 'save',
-    });
-    ok($mech->value('title') eq 'Folder 3', 'Title updated');
 
-    skip 'Test::XPath not installed', 1 unless $child_id;
+    $mech->follow_link_ok({ url_regex => qr(folder_1/manage) }, 'Back to folder_1');
+    $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
+    $xpc = $xpath->xpc;
+    my $folder_3_id = $xpc->findvalue('//div[@class="child folder"][1]/@id');
 
     my ($id) = $child_id =~ /child_(\d+)/;
-    $mech->get_ok($mech->uri . '_paste?attribute=children;id=' . $id);
+    ($folder_3_id) = $folder_3_id =~ /child_(\d+)/;
+    $mech->get_ok($mech->uri . "_paste?attribute=children;id=$id;after=$folder_3_id");
+    $mech->content_like(qr((?s)folder_3.*folder_2), 'Folders in correct order');
     $mech->follow_link_ok({ url_regex => qr{folder_2/manage} }, 'Folder 2 works');
 }
