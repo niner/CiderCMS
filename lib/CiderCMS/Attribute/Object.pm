@@ -31,6 +31,19 @@ sub data {
     return $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
 }
 
+=head2 pages
+
+Returns all child objects that are pages
+
+=cut
+
+sub pages {
+    my ($self) = @_;
+
+    my @pages = grep {not $_->type->{page_element}} $self->data;
+    return wantarray ? @pages : \@pages;
+}
+
 =head2 input_field
 
 Renders a list of children for this attribute with links for adding more.

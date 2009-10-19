@@ -19,8 +19,8 @@
                 <li tal:repeat="child site/children"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
             </ul>
 
-            <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/children" tal:condition="true: children">
-                <li tal:repeat="child children"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
+            <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/attribute --children; pages children/pages" tal:condition="true: pages">
+                <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
             </ul>
             <div id="content" tal:content="structure content"/>
         </div>

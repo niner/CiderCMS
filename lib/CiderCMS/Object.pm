@@ -21,7 +21,7 @@ This class is the base for all content objects and provides the public API that 
 
 =head1 METHODS
 
-=head2 new({c => $c, type => 'type1', sort_id => 0, data => {}})
+=head2 new({c => $c, id => 2, type => 'type1', parent => 1, parent_attr => 'children', sort_id => 0, data => {}})
 
 =cut
 
@@ -91,6 +91,19 @@ sub set_property {
     my ($self, $property, $data) = @_;
 
     return $self->{data}{$property}->set_data($data);
+}
+
+=head2 attribute($attribute)
+
+Returns the CiderCMS::Attribute object for the named attribute
+
+=cut
+
+sub attribute {
+    my ($self, $attribute) = @_;
+
+    return unless exists $self->{data}{$attribute};
+    return $self->{data}{$attribute};
 }
 
 =head2 update_data($data)
