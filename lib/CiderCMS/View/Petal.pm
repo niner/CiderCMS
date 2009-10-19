@@ -35,7 +35,7 @@ sub process {
         $c->stash->{uri_static} ||= $c->uri_for('/') . join '/', 'instances', $instance, 'static';
     }
     else {
-        $self->config(base_dir => "root/templates");
+        $self->config(base_dir => "$root/templates");
     }
 
     $c->stash({
