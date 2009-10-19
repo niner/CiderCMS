@@ -49,6 +49,8 @@ sub input_field {
         children      => scalar $self->data,
         self          => $self,
     });
+
+    return;
 }
 
 =head1 AUTHOR

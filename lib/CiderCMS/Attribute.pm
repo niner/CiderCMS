@@ -84,7 +84,7 @@ sub input_field {
     my $c = $self->{c};
 
     my $template = ref $self;
-    $template =~ s/CiderCMS::Attribute:://;
+    $template =~ s/CiderCMS::Attribute:://xm;
     $template = lc $template;
 
     return $c->view()->render_template($c, {
@@ -111,7 +111,7 @@ Contains names of all available attribute types.
 
 =cut
 
-our @attribute_types = map {s/CiderCMS::Attribute:://; $_} __PACKAGE__->plugins;
+our @attribute_types = map {my $class = $_; $class =~ s/CiderCMS::Attribute:://xm; $class} __PACKAGE__->plugins;
 
 =head1 AUTHOR
 

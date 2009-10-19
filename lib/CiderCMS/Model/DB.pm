@@ -135,7 +135,7 @@ sub traverse_path {
     my $level = 0;
 
     foreach (@$path) {
-        my $may_be_id = /\A\d+\z/;
+        my $may_be_id = /\A\d+\z/xm;
         $object = $dbh->selectrow_hashref(
             'select id, type from sys_object where parent '
             . (@objects ? ' = ?' : ' is null')
@@ -256,6 +256,8 @@ sub update_type {
     else {
         $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
     }
+
+    return;
 }
 
 =head2 create_attribute($c, {type => 'type1', id => 'attr1', name => 'Attribute 1', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''})

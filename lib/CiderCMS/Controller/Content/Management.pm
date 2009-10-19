@@ -64,6 +64,8 @@ sub manage : Regex('/manage\z') {
         template => 'manage.zpt',
         content  => $c->stash->{context}->edit_form(),
     });
+
+    return;
 }
 
 =head2 manage_add
@@ -74,6 +76,8 @@ Adds a new object as child of the current node.
 
 sub manage_add : Regex('/manage_add\z') {
     my ( $self, $c ) = @_;
+
+    return;
 
     my %params = %{ $c->req->params };
     my $type        = delete $params{type};
@@ -99,6 +103,8 @@ sub manage_add : Regex('/manage_add\z') {
         template => 'manage.zpt',
         content  => $object->edit_form(),
     });
+
+    return;
 }
 
 =head2 manage_delete

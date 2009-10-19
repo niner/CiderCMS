@@ -29,7 +29,7 @@ Just throw a 404.
 sub default :Path {
     my ( $self, $c ) = @_;
 
-    if ($c->req->uri->path =~ m!/\z!) {
+    if ($c->req->uri->path =~ m!/\z!xm) {
         $c->req->path($c->req->path . 'index.html');
         return $c->go('content/index');
     }

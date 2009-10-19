@@ -82,6 +82,8 @@ sub prepare_path {
     else {
         $self->stash->{uri_raw} = $uri_raw;
     }
+
+    return;
 }
 
 =head2 uri_for_instance(@path)

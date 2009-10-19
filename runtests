@@ -4,15 +4,18 @@
 rm -Rf root/instances/test.example
 echo 'set client_min_messages='"'"'warning'"'"'; drop schema "test.example" cascade;' | psql cidercms
 
+TEST_POD=1
+TEST_AUTHOR=1
+
 if [ "$1" == "cover" ] ; then
 	make clean
 	perl Makefile.PL
 	make
 	echo
-	TEST_POD=1 cover -test
+	cover -test
 else
 	# to make Test::POD work
 	make
 	echo
-	TEST_POD=1 prove -l t
+	prove -l t
 fi

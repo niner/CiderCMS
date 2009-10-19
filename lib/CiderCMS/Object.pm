@@ -254,6 +254,7 @@ sub set_dcid {
     }
 
     # $self->{dcid} = $self->{id}; #TODO figure out what to do about node 1
+    return;
 }
 
 =head2 insert()
@@ -301,7 +302,7 @@ sub delete {
         $_->delete;
     }
 
-    $self->{c}->model('DB')->delete_object($self->{c}, $self);
+    return $self->{c}->model('DB')->delete_object($self->{c}, $self);
 }
 
 =head2 get_dirty_columns()
@@ -337,7 +338,7 @@ Moves this object (and it's subtree) to a new parent and or sort position
 sub move_to {
     my ($self, %params) = @_;
 
-    $self->{c}->model('DB')->move_object($self->{c}, $self, \%params);
+    return $self->{c}->model('DB')->move_object($self->{c}, $self, \%params);
 }
 
 =head1 AUTHOR

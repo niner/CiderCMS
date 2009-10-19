@@ -24,8 +24,8 @@ sub auto : Private {
     my ( $self, $c ) = @_;
 
     my $path = $c->req->path;
-    $path =~ s!/+!/!g;
-    my @path = split m!/!, $path;
+    $path =~ s!/+!/!gxm;
+    my @path = split m!/!xm, $path;
 
     my $instance = shift @path;
     unshift @path, '';
@@ -60,6 +60,8 @@ sub index : Regex('/(?:index\.html)?$') {
         template => 'index.zpt',
         content  => $c->stash->{context}->render,
     });
+
+    return;
 }
 
 

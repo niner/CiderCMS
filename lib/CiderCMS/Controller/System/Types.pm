@@ -114,7 +114,7 @@ sub save : PathPart Chained('setup_type') {
 
     $c->model('DB')->update_type($c, $id, $params);
 
-    $c->res->redirect($c->uri_for_instance("system/types/$params->{id}/edit"));
+    return $c->res->redirect($c->uri_for_instance("system/types/$params->{id}/edit"));
 }
 
 =head2 create_attribute
