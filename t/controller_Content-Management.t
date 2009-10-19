@@ -1,12 +1,13 @@
 use strict;
 use warnings;
 use Test::More;
+use FindBin qw($Bin);
 use utf8;
 
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 42 );
+    : ( tests => 45 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -43,6 +44,19 @@ $mech->submit_form_ok({
 $mech->content_like(qr/Delete me!/, 'New textarea content');
 $mech->follow_link_ok({ url_regex => qr{manage_delete\b.*\bid=3} }, 'Delete new textarea');
 $mech->content_unlike(qr/Delete me!/, 'Textarea gone');
+
+# Try some image
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=image} }, 'Add an image');
+$mech->submit_form_ok({
+    with_fields => {
+        img => "$Bin/../root/static/images/catalyst_logo.png",
+    }      ,
+    button => 'save',
+});
+my $image = $mech->find_image(url_regex => qr{catalyst_logo.png});
+warn $image->url;
+$mech->get_ok($image->url);
+$mech->back;
 
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a folder');
 $mech->submit_form_ok({

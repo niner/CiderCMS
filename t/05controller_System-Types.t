@@ -5,7 +5,7 @@ use Test::More;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 26 );
+    : ( tests => 30 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -104,5 +104,32 @@ $mech->submit_form_ok({
 
 $mech->form_number(2);
 ok($mech->value('title_data_type') eq 'Title', 'title data_type now Title');
+
+$mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
+
+$mech->submit_form_ok({
+    with_fields => {
+        id           => 'image',
+        name         => 'Image',
+        page_element => 1,
+    },
+    button => 'save',
+}, 'Create image type');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'img',
+        name      => 'Image file',
+        data_type => 'Image',
+        mandatory => 1,
+    },
+}, 'Add image file attribute');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'title',
+        name      => 'Title',
+        data_type => 'String',
+        mandatory => 0,
+    },
+}, 'Add title attribute');
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');
