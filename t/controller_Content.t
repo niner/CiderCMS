@@ -37,10 +37,10 @@ $mech->follow_link_ok({ url_regex => qr(folder_1) });
 
 SKIP: {
     eval { require Test::XPath; };
-    skip 'Test::XPath not installed', 1 if $@;
+    skip 'Test::XPath not installed', 2 if $@;
 
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->ok('id("subnav")', 'subnav found');
-}
 
-$mech->follow_link_ok({ url_regex => qr(folder_3) });
+    $mech->follow_link_ok({ url_regex => qr(folder_3) });
+}

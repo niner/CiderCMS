@@ -107,7 +107,7 @@ $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct or
 
 SKIP: {
     eval { require Test::XPath; };
-    skip 'Test::XPath not installed', 9 if $@;
+    skip 'Test::XPath not installed', 12 if $@;
 
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->like('//div[@class="child folder"][3]/@id', qr/\A child_(\d+) \z/x);
