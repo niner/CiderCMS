@@ -77,8 +77,6 @@ Adds a new object as child of the current node.
 sub manage_add : Regex('/manage_add\z') {
     my ( $self, $c ) = @_;
 
-    return;
-
     my %params = %{ $c->req->params };
     my $type        = delete $params{type};
     my $parent_attr = delete $params{parent_attr};

@@ -42,15 +42,13 @@ sub input_field {
 
     my $c = $self->{c};
 
-    $c->view()->render_template($c, {
+    return $c->view()->render_template($c, {
         %{ $c->stash },
         template      => "attributes/object.zpt",
         addable_types => [values %{ $c->stash->{types} }],
         children      => scalar $self->data,
         self          => $self,
     });
-
-    return;
 }
 
 =head1 AUTHOR
