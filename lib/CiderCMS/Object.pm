@@ -253,7 +253,7 @@ sub edit_form {
         template   => 'edit.zpt',
         self       => $self,
         attributes => [
-            map $self->{data}{$_->{id}}->input_field, @{ $self->{attributes} },
+            map { $self->{data}{$_->{id}}->input_field } @{ $self->{attributes} },
         ],
     });
 }
