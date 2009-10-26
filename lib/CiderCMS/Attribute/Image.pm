@@ -21,19 +21,6 @@ Image attribute
 
 =head1 METHODs
 
-=head2 new({c => $c, object => $object, id => 'attr1', data => 'foo'})
-
-=cut
-
-sub new {
-    my ($self, $params) = @_;
-
-    $self = $self->SUPER::new($params);
-    $self->set_data($self->{data});
-
-    return $self;
-}
-
 =head2 data()
 
 Returns an URI for this image
@@ -46,29 +33,37 @@ sub data {
     return $self->{object}->uri_static . "/$self->{id}/$self->{data}";
 }
 
-=head2 set_data($data)
-
-Upload a new file
+=head2 prepare_update()
 
 =cut
 
-sub set_data {
-    my ($self, $filename) = @_;
+sub prepare_update {
+    my ($self) = @_;
 
     if (my $upload = $self->{c}->req->upload($self->{id})) {
-        $filename = $upload->basename;
-
-        if ($self->{object}{id}) {
-            my $path = $self->fs_path;
-
-            rmtree($path);
-            mkpath($path);
-
-            $upload->copy_to("$path/$self->{data}");
-        }
+        $self->set_data($upload->basename);
     }
 
-    return $self->SUPER::set_data($filename);
+    return;
+}
+
+=head2 post_update()
+
+=cut
+
+sub post_update {
+    my ($self) = @_;
+
+    if (my $upload = $self->{c}->req->upload($self->{id})) {
+        my $path = $self->fs_path;
+
+        rmtree($path);
+        mkpath($path);
+
+        $upload->copy_to("$path/$self->{data}");
+    }
+
+    return;
 }
 
 =head2 fs_path()

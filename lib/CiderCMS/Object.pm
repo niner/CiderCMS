@@ -237,7 +237,7 @@ sub fs_path {
     return ( ($parent ? $parent->fs_path : $self->{c}->fs_path_for_instance()) . "/$self->{id}" );
 }
 
-=head2 edit_form($uri_action)
+=head2 edit_form()
 
 Renders the form for editing this object.
 
@@ -276,22 +276,35 @@ sub render {
     });
 }
 
-=head2 set_dcid()
+=head2 prepare_attributes()
 
-Tries to get a dcid for this object from it's attributes and sets it.
+Prepares attributes for insert and update operations.
 
 =cut
 
-sub set_dcid {
+sub prepare_attributes {
     my ($self) = @_;
 
     foreach (values %{ $self->{data} }) {
-        if (defined(my $dcid = $_->dcid)) {
-            return $self->{dcid} = $dcid;
-        }
+        $_->prepare_update();
     }
 
-    # $self->{dcid} = $self->{id}; #TODO figure out what to do about node 1
+    return;
+}
+
+=head2 update_attributes()
+
+Runs update operation on attributes after inserts and updates.
+
+=cut
+
+sub update_attributes {
+    my ($self) = @_;
+
+    foreach (values %{ $self->{data} }) {
+        $_->post_update();
+    }
+
     return;
 }
 
@@ -304,13 +317,11 @@ Inserts the object into the database.
 sub insert {
     my ($self, $params) = @_;
 
-    $self->set_dcid;
+    $self->prepare_attributes;
 
     my $result = $self->{c}->model('DB')->insert_object($self->{c}, $self, $params);
 
-    foreach (values %{ $self->{data} }) { #TODO factor this out
-        $_->set_data($_->{data});
-    }
+    $self->update_attributes;
 
     return $result;
 }
@@ -328,7 +339,7 @@ sub update {
         $self->update_data($params->{data});
     }
 
-    $self->set_dcid;
+    $self->prepare_attributes;
 
     return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }
