@@ -58,9 +58,9 @@ Checks for an CIDERCMS_INSTANCE environment variable and prepends it to the path
 =cut
 
 sub prepare_path {
-    my ($self) = @_;
+    my ($self, @args) = @_;
 
-    $self->maybe::next::method(@_);
+    $self->maybe::next::method(@args);
 
     my $uri_raw = $self->request->uri->clone;
     if (my $instance = $ENV{CIDERCMS_INSTANCE}) {
@@ -96,6 +96,30 @@ sub uri_for_instance {
     my ($self, @path) = @_;
 
     return ($self->stash->{uri_instance} ||= $self->uri_for('/') . $self->stash->{instance}) . (@path ? join '/', '', @path : '');
+}
+
+=head2 uri_static_for_instance()
+
+Returns an URI for static files for this instance
+
+=cut
+
+sub uri_static_for_instance {
+    my ($self, @path) = @_;
+
+    return $self->uri_for('/') . join '/', 'instances', $self->stash->{instance}, @path;
+}
+
+=head2 fs_path_for_instance()
+
+Returns a file system path for the current instance's root
+
+=cut
+
+sub fs_path_for_instance {
+    my ($self) = @_;
+
+    return $self->config->{root} . '/instances/' . $self->stash->{instance};
 }
 
 =head1 SEE ALSO

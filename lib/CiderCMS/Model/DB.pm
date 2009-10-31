@@ -144,7 +144,7 @@ sub traverse_path {
             (@objects ? $objects[-1]->{id} : ()),
             $_,
             ($may_be_id ? $_ : ()),
-        ) or die qq{node "$_" not found};
+        ) or croak qq{node "$_" not found};
         $object->{level} = $level++;
 
         push @objects, $self->inflate_object($c, $object);
@@ -366,12 +366,12 @@ sub insert_object {
     $dbh->do('begin');
 
     $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, $object->{parent_attr}, 1, $params->{after});
-    
-    my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
- 
-    my $insert_statement = qq{insert into "$type" (} . join (q{, }, map qq{"$_"}, @sys_object_columns, @$columns) . ') values (' . join (q{, }, map '?', @sys_object_columns, @$columns) . ')';
 
-    if (my $retval = $dbh->do($insert_statement, undef, (map $object->{$_}, @sys_object_columns), @$values)) {
+    my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
+
+    my $insert_statement = qq{insert into "$type" (} . join (q{, }, map { qq{"$_"} } @sys_object_columns, @$columns) . ') values (' . join (q{, }, map { '?' } @sys_object_columns, @$columns) . ')';
+
+    if (my $retval = $dbh->do($insert_statement, undef, (map { $object->{$_} } @sys_object_columns), @$values)) {
         $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
 
         $dbh->do('commit');
@@ -393,12 +393,12 @@ sub update_object {
 
     my $dbh = $self->dbh;
     my $type = $object->{type};
-    
+
     my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
 
-    my $update_statement = qq{update "$type" set } . join (q{, }, map qq{"$_" = ?}, @sys_object_columns, @$columns) . ' where id = ?';
+    my $update_statement = qq{update "$type" set } . join (q{, }, map { qq{"$_" = ?} } @sys_object_columns, @$columns) . ' where id = ?';
 
-    if (my $retval = $dbh->do($update_statement, undef, (map $object->{$_}, @sys_object_columns), @$values, $object->{id})) {
+    if (my $retval = $dbh->do($update_statement, undef, (map { $object->{$_} } @sys_object_columns), @$values, $object->{id})) {
         return $retval;
     }
     else {

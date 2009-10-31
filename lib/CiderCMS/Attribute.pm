@@ -70,6 +70,26 @@ sub set_data {
     return $self->{data} = $data;
 }
 
+=head2 prepare_update
+
+Preparations for updating this attribute.
+Default implementation does nothing.
+
+=cut
+
+sub prepare_update {
+}
+
+=head2 post_update
+
+Does post update work for this attribute.
+Default implementation does nothing.
+
+=cut
+
+sub post_update {
+}
+
 =head2 input_field
 
 Renders an input field for this attribute.
@@ -91,16 +111,6 @@ sub input_field {
         template => "attributes/$template.zpt",
         self => $self,
     });
-}
-
-=head2 dcid
-
-Return a dcid
-
-=cut
-
-sub dcid {
-    return; # not implemented
 }
 
 =head1 VARIABLES

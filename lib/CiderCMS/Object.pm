@@ -211,24 +211,49 @@ sub uri_management {
     return $self->uri . '/manage';
 }
 
-=head2 edit_form($uri_action)
+=head2 uri_static()
+
+Returns an URI for static file for this object
+
+=cut
+
+sub uri_static {
+    my ($self) = @_;
+
+    my $parent = $self->parent;
+    return ( ($parent ? $parent->uri_static : $self->{c}->uri_static_for_instance()) . "/$self->{id}" );
+}
+
+=head2 fs_path()
+
+Returns the file system path to this node
+
+=cut
+
+sub fs_path {
+    my ($self) = @_;
+
+    my $parent = $self->parent;
+    return ( ($parent ? $parent->fs_path : $self->{c}->fs_path_for_instance()) . "/$self->{id}" );
+}
+
+=head2 edit_form()
 
 Renders the form for editing this object.
 
 =cut
 
 sub edit_form {
-    my ($self, $uri_action) = @_;
+    my ($self) = @_;
 
     my $c = $self->{c};
 
     return $c->view()->render_template($c, {
         %{ $c->stash },
         template   => 'edit.zpt',
-        uri_action => $uri_action,
         self       => $self,
         attributes => [
-            map $self->{data}{$_->{id}}->input_field, @{ $self->{attributes} },
+            map { $self->{data}{$_->{id}}->input_field } @{ $self->{attributes} },
         ],
     });
 }
@@ -251,22 +276,35 @@ sub render {
     });
 }
 
-=head2 set_dcid()
+=head2 prepare_attributes()
 
-Tries to get a dcid for this object from it's attributes and sets it.
+Prepares attributes for insert and update operations.
 
 =cut
 
-sub set_dcid {
+sub prepare_attributes {
     my ($self) = @_;
 
     foreach (values %{ $self->{data} }) {
-        if (defined(my $dcid = $_->dcid)) {
-            return $self->{dcid} = $dcid;
-        }
+        $_->prepare_update();
     }
 
-    # $self->{dcid} = $self->{id}; #TODO figure out what to do about node 1
+    return;
+}
+
+=head2 update_attributes()
+
+Runs update operation on attributes after inserts and updates.
+
+=cut
+
+sub update_attributes {
+    my ($self) = @_;
+
+    foreach (values %{ $self->{data} }) {
+        $_->post_update();
+    }
+
     return;
 }
 
@@ -279,9 +317,13 @@ Inserts the object into the database.
 sub insert {
     my ($self, $params) = @_;
 
-    $self->set_dcid;
+    $self->prepare_attributes;
 
-    return $self->{c}->model('DB')->insert_object($self->{c}, $self, $params);
+    my $result = $self->{c}->model('DB')->insert_object($self->{c}, $self, $params);
+
+    $self->update_attributes;
+
+    return $result;
 }
 
 =head2 update()
@@ -297,7 +339,7 @@ sub update {
         $self->update_data($params->{data});
     }
 
-    $self->set_dcid;
+    $self->prepare_attributes;
 
     return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }
@@ -335,7 +377,7 @@ sub get_dirty_columns {
 
         if ($attr->db_type) {
             push @columns, $id;
-            push @values, $attr->data;
+            push @values, $attr->{data}; #maybe introduce a $attr->raw_data?
         }
     }
 

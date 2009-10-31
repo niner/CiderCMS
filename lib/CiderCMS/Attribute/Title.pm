@@ -19,17 +19,19 @@ Title attributes are String attributes that can produce a dcid
 
 =head1 METHODs
 
-=head2 dcid
+=head2 prepare_update
 
 =cut
 
-sub dcid {
+sub prepare_update {
     my ($self) = @_;
 
     my $dcid = lc $self->{data};
     $dcid =~ s/[^a-z0-9_\.-]/_/gxm;
 
-    return $dcid;
+    $self->{object}{dcid} = $dcid;
+
+    return;
 }
 
 =head1 AUTHOR
