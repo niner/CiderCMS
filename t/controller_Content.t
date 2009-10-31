@@ -29,9 +29,6 @@ $mech->content_like(qr(http://localhost/static/css/styles.css), 'Stylesheet URI 
 
 $mech->get_ok('http://localhost/', 'short URI without index.html works');
 
-# beef up our layout
-system ('/bin/cp', "$Bin/test.example/index.zpt", "$Bin/../root/instances/test.example/templates");
-
 $mech->get_ok('http://localhost/', 'new layout works');
 $mech->follow_link_ok({ url_regex => qr(folder_1) });
 

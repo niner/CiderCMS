@@ -123,3 +123,13 @@ div.child div.folder a {
 .add_child ul a {
     text-decoration: none;
 }
+
+label {
+    display: block;
+    clear: left;
+}
+
+label span {
+    float: left;
+    width: 20%;
+}

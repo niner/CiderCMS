@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use FindBin qw($Bin);
 
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
@@ -131,5 +132,8 @@ $mech->submit_form_ok({
         mandatory => 0,
     },
 }, 'Add title attribute');
+
+# beef up our layout
+system ('/bin/cp', '-r', "$Bin/test.example/templates/index.zpt", "$Bin/test.example/templates/types", "$Bin/../root/instances/test.example/templates/");
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');
