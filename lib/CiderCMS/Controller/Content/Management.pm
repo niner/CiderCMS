@@ -91,19 +91,16 @@ sub manage_add : Regex('/manage_add\z') {
         return $c->res->redirect(($object->type->{page_element} ? $context : $object)->uri_management());
     }
 
-    my $uri = $c->req->uri;
-    $uri->query('');
-
     $c->stash({
         type        => $type,
         after       => $after,
         parent_attr => $parent_attr,
-        uri_action  => $uri,
+        uri_action  => $context->uri . '/manage_add',
     });
 
     $c->stash({
         template => 'manage.zpt',
-        content  => $object->edit_form($uri),
+        content  => $object->edit_form(),
     });
 
     return;
