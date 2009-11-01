@@ -36,7 +36,6 @@ __PACKAGE__->config( name => 'CiderCMS' );
 # Start the application
 __PACKAGE__->setup();
 
-
 =head1 NAME
 
 CiderCMS - Catalyst based application
@@ -86,6 +85,13 @@ sub prepare_path {
     return;
 }
 
+if ($ENV{CIDERCMS_INSTANCE}) {
+    __PACKAGE__->config->{static}{include_path} = [
+        __PACKAGE__->config->{root} . '/instances/',
+        __PACKAGE__->config->{root},
+    ];
+}
+
 =head2 uri_for_instance(@path)
 
 Creates an URI relative to the current instance's root
@@ -107,7 +113,7 @@ Returns an URI for static files for this instance
 sub uri_static_for_instance {
     my ($self, @path) = @_;
 
-    return $self->uri_for('/') . join '/', 'instances', $self->stash->{instance}, @path;
+    return join '/', ($self->stash->{uri_static} || $self->uri_for('/') . join('/', 'instances', $self->stash->{instance}, 'static')), @path;
 }
 
 =head2 fs_path_for_instance()
@@ -119,7 +125,7 @@ Returns a file system path for the current instance's root
 sub fs_path_for_instance {
     my ($self) = @_;
 
-    return $self->config->{root} . '/instances/' . $self->stash->{instance};
+    return $self->config->{root} . '/instances/' . $self->stash->{instance} . '/static';
 }
 
 =head1 SEE ALSO

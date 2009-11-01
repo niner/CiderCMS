@@ -83,9 +83,12 @@
                     <span>Name</span>
                     <input name="name"/>
                 </label>
-                <select name="data_type">
-                    <option tal:repeat="type attribute_types" tal:attributes="value type" tal:content="type"/>
-                </select>
+                <label>
+                    <span>Data type</span>
+                    <select name="data_type">
+                        <option tal:repeat="type attribute_types" tal:attributes="value type" tal:content="type"/>
+                    </select>
+                </label>
                 <label>
                     <span>Repetitive</span>
                     <input type="checkbox" name="repetitive" value="1"/>

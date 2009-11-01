@@ -2,6 +2,7 @@
     <legend tal:content="self/name"/>
 
     <div class="add_child">
+        <a class="icon paste" tal:attributes="href string:${self/object/uri_management}_paste?attribute=${self/id}; onclick string:return paste(this)"><img tal:attributes="src string:${uri_sys_static}/images/icons/paste.png" title="paste" alt="paste"/></a>
         <img tal:attributes="src string:${uri_sys_static}/images/icons/add.png" title="add child" alt="add child"/>
         <ul>
             <li tal:condition="true: addable_types" tal:repeat="type addable_types">
@@ -16,7 +17,7 @@
                 <div tal:content="child/type/name"/>
                 <a class="icon" tal:attributes="href child/uri_management"><img tal:attributes="src string:${uri_sys_static}/images/icons/edit.png" title="edit" alt="edit"/></a>
                 <span class="icon" tal:attributes="onclick string:cut(${child/id})"><img tal:attributes="src string:${uri_sys_static}/images/icons/cut.png" title="cut" alt="cut"/></span>
-                <a class="icon paste" tal:attributes="href string:${self/object/uri_management}_paste?attribute=${self/id}; onclick string:return paste(this, ${child/id})"><img tal:attributes="src string:${uri_sys_static}/images/icons/paste.png" title="paste" alt="paste"/></span>
+                <a class="icon paste" tal:attributes="href string:${self/object/uri_management}_paste?attribute=${self/id}; onclick string:return paste(this, ${child/id})"><img tal:attributes="src string:${uri_sys_static}/images/icons/paste.png" title="paste" alt="paste"/></a>
                 <a class="icon" tal:attributes="href string:${uri_delete}?id=${child/id}"><img tal:attributes="src string:${uri_sys_static}/images/icons/delete.png" title="delete" alt="delete"/></a>
                 <div class="icon add_child">
                     <img tal:attributes="src string:${uri_sys_static}/images/icons/add.png" title="add child" alt="add child"/>

@@ -134,6 +134,6 @@ $mech->submit_form_ok({
 }, 'Add title attribute');
 
 # beef up our layout
-system ('/bin/cp', '-r', "$Bin/test.example/templates/index.zpt", "$Bin/test.example/templates/types", "$Bin/../root/instances/test.example/templates/");
+system ('/bin/cp', '-r', "$Bin/test.example/templates", "$Bin/test.example/static", "$Bin/../root/instances/test.example/");
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');

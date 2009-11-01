@@ -32,7 +32,7 @@ sub process {
 
     if (my $instance = $c->stash->{instance}) {
         $self->config(base_dir => ["$root/instances/$instance/templates", "$root/templates"]);
-        $c->stash->{uri_static} ||= $c->uri_static_for_instance('static');
+        $c->stash->{uri_static} ||= $c->uri_static_for_instance();
     }
     else {
         $self->config(base_dir => "$root/templates");
@@ -66,7 +66,7 @@ sub render_template {
 
     return $template->process({
         c              => $c,
-        uri_static     => $c->uri_for('/static'),
+        uri_static     => ($c->stash->{uri_static} or $c->uri_static_for_instance()),
         uri_sys_static => $c->uri_for($ENV{CIDERCMS_INSTANCE} ? '/sys_static' : '/static'),
         %$stash,
     });
