@@ -11,13 +11,13 @@ BEGIN {
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 11 );
+    : ( tests => 12 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok('http://localhost/index.html');
 
-$mech->title_like(qr/Testsite/, 'Title correct');
+$mech->title_is('Testsite', 'Title correct');
 $mech->content_like(qr/Foo bar baz!/, 'Textarea present');
 my $styles = $mech->find_link(url_regex  => qr{styles.css});
 $mech->links_ok([ $styles ]);
@@ -32,6 +32,8 @@ $mech->back;
 $mech->get_ok('http://localhost/', 'new layout works');
 $mech->follow_link_ok({ url_regex => qr(folder_1) });
 
+$mech->title_is('Folder 3', 'We got to the first subfolder with page elements');
+
 SKIP: {
     eval { require Test::XPath; };
     skip 'Test::XPath not installed', 2 if $@;
@@ -39,6 +41,6 @@ SKIP: {
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->ok('id("subnav")', 'subnav found');
 
-    $mech->follow_link_ok({ url_regex => qr(folder_3) });
+    $mech->follow_link_ok({ url_regex => qr(folder_2) });
 }
 

@@ -7,7 +7,7 @@ use utf8;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 45 );
+    : ( tests => 49 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -85,6 +85,13 @@ $mech->submit_form_ok({
     },
     button => 'save',
 });
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a folder');
+$mech->submit_form_ok({
+    with_fields => {
+        title => 'Folder 0.1',
+    },
+    button => 'save',
+});
 $mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder}, n => 3 }, 'Add a folder');
 $mech->submit_form_ok({
@@ -106,7 +113,7 @@ $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct or
 
 SKIP: {
     eval { require Test::XPath; };
-    skip 'Test::XPath not installed', 12 if $@;
+    skip 'Test::XPath not installed', 14 if $@;
 
     my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpath->like('//div[@class="child folder"][3]/@id', qr/\A child_(\d+) \z/x);
@@ -139,4 +146,13 @@ SKIP: {
     $mech->get_ok($mech->uri . "_paste?attribute=children;id=$id;after=$folder_3_id");
     $mech->content_like(qr((?s)folder_3.*folder_2), 'Folders in correct order');
     $mech->follow_link_ok({ url_regex => qr{folder_2/manage} }, 'Folder 2 works');
+    $mech->back;
+
+    # now move the textarea to folder_3 to set up for the content tests
+    $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
+    $xpc = $xpath->xpc;
+    my $textarea_id = $xpc->findvalue('//div[@class="child textarea"][1]/@id');
+    ($textarea_id) = $textarea_id =~ /child_(\d+)/;
+    $mech->follow_link_ok({ url_regex => qr{folder_3/manage} });
+    $mech->get_ok($mech->uri . "_paste?attribute=children;id=$textarea_id");
 }

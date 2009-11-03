@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(weaken);
+use List::MoreUtils qw(any);
 
 use CiderCMS::Attribute;
 
@@ -189,14 +190,21 @@ sub uri {
 
 =head2 uri_index()
 
-Returns an URI to the index action for this object
+Returns an URI to the first object in this subtree that contains page elements.
+If none does, return the URI to the first child.
 
 =cut
 
 sub uri_index {
     my ($self) = @_;
 
-    return $self->uri . '/index.html';
+    my @children = $self->children;
+    if (not @children or any { $_->type->{page_element} } @children) { # we contain no children at all or page elements
+        return $self->uri . '/index.html';
+    }
+    else {
+        return $children[0]->uri_index;
+    }
 }
 
 =head2 uri_management()
