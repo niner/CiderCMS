@@ -4,8 +4,10 @@
 rm -Rf root/instances/test.example
 echo 'set client_min_messages='"'"'warning'"'"'; drop schema "test.example" cascade;' | psql cidercms
 
-export TEST_POD=1
-export TEST_AUTHOR=1
+if [ "$1" != "fast" ] && [ "$2" != "fast" ] ; then
+    export TEST_POD=1
+    export TEST_AUTHOR=1
+fi
 
 if [ "$1" == "cover" ] ; then
 	make clean
