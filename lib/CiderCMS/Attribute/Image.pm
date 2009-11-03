@@ -30,6 +30,7 @@ Returns an URI for this image
 sub data {
     my ($self) = @_;
 
+    return unless $self->{data};
     return $self->{object}->uri_static . "/$self->{id}/$self->{data}";
 }
 
