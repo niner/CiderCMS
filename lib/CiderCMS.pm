@@ -113,7 +113,7 @@ Returns an URI for static files for this instance
 sub uri_static_for_instance {
     my ($self, @path) = @_;
 
-    return join '/', ($self->stash->{uri_static} or $self->uri_for('/') . join('/', 'instances', $self->stash->{instance}, 'static')), @path;
+    return join '/', ($self->stash->{uri_static} or $self->uri_for('/') . (join '/', 'instances', $self->stash->{instance}, 'static')), @path;
 }
 
 =head2 fs_path_for_instance()

@@ -119,7 +119,7 @@ sub manage_delete : Regex('/manage_delete\z') {
 
     my $object = $c->model('DB')->get_object($c, $id);
 
-    $object->delete;
+    $object->delete_from_db;
 
     return $c->res->redirect($c->stash->{context}->uri_management());
 }

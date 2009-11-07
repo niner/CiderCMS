@@ -8,7 +8,7 @@
 severity   = 3
 
 [Perl::Critic::Policy::BuiltinFunctions::ProhibitReverseSortBlock]
-severity   = 1
+severity   = 3
 
 [Perl::Critic::Policy::BuiltinFunctions::ProhibitSleepViaSelect]
 severity   = 5
@@ -17,7 +17,7 @@ severity   = 5
 severity   = 5
 
 [Perl::Critic::Policy::BuiltinFunctions::ProhibitStringySplit]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::BuiltinFunctions::ProhibitUniversalCan]
 severity   = 4
@@ -56,10 +56,10 @@ severity   = 5
 severity   = 4
 
 [Perl::Critic::Policy::CodeLayout::ProhibitParensWithBuiltins]
-severity   = 1
+severity   = 3
 
 [Perl::Critic::Policy::CodeLayout::ProhibitQuotedWordLists]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::CodeLayout::RequireConsistentNewlines]
 severity   = 4
@@ -83,10 +83,10 @@ severity   = 4
 severity   = 5
 
 [Perl::Critic::Policy::ControlStructures::ProhibitPostfixControls]
-severity   = 3
+severity   = 2
 
 [Perl::Critic::Policy::ControlStructures::ProhibitUnlessBlocks]
-severity   = 3
+severity   = 2
 
 [Perl::Critic::Policy::ControlStructures::ProhibitUnreachableCode]
 severity   = 4
@@ -154,19 +154,19 @@ severity   = 4
 severity   = 5
 
 [Perl::Critic::Policy::Modules::RequireVersionVar]
-severity   = 3
+severity   = 2
 
 [Perl::Critic::Policy::NamingConventions::ProhibitAmbiguousNames]
 severity   = 3
 
 [Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs]
-severity   = 1
+severity   = 3
 
 [Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseVars]
-severity   = 1
+severity   = 3
 
 [Perl::Critic::Policy::References::ProhibitDoubleSigils]
-severity   = 3
+severity   = 2
 
 [Perl::Critic::Policy::RegularExpressions::ProhibitCaptureWithoutTest]
 severity   = 4
@@ -178,7 +178,7 @@ severity   = 5
 severity   = 5
 
 [Perl::Critic::Policy::Subroutines::ProhibitAmpersandSigils]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::Subroutines::ProhibitBuiltinHomonyms]
 severity   = 3
@@ -223,16 +223,16 @@ severity   = 4
 severity   = 2
 
 [Perl::Critic::Policy::ValuesAndExpressions::ProhibitEscapedCharacters]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::ValuesAndExpressions::ProhibitInterpolationOfLiterals]
-severity   = 1
+severity   = 3
 
 [Perl::Critic::Policy::ValuesAndExpressions::ProhibitLeadingZeros]
 severity   = 5
 
 [Perl::Critic::Policy::ValuesAndExpressions::ProhibitMismatchedOperators]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::ValuesAndExpressions::ProhibitMixedBooleanOperators]
 severity   = 4
@@ -268,7 +268,7 @@ severity   = 4
 severity   = 3
 
 [Perl::Critic::Policy::Variables::ProhibitPunctuationVars]
-severity   = 2
+severity   = 3
 
 [Perl::Critic::Policy::Variables::ProtectPrivateVars]
 severity   = 3
