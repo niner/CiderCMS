@@ -20,6 +20,7 @@ requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
 requires 'File::Slurp';
 requires 'Module::Pluggable';
+requires 'Image::Imlib2';
 catalyst;
 
 install_script glob('script/*.pl');

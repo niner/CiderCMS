@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 use FindBin qw($Bin);
+use File::Temp qw(tempfile);
+use Image::Imlib2;
 
 BEGIN {
     # test INSTANCE environment var
@@ -11,7 +13,7 @@ BEGIN {
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 12 );
+    : ( tests => 14 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -25,8 +27,15 @@ $mech->links_ok([ $styles ]);
 $mech->get_ok('http://localhost/', 'short URI without index.html works');
 
 # images work
-my $image = $mech->find_image(url_regex => qr{catalyst_logo.png});
-$mech->get_ok($image->url);
+my $img = $mech->find_image(url_regex => qr{catalyst_logo});
+$mech->get_ok($img->url);
+
+my ($fh, $filename) = tempfile();
+$mech->save_content($filename);
+my $image = Image::Imlib2->load($filename);
+ok($image->width  <= 80, 'thumbnail width <= 80');
+ok($image->height <= 60, 'thumbnail height <= 60');
+
 $mech->back;
 
 $mech->get_ok('http://localhost/', 'new layout works');

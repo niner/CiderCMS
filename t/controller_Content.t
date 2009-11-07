@@ -20,5 +20,5 @@ $mech->links_ok([ $styles ]);
 $mech->get_ok('http://localhost/test.example/', 'URI without index.html works');
 
 # images work
-my $image = $mech->find_image(url_regex => qr{catalyst_logo.png});
+my $image = $mech->find_image(url_regex => qr{catalyst_logo});
 $mech->get_ok($image->url);

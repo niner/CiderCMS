@@ -53,7 +53,7 @@ $mech->submit_form_ok({
     }      ,
     button => 'save',
 });
-my $image = $mech->find_image(url_regex => qr{catalyst_logo.png});
+my $image = $mech->find_image(url_regex => qr{catalyst_logo});
 $mech->get_ok($image->url);
 $mech->back;
 
