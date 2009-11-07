@@ -6,12 +6,13 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 30 );
+    : ( tests => 35 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/test.example/system/types' );
 
+# check basic form setup
 $mech->follow_link_ok({url_regex => qr(site/edit)}, 'Edit Site');
 $mech->title_is('Edit type Site');
 
@@ -22,6 +23,7 @@ ok((not $mech->value('page_element')), 'page_element not checked');
 
 $mech->back;
 
+# add a textfield type
 $mech->submit_form_ok({
     with_fields => {
         id           => 'textfield',
@@ -36,6 +38,7 @@ ok($mech->value('id')   eq 'textfield', 'ID field correct');
 ok($mech->value('name') eq 'Textfield', 'name field correct');
 ok($mech->value('page_element'), 'page_element checked');
 
+# add the text attribute
 $mech->submit_form_ok({
     with_fields => {
         id        => 'text',
@@ -50,6 +53,7 @@ ok($mech->value('text_id')        eq 'text', 'new attribute present');
 ok($mech->value('text_name')      eq 'Text', 'new attribute name correct');
 ok($mech->value('text_data_type') eq 'Text', 'new attribute type correct');
 
+# rename the type to textarea in two steps to test the fields independently
 $mech->submit_form_ok({
     with_fields => {
         id           => 'textfield',
@@ -67,11 +71,13 @@ $mech->submit_form_ok({
     button => 'save',
 }, 'Rename textfield to textarea');
 
+# accessing the old name throws an expected error
 ok($mech->get('http://localhost/test.example/system/types/textfield/edit')->is_error, 'Old type name gone');
 $mech->back;
 
 $mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
 
+# add a folder type with title (String) and children attributes
 $mech->submit_form_ok({
     with_fields => {
         id   => 'folder',
@@ -96,6 +102,7 @@ $mech->submit_form_ok({
     },
 }, 'Add title attribute');
 
+# now change the title's type to Title
 $mech->submit_form_ok({
     with_fields => {
         title_data_type => 'Title',
@@ -108,6 +115,7 @@ ok($mech->value('title_data_type') eq 'Title', 'title data_type now Title');
 
 $mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
 
+# add an image type to test Image attributes
 $mech->submit_form_ok({
     with_fields => {
         id           => 'image',
@@ -132,6 +140,43 @@ $mech->submit_form_ok({
         mandatory => 0,
     },
 }, 'Add title attribute');
+
+$mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
+
+# add a news type to test Date attributes
+
+$mech->submit_form_ok({
+    with_fields => {
+        id           => 'news',
+        name         => 'News',
+        page_element => 1,
+    },
+    button => 'save',
+}, 'Create news type');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'date',
+        name      => 'Date',
+        data_type => 'Date',
+        mandatory => 1,
+    },
+}, 'Add date attribute');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'title',
+        name      => 'Title',
+        data_type => 'String',
+        mandatory => 1,
+    },
+}, 'Add title attribute');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'text',
+        name      => 'Text',
+        data_type => 'Text',
+        mandatory => 0,
+    },
+}, 'Create the text attribute');
 
 # beef up our layout
 system ('/bin/cp', '-r', "$Bin/test.example/templates", "$Bin/test.example/static", "$Bin/../root/instances/test.example/");

@@ -1,4 +1,4 @@
-<form xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="action uri_action" method="post" enctype="multipart/form-data">
+<form xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="action uri_action" method="post" enctype="multipart/form-data" id="edit_object_form">
     <div id="breadcrumbs" tal:condition="true: parents">
         <span tal:repeat="node parents">
             » <a tal:attributes="href node/uri_management" tal:content="node/property --title"/>

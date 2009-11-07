@@ -133,3 +133,7 @@ label span {
     float: left;
     width: 20%;
 }
+
+label input[name=date] {
+    width: 7em;
+}
