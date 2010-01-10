@@ -59,9 +59,9 @@ sub render_template {
     my $instance = $c->stash->{instance};
 
     my $template = Petal->new(
+        %{ $self->config },
         base_dir => ["$root/instances/$instance/templates", "$root/templates"],
         file => $stash->{template},
-        %{ $self->config },
     );
 
     return $template->process({
