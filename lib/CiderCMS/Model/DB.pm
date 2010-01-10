@@ -196,8 +196,7 @@ sub object_children {
     my ($self, $c, $object, $attr) = @_;
 
     my @children = map {
-        $_->{level} = $object->{level} + 1;
-        $self->inflate_object($c, $_);
+        $self->inflate_object($c, {%$_, level => $object->{level} + 1});
     } @{ $self->dbh->selectall_arrayref('select id, type from sys_object where parent = ?' . ($attr ? ' and parent_attr = ?' : '') . ' order by sort_id', {Slice => {}}, $object->{id}, ($attr ? $attr : ())) };
 
     return wantarray ? @children : \@children;
@@ -249,7 +248,7 @@ sub update_type {
         $dbh->do('begin');
         $dbh->do('set constraints "sys_attributes_type_fkey" deferred');
         $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
-        $dbh->do(qq/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
+        $dbh->do(q/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
         $dbh->do(qq/alter table "$id" rename to "$data->{id}"/);
         $dbh->do('commit');
     }
@@ -309,27 +308,27 @@ sub update_attribute {
     return;
 }
 
-=head2 create_insert_aisle($c, $parent, $attr, $count, $after)
+=head2 create_insert_aisle({c => $c, parent => $parent, attr => $attr, count => $count, after => $after})
 
 Creates an aisle in the sort order of an object's children to insert new objects in between.
 
 =cut
 
 sub create_insert_aisle {
-    my ($self, $c, $parent, $attr, $count, $after) = @_;
+    my ($self, $params) = @_;
 
     my $dbh = $self->dbh;
-    if ($after) {
-        $after = $self->get_object($c, $after) unless ref $after;
+    if ($params->{after}) {
+        $params->{after} = $self->get_object($params->{c}, $params->{after}) unless ref $params->{after};
         # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
-        $dbh->do("update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ? and sort_id > ?", undef, $parent, $attr, $after->{sort_id});
-        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ? and sort_id < 0", undef, $parent, $attr);
-        return $after->{sort_id} + 1;
+        $dbh->do('update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ? and sort_id > ?', undef, $params->{parent}, $params->{attr}, $params->{after}->{sort_id});
+        $dbh->do("update sys_object set sort_id = -sort_id + $params->{count} where parent = ? and parent_attr = ? and sort_id < 0", undef, $params->{parent}, $params->{attr});
+        return $params->{after}->{sort_id} + 1;
     }
     else {
         # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
-        $dbh->do("update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ?", undef, $parent, $attr);
-        $dbh->do("update sys_object set sort_id = -sort_id + $count where parent = ? and parent_attr = ?", undef, $parent, $attr);
+        $dbh->do('update sys_object set sort_id = -sort_id where parent = ? and parent_attr = ?', undef, $params->{parent}, $params->{attr});
+        $dbh->do("update sys_object set sort_id = -sort_id + $params->{count} where parent = ? and parent_attr = ?", undef, $params->{parent}, $params->{attr});
         return 1;
     }
 }
@@ -361,11 +360,10 @@ sub insert_object {
 
     my $dbh = $self->dbh;
     my $type = $object->{type};
-    my $after;
 
     $dbh->do('begin');
 
-    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, $object->{parent_attr}, 1, $params->{after});
+    $object->{sort_id} = $self->create_insert_aisle({c => $c, parent => $object->{parent}, attr => $object->{parent_attr}, count => 1, after => $params->{after}});
 
     my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
 
@@ -446,7 +444,7 @@ sub move_object {
         $object->{parent_attr} = $params->{parent_attr};
     }
 
-    $object->{sort_id} = $self->create_insert_aisle($c, $object->{parent}, $object->{parent_attr}, 1, $params->{after});
+    $object->{sort_id} = $self->create_insert_aisle({c => $c, parent => $object->{parent}, attr => $object->{parent_attr}, count => 1, after => $params->{after}});
 
     my $result = $self->update_object($c, $object);
 

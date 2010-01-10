@@ -20,18 +20,18 @@ CiderCMS::Controller::Root - Root Controller for CiderCMS
 
 =head1 METHODS
 
-=head2 default
+=head2 not_found
 
 Just throw a 404.
 
 =cut
 
-sub default :Path {
+sub not_found :Path {
     my ( $self, $c ) = @_;
 
     if ($c->req->uri->path =~ m!/\z!xm) {
         $c->req->path($c->req->path . 'index.html');
-        return $c->go('content/index');
+        return $c->go('content/index_html');
     }
 
     $c->response->body( 'Page not found' );

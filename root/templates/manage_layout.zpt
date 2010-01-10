@@ -12,7 +12,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title metal:define-slot="title">CiderCMS</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_sys_static}/css/calendar.css" />
         <link rel="stylesheet" tal:attributes="href string:${uri_sys_static}/css/management.css" />
+        <script tal:attributes="src string:${uri_sys_static}/js/calendar.js" />
+        <script tal:content="string:A_TCALDEF['imgpath'] = '${uri_sys_static}/images/calendar/'" />
         <script metal:define-slot="scripts" />
     </head>
     <body>

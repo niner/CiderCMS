@@ -364,17 +364,17 @@ sub update {
     return $self->{c}->model('DB')->update_object($self->{c}, $self);
 }
 
-=head2 delete()
+=head2 delete_from_db()
 
 Deletes the object and it's children.
 
 =cut
 
-sub delete {
+sub delete_from_db {
     my ($self) = @_;
 
     foreach ($self->children) {
-        $_->delete;
+        $_->delete_from_db;
     }
 
     return $self->{c}->model('DB')->delete_object($self->{c}, $self);

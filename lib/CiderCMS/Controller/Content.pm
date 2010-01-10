@@ -47,13 +47,13 @@ sub auto : Private {
     return 1;
 }
 
-=head2 index
+=head2 index_html
 
 Renders the page.
 
 =cut
 
-sub index : Regex('/(?:index\.html)?$') {
+sub index_html : Regex('/(?:index\.html)?$') {
     my ( $self, $c ) = @_;
 
     $c->stash({

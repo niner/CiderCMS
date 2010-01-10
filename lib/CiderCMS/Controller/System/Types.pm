@@ -17,13 +17,13 @@ Catalyst Controller.
 =cut
 
 
-=head2 index
+=head2 list
 
 List all available types.
 
 =cut
 
-sub index : PathPart('system/types') Chained('/system/init') {
+sub list : PathPart('system/types') Chained('/system/init') {
     my ( $self, $c ) = @_;
 
     $_->{uri_edit} = $c->uri_for_instance("system/types/$_->{id}/edit") foreach values %{ $c->stash->{types} };
@@ -90,7 +90,7 @@ sub edit : PathPart Chained('setup_type') {
     my $id = $c->stash->{type}{id};
 
     $c->stash({
-        attribute_types      => [ sort @CiderCMS::Attribute::attribute_types ],
+        attribute_types      => [ sort CiderCMS::Attribute->attribute_types ],
         template             => 'system/types/edit.zpt',
         uri_save             => $c->uri_for_instance("system/types/$id/save"),
         uri_save_attributes  => $c->uri_for_instance("system/types/$id/save_attributes"),

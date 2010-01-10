@@ -113,15 +113,17 @@ sub input_field {
     });
 }
 
-=head1 VARIABLES
+=head2 attribute_types
 
-=head2 @attribute_types
-
-Contains names of all available attribute types.
+Returns an array containing the names of all available attribute types.
 
 =cut
 
-our @attribute_types = map {my $class = $_; $class =~ s/CiderCMS::Attribute:://xm; $class} __PACKAGE__->plugins;
+my @attribute_types = map { /CiderCMS::Attribute::(.*)/xm } __PACKAGE__->plugins;
+
+sub attribute_types {
+    return @attribute_types;
+}
 
 =head1 AUTHOR
 
