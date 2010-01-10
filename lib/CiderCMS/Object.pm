@@ -58,6 +58,18 @@ sub new {
     return $self;
 }
 
+=head2 object_by_id($id)
+
+Returns an object for the given ID
+
+=cut
+
+sub object_by_id {
+    my ($self, $id) = @_;
+
+    return $self->{c}->model('DB')->get_object($self->{c}, $id);
+}
+
 =head2 type
 
 Returns the type info for this object.
