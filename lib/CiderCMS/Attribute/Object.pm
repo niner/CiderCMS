@@ -58,7 +58,7 @@ sub input_field {
     return $c->view()->render_template($c, {
         %{ $c->stash },
         template      => 'attributes/object.zpt',
-        addable_types => [values %{ $c->stash->{types} }],
+        addable_types => [sort { $a->{name} cmp $b->{name} } values %{ $c->stash->{types} }],
         children      => scalar $self->data,
         self          => $self,
     });
