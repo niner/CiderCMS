@@ -361,7 +361,11 @@ sub update {
 
     $self->prepare_attributes;
 
-    return $self->{c}->model('DB')->update_object($self->{c}, $self);
+    my $result = $self->{c}->model('DB')->update_object($self->{c}, $self);
+
+    $self->update_attributes;
+
+    return $result;
 }
 
 =head2 delete_from_db()

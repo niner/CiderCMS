@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 35 );
+    : ( tests => 36 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -177,6 +177,14 @@ $mech->submit_form_ok({
         mandatory => 0,
     },
 }, 'Create the text attribute');
+$mech->submit_form_ok({
+    with_fields => {
+        id        => 'image',
+        name      => 'Image',
+        data_type => 'Image',
+        mandatory => 0,
+    },
+}, 'Add image file attribute');
 
 # beef up our layout
 system ('/bin/cp', '-r', "$Bin/test.example/templates", "$Bin/test.example/static", "$Bin/../root/instances/test.example/");
