@@ -58,6 +58,7 @@ sub thumbnail {
         }
 
         my $thumb = $image->create_scaled_image($width, $height);
+        $thumb->set_quality(90);
         $thumb->save("$path/$thumb_name");
     }
 
@@ -99,7 +100,7 @@ sub post_update {
 
 =head2 fs_path()
 
-}Returns the file system path to this attribute.
+Returns the file system path to this attribute.
 
 =cut
 
