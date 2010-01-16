@@ -1,0 +1,1 @@
+<a xmlns:tal="http://purl.org/petal/1.0/" tal:attributes="id string:object_${self/id}; href self/property --file" tal:content="self/property --title"/>
