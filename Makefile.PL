@@ -21,6 +21,8 @@ requires 'Catalyst::Plugin::FormValidator';
 requires 'File::Slurp';
 requires 'Module::Pluggable';
 requires 'Image::Imlib2';
+requires 'File::Path';
+requires 'File::Copy';
 catalyst;
 
 install_script glob('script/*.pl');
