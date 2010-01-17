@@ -7,7 +7,7 @@ use utf8;
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 9 );
+    : ( tests => 12 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -53,3 +53,19 @@ $mech->submit_form_ok({
 
 $mech->follow_link_ok({ text => 'Testfile' });
 
+$mech->back;
+
+SKIP: {
+    eval { require Test::XPath; };
+    skip 'Test::XPath not installed', 3 if $@;
+
+    my $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
+    my $xpc = $xpath->xpc;
+    my $file_id = $xpc->findvalue('//div[@class="child file"][1]/@id');
+    ($file_id) = $file_id =~ /child_(\d+)/;
+
+    $mech->follow_link_ok({ url_regex => qr{folder_0/manage} });
+    $mech->get_ok($mech->uri . "_paste?attribute=children;id=$file_id");
+
+    $mech->follow_link_ok({ text => 'Testfile' });
+}

@@ -5,6 +5,8 @@ use warnings;
 
 use Scalar::Util qw(weaken);
 use List::MoreUtils qw(any);
+use File::Path qw(mkpath);
+use File::Copy qw(move);
 
 use CiderCMS::Attribute;
 
@@ -417,7 +419,18 @@ Moves this object (and it's subtree) to a new parent and or sort position
 sub move_to {
     my ($self, %params) = @_;
 
-    return $self->{c}->model('DB')->move_object($self->{c}, $self, \%params);
+    my $old_fs_path = $self->fs_path;
+
+    my $result = $self->{c}->model('DB')->move_object($self->{c}, $self, \%params);
+
+    if (-e $old_fs_path) {
+        my $new_fs_path = $self->fs_path;
+
+        mkpath $self->parent->fs_path if $self->{parent};
+        move $old_fs_path, $new_fs_path;
+    }
+
+    return $result;
 }
 
 =head1 AUTHOR
