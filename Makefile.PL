@@ -23,6 +23,7 @@ requires 'Module::Pluggable';
 requires 'Image::Imlib2';
 requires 'File::Path';
 requires 'File::Copy';
+requires 'MIME::Lite';
 catalyst;
 
 install_script glob('script/*.pl');
