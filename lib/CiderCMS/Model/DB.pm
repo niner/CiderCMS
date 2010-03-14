@@ -376,6 +376,8 @@ sub insert_object {
         return $retval;
     }
     else {
+        $dbh->do('rollback');
+
         croak $dbh->errstr;
     }
 }
