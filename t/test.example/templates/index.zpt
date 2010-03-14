@@ -22,6 +22,9 @@
             <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/attribute --children; pages children/pages" tal:condition="true: pages">
                 <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
             </ul>
+
+            <div id="get_object" tal:define="obj context/object_by_id '6'" tal:content="structure obj/property --text"/>
+
             <div id="content" tal:content="structure content"/>
         </div>
     </body>

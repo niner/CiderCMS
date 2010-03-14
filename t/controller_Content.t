@@ -6,11 +6,13 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 7 );
+    : ( tests => 8 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok('http://localhost/test.example/index.html');
+
+$mech->content_contains('Page 1', 'get_object works');
 
 $mech->title_like(qr/Testsite/, 'Title correct');
 $mech->content_like(qr/Foo bar baz!/, 'Textarea present');
