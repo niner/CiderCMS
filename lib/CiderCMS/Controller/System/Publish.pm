@@ -35,7 +35,7 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
 
     chdir $dir;
 
-    system('/usr/bin/wget', '-nv', '-r', '-k', $c->uri_for_instance);
+    system('/usr/bin/wget', '-nv', '-r', '-k', $c->uri_for_instance(''));
     find( sub {
         if (/\.html$/xm) {
             local($^I, @ARGV) = ('', $_); # process file in place
@@ -45,7 +45,7 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
 
     chdir $c->req->uri->host;
 
-    system('/usr/bin/lftp', '-c', 'mirror -R -v .', $c->model('DB')->get_object($c, 1)->property('uri_publish'));
+    system('/usr/bin/lftp', '-c', 'mirror -R -v . ' . $c->model('DB')->get_object($c, 1)->property('publish_uri'));
 
     chdir($cwd);
 
