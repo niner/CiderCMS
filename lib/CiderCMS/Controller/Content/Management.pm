@@ -32,6 +32,8 @@ sub auto : Private {
         management         => 1,
     });
 
+    $c->stash->{uri_publish} = $c->uri_for_instance('system/publish') if $c->stash->{site}->property('publish_uri');
+
     return 1;
 }
 

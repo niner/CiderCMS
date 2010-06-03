@@ -18,11 +18,14 @@ requires 'Catalyst::Model::DBI';
 requires 'Catalyst::View::Petal';
 requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
-requires 'File::Slurp';
 requires 'Module::Pluggable';
 requires 'Image::Imlib2';
 requires 'File::Path';
 requires 'File::Copy';
+requires 'File::Temp';
+requires 'File::Find';
+requires 'File::Slurp';
+requires 'Cwd';
 requires 'MIME::Lite';
 catalyst;
 

@@ -23,6 +23,7 @@
             <li><a tal:attributes="href uri_manage_content">Content</a></li>
             <li><a tal:attributes="href uri_manage_types">Types</a></li>
             <li><a tal:condition="true: uri_view" tal:attributes="href uri_view">View page</a></li>
+            <li><a tal:condition="true: uri_publish" tal:attributes="href uri_publish">Publish</a></li>
         </ul>
         <div id="content">
             <div metal:define-slot="content" />

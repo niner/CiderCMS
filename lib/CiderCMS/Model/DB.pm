@@ -39,11 +39,7 @@ sub create_instance {
 
     my $instance_path = $c->config->{root} . '/instances/' . $data->{id};
 
-    mkdir $instance_path;
-    mkdir "$instance_path/static";
-    mkdir "$instance_path/templates";
-    mkdir "$instance_path/templates/layout";
-    mkdir "$instance_path/templates/content";
+    mkdir "$instance_path$_" foreach '', qw( /static /templates /templates/layout /templates/content );
 
     $dbh->do(qq(create schema "$data->{id}")) or croak qq(could not create schema "$data->{id}");
     $dbh->do(qq(set search_path="$data->{id}",public)) or croak qq(could not set search path "$data->{id}",public!?);
@@ -52,6 +48,7 @@ sub create_instance {
 
     $self->create_type($c, {id => 'site', name => 'Site', page_element => 0});
     $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''});
+    $self->create_attribute($c, {type => 'site', id => 'publish_uri', name => 'Publishing target URI', sort_id => 2, data_type => 'String', repetitive => 0, mandatory => 0, default_value => ''});
     $self->create_attribute($c, {type => 'site', id => 'children', name => 'Children', sort_id => 1, data_type => 'Object', repetitive => 1, mandatory => 0, default_value => ''});
 
     $c->stash({instance => $data->{id}});
