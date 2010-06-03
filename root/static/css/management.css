@@ -65,7 +65,7 @@ div.child {
 
 div.child div.actions {
     float: left;
-    width: 130px; /* icons have static width */
+    width: 140px; /* icons have static width */
 }
 
 div.child div.actions > .icon {
@@ -86,7 +86,7 @@ div.child div.actions > .icon img {
 }
 
 div.child div.child_content {
-    margin-left: 140px;
+    margin-left: 145px;
 }
 
 div.child div.folder a {
@@ -136,4 +136,9 @@ label span {
 
 label input[name=date] {
     width: 7em;
+}
+
+textarea {
+    width: 42em;
+    height: 35em;
 }
