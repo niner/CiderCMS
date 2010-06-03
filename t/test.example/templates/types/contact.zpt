@@ -1,5 +1,9 @@
-<form xmlns:tal="http://purl.org/petal/1.0/" method="post" tal:attributes="action self/property --recipient">
-    Foo: <input name="foo"/>
-    Bar: <input name="bar"/>
-    <button type="submit" name="send" value="1">send!</button>
-</form>
+<div xmlns:tal="http://purl.org/petal/1.0/" tal:omit-tag="">
+    <form tal:condition="false: management" method="post" tal:attributes="action self/property --recipient">
+        Foo: <input name="foo"/>
+        Bar: <input name="bar"/>
+        <button type="submit" name="send" value="1">send!</button>
+    </form>
+    <div tal:condition="true: management">
+    </div>
+</div>
