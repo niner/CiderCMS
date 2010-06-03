@@ -39,6 +39,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Type</th>
@@ -48,6 +49,14 @@
                 </thead>
                 <tbody>
                     <tr tal:repeat="attribute type/attributes">
+                        <td class="sort_id">
+                            <select tal:attributes="name string:${attribute/id}_sort_id">
+                                <tal:div tal:omit-tag="" tal:repeat="sort_id sort_ids">
+                                    <option tal:condition="eq: sort_id attribute/sort_id" tal:attributes="value sort_id" tal:content="sort_id" selected="selected"/>
+                                    <option tal:condition="not: eq: sort_id attribute/sort_id" tal:attributes="value sort_id" tal:content="sort_id"/>
+                                </tal:div>
+                            </select>
+                        </td>
                         <td class="id"><input tal:attributes="name string:${attribute/id}_id; value attribute/id"/></td>
                         <td class="name"><input tal:attributes="name string:${attribute/id}_name; value attribute/name"/></td>
                         <td class="data_type">

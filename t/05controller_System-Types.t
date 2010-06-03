@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 36 );
+    : ( tests => 39 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -105,13 +105,18 @@ $mech->submit_form_ok({
 # now change the title's type to Title
 $mech->submit_form_ok({
     with_fields => {
-        title_data_type => 'Title',
+        title_sort_id    => 1,
+        children_sort_id => 2,
+        title_data_type  => 'Title',
     },
     button => 'save',
 });
 
 $mech->form_number(2);
-ok($mech->value('title_data_type') eq 'Title', 'title data_type now Title');
+is($mech->value('title_data_type'), 'Title', 'title data_type now Title');
+is($mech->value('title_sort_id'), 1, 'title sort_id correct');
+is($mech->value('children_sort_id'), 2, 'children sort_id correct');
+$mech->content_like(qr/title_sort_id.*children_sort_id/xms, 'Attributes in correct order');
 
 $mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
 

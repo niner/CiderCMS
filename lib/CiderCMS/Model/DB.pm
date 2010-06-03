@@ -299,7 +299,7 @@ sub update_attribute {
     $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
 
     $dbh->do('begin');
-    $dbh->do('update sys_attributes set id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id name data_type repetitive mandatory default_value)}, $type, $id);
+    $dbh->do('update sys_attributes set id = ?, sort_id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id sort_id name data_type repetitive mandatory default_value)}, $type, $id);
     $dbh->do('commit');
 
     return;

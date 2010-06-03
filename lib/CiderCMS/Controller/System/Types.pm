@@ -91,6 +91,7 @@ sub edit : PathPart Chained('setup_type') {
 
     $c->stash({
         attribute_types      => [ sort CiderCMS::Attribute->attribute_types ],
+        sort_ids             => [ 1 .. @{ $c->stash->{type}{attributes} } ],
         template             => 'system/types/edit.zpt',
         uri_save             => $c->uri_for_instance("system/types/$id/save"),
         uri_save_attributes  => $c->uri_for_instance("system/types/$id/save_attributes"),
