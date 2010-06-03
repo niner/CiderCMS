@@ -2,5 +2,5 @@
     <span tal:content="self/name"/>
     <input type="file" size="40" tal:attributes="name self/id"/>
     <img tal:attributes=""/>
-    <img tal:attributes="src self/data" alt="The image"/>
+    <img tal:attributes="src self/thumbnail '300' '0'" alt="The image"/>
 </label>
