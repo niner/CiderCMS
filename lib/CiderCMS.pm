@@ -133,7 +133,7 @@ sub fs_path_for_instance {
 Controllers may register subroutines returning additional actions for the management interface dynamically.
 For example:
 
-    CiderCMS->register_management_action(__PACKAGE__ => sub {
+    CiderCMS->register_management_action(__PACKAGE__, sub {
             my ($self, $c) = @_;
             return {title => 'Foo', uri => $c->uri_for('foo')}, { ... };
         });
