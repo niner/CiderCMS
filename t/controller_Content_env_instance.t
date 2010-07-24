@@ -41,7 +41,7 @@ $mech->back;
 $mech->get_ok('http://localhost/', 'new layout works');
 $mech->follow_link_ok({ url_regex => qr(folder_1) });
 
-$mech->title_is('Folder 3', 'We got to the first subfolder with page elements');
+$mech->title_is('Folder 1', 'We got to the first subfolder with page elements');
 
 SKIP: {
     eval { require Test::XPath; };
