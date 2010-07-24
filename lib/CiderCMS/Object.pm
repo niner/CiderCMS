@@ -330,7 +330,7 @@ sub update_attributes {
     return;
 }
 
-=head2 insert()
+=head2 insert({after => $after})
 
 Inserts the object into the database.
 
