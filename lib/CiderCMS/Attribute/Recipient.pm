@@ -46,7 +46,7 @@ sub data {
             From    => 'nine@detonation.org',
             To      => $self->{data},
             Subject => ($self->{object}->property('subject') or $self->{object}->property('title') or 'Submitted form'),
-            Data    => (join "\n", map "$_: $params->{$_}", sort keys %$params),
+            Data    => (join "\n", map { "$_: $params->{$_}" } sort keys %$params),
         );
 
         $mail->send;

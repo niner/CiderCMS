@@ -7,6 +7,7 @@ use parent 'Catalyst::Controller';
 use File::Temp;
 use File::Find;
 use Cwd;
+use English qw( -no_match_vars );
 
 =head1 NAME
 
@@ -35,19 +36,19 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
 
     chdir $dir;
 
-    system('/usr/bin/wget', '-nv', '-r', '-k', $c->uri_for_instance(''));
+    system '/usr/bin/wget', '-nv', '-r', '-k', $c->uri_for_instance('');
     find( sub {
         if (/\.html$/xm) {
-            local($^I, @ARGV) = ('', $_); # process file in place
-            s!action="index\.html"!action="http://$File::Find::name"!gxm
+            local ($INPLACE_EDIT, @ARGV) = ('', $_); # process file in place
+            s!action="index\.html"!action="http://$File::Find::name"!gxm;
         }
     }, '.');
 
     chdir $c->req->uri->host;
 
-    system('/usr/bin/lftp', '-c', 'mirror -R -v . ' . $c->model('DB')->get_object($c, 1)->property('publish_uri'));
+    system '/usr/bin/lftp', '-c', 'mirror -R -v . ' . $c->model('DB')->get_object($c, 1)->property('publish_uri');
 
-    chdir($cwd);
+    chdir $cwd;
 
     return $c->res->body('Site published successfully');
 }
