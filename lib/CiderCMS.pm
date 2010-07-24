@@ -128,6 +128,40 @@ sub fs_path_for_instance {
     return $self->config->{root} . '/instances/' . $self->stash->{instance} . '/static';
 }
 
+=head2 register_management_action
+
+Controllers may register subroutines returning additional actions for the management interface dynamically.
+For example:
+
+    CiderCMS->register_management_action(__PACKAGE__ => sub {
+            my ($self, $c) = @_;
+            return {title => 'Foo', uri => $c->uri_for('foo')}, { ... };
+        });
+
+=cut
+
+my %management_actions;
+
+sub register_management_action {
+    my ($self, $package, $action_creator) = @_;
+
+    $management_actions{$package} = $action_creator;
+
+    return;
+}
+
+=head2 management_actions
+
+Returns the registered management actions
+
+=cut
+
+sub management_actions {
+    my ($self) = @_;
+    
+    return \%management_actions;
+}
+
 =head1 SEE ALSO
 
 L<CiderCMS::Controller::Root>, L<Catalyst>

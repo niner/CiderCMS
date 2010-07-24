@@ -53,6 +53,18 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
     return $c->res->body('Site published successfully');
 }
 
+=head2 manage_actions
+
+=cut
+
+CiderCMS->register_management_action(__PACKAGE__ => sub {
+        my ($self, $c) = @_;
+
+        return {title => 'Publish', uri => $c->uri_for_instance('system/publish')} if $c->stash->{site}->property('publish_uri');
+
+        return;
+    });
+
 =head1 AUTHOR
 
 Stefan Seifert
