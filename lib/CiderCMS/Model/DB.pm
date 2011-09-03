@@ -5,6 +5,7 @@ use warnings;
 
 use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
+use File::Path qw(make_path);
 use Carp qw(croak cluck);
 
 use CiderCMS::Object;
@@ -46,12 +47,13 @@ sub create_instance {
 
     $dbh->do(scalar read_file($c->config->{root} . '/initial_schema.sql')) or croak 'could not import initial schema';
 
+    $c->stash({instance => $data->{id}});
+
     $self->create_type($c, {id => 'site', name => 'Site', page_element => 0});
     $self->create_attribute($c, {type => 'site', id => 'title', name => 'Title', sort_id => 0, data_type => 'String', repetitive => 0, mandatory => 1, default_value => ''});
     $self->create_attribute($c, {type => 'site', id => 'publish_uri', name => 'Publishing target URI', sort_id => 2, data_type => 'String', repetitive => 0, mandatory => 0, default_value => ''});
     $self->create_attribute($c, {type => 'site', id => 'children', name => 'Children', sort_id => 1, data_type => 'Object', repetitive => 1, mandatory => 0, default_value => ''});
 
-    $c->stash({instance => $data->{id}});
     $self->initialize($c);
 
     CiderCMS::Object->new({c => $c, type => 'site', dcid => '', data => {title => $data->{title}}})->insert;
@@ -225,6 +227,13 @@ sub create_type {
     $dbh->do(qq/create trigger "${id}_ad" after  delete on "$id" for each row execute procedure sys_objects_ad()/);
 
     $dbh->do('commit');
+
+    my $path = $c->fs_path_for_instance . '/../templates/types';
+    unless (-e "$path/$data->{id}.zpt" or -e $c->config->{root} . "/templates/types/$data->{id}.zpt") { #TODO: put this stuff in it's own class. CiderCMS::Type?
+        make_path($path);
+        open my $template, '>', "$path/$data->{id}.zpt";
+        say $template '<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="id string:object_${self/id}" />';
+    }
 
     return;
 }

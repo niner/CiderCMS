@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
 plan $@
     ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 39 );
+    : ( tests => 40 );
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -37,6 +37,8 @@ $mech->form_number(1);
 ok($mech->value('id')   eq 'textfield', 'ID field correct');
 ok($mech->value('name') eq 'Textfield', 'name field correct');
 ok($mech->value('page_element'), 'page_element checked');
+
+ok(-e "$Bin/../root/instances/test.example/templates/types/textfield.zpt", 'template got created');
 
 # add the text attribute
 $mech->submit_form_ok({

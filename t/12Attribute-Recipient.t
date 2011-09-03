@@ -21,7 +21,7 @@ ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/test.example/system/types' );
 
-# add a File type to test File attributes
+# add a Contact type to test Recipient attributes
 $mech->submit_form_ok({
     with_fields => {
         id           => 'contact',
