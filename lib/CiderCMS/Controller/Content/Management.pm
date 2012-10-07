@@ -93,6 +93,9 @@ sub manage_add : Regex('/manage_add\z') {
         $object->insert({after => $after});
         return $c->res->redirect(($object->type->{page_element} ? $context : $object)->uri_management());
     }
+    else {
+        $object->init_defaults;
+    }
 
     $c->stash({
         type        => $type,

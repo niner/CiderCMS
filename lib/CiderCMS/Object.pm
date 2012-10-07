@@ -137,6 +137,18 @@ sub update_data {
     return;
 }
 
+=head2 init_defaults()
+
+Initialize this object's data to the attributes' default values.
+
+=cut
+
+sub init_defaults {
+    my ($self) = @_;
+
+    $_->init_default foreach values %{ $self->{data} };
+}
+
 =head2 parent
 
 Returns the parent of this object, if any.
