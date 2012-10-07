@@ -147,6 +147,8 @@ sub init_defaults {
     my ($self) = @_;
 
     $_->init_default foreach values %{ $self->{data} };
+
+    return;
 }
 
 =head2 parent

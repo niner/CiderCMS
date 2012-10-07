@@ -113,6 +113,8 @@ sub init_default {
     my ($self) = @_;
 
     $self->set_data($self->meta_data->{default_value});
+
+    return;
 }
 
 =head2 input_field

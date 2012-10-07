@@ -7,6 +7,7 @@ use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
 use File::Path qw(make_path);
 use Carp qw(croak cluck);
+use English '-no_match_vars';
 
 use CiderCMS::Object;
 
@@ -231,8 +232,9 @@ sub create_type {
     my $path = $c->fs_path_for_instance . '/../templates/types';
     unless (-e "$path/$data->{id}.zpt" or -e $c->config->{root} . "/templates/types/$data->{id}.zpt") { #TODO: put this stuff in it's own class. CiderCMS::Type?
         make_path($path);
-        open my $template, '>', "$path/$data->{id}.zpt";
-        say $template '<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="id string:object_${self/id}" />';
+        open my $template, '>', "$path/$data->{id}.zpt" or croak "Could not open $path/$data->{id}.zpt: $OS_ERROR";
+        say { $template } '<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="id string:object_${self/id}" />';
+        close $template;
     }
 
     return;

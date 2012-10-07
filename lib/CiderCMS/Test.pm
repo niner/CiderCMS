@@ -6,8 +6,9 @@ use utf8;
 
 use Test::More;
 use Exporter;
-use FindBin qw($Bin);
+use FindBin qw($Bin); ## no critic (ProhibitPackageVars)
 use File::Path qw(remove_tree);
+use English '-no_match_vars';
 
 use base qw(Exporter);
 
@@ -44,8 +45,9 @@ A Test::WWW::Mechanize::Catalyst object for conducting UI tests.
 
 =cut
 
-our ($instance, $c, $model, $mech);
-our @EXPORT = qw($instance $c $model $mech);
+## no critic (ProhibitReusedNames)
+our ($instance, $c, $model, $mech);          ## no critic (ProhibitPackageVars)
+our @EXPORT = qw($instance $c $model $mech); ## no critic (ProhibitPackageVars, ProhibitAutomaticExportation)
 sub import {
     my ($self, %params) = @_;
 
@@ -53,6 +55,8 @@ sub import {
         ($instance, $c, $model, $mech) = $self->setup_test_environment(%params);
         __PACKAGE__->export_to_level(1, $self, @EXPORT);
     }
+
+    return;
 }
 
 =head1 METHODS
@@ -64,8 +68,9 @@ sub import {
 sub init_mechanize {
     my ($self) = @_;
 
-    eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-    plan skip_all => "Test::WWW::Mechanize::Catalyst required: $@" if $@;
+    my $result = eval q{use Test::WWW::Mechanize::Catalyst 'CiderCMS'}; ## no critic (ProhibitStringyEval)
+    plan skip_all => "Test::WWW::Mechanize::Catalyst required: $EVAL_ERROR"
+        if $EVAL_ERROR;
 
     require WWW::Mechanize::TreeBuilder;
     require HTML::TreeBuilder::XPath;
@@ -88,6 +93,8 @@ sub setup_instance {
     my ($self, $instance, $c, $model) = @_;
 
     $model->create_instance($c, {id => $instance, title => 'test instance'});
+
+    return;
 }
 
 =head2 setup_test_environment(%params)
@@ -120,9 +127,9 @@ On process exit, the test instance will be cleaned up again.
 
 END {
     if ($instance and $model) {
-        $model->dbh->do("set client_min_messages='warning'");
+        $model->dbh->do(q{set client_min_messages='warning'});
         $model->dbh->do(qq{drop schema if exists "$instance" cascade});
-        $model->dbh->do("set client_min_messages='notice'");
+        $model->dbh->do(q{set client_min_messages='notice'});
         remove_tree("$Bin/../root/instances/$instance");
     }
 }
