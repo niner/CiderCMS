@@ -72,7 +72,7 @@ Fetches type and attribute information from the DB and puts it on the stash:
             attributes   => [
                 # same as {attrs}{attr1}
             ],
-            attrs        => {
+            attr         => {
                 attr1 => {
                     type          => 'type1',
                     class         => 'CiderCMS::Attribute::String',
