@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Catalyst::View::Petal';
 
-use Petal::Utils qw( :default :hash );
+use Petal::Utils qw( :all );
 
 =head1 NAME
 
