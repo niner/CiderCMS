@@ -44,6 +44,21 @@ sub pages {
     return wantarray ? @pages : \@pages;
 }
 
+=head2 objects_by_type($type)
+
+Returns the child objects conforming to the given $type.
+
+=cut
+
+sub objects_by_type {
+    my ($self, $type) = @_;
+
+    my @objects = grep {$_->{type} eq $type}
+        $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+
+    return wantarray ? @objects : \@objects;
+}
+
 =head2 input_field
 
 Renders a list of children for this attribute with links for adding more.

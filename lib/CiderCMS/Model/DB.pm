@@ -237,6 +237,8 @@ sub create_type {
         close $template;
     }
 
+    $self->initialize($c);
+
     return;
 }
 
@@ -292,6 +294,8 @@ sub create_attribute {
     }
 
     $dbh->do('commit');
+
+    $self->initialize($c);
 
     return;
 }
