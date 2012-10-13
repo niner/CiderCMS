@@ -76,4 +76,10 @@ srand(2);
 is($random[0]->{type}, 'appointment', 'appointment first');
 is($random[1]->{type}, 'news', 'news second');
 
+my @children = $children->data;
+is($children->previous($children[0]), undef);
+is($children->previous($children[1]), $children[0]);
+is($children->next($children[0]), $children[1]);
+is($children->next($children[1]), undef);
+
 done_testing;

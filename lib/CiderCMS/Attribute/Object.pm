@@ -81,6 +81,42 @@ sub random {
     return wantarray ? @children : \@children;
 }
 
+=head2 previous($obj)
+
+Returns the previous object to the given one in the children list.
+
+=cut
+
+sub previous {
+    my ($self, $obj) = @_;
+
+    my $prev;
+    foreach ($self->data) {
+        return $prev if $_->{id} eq $obj->{id};
+        $prev = $_;
+    }
+
+    return;
+}
+
+=head2 next($obj)
+
+Returns the next object to the given one in the children list.
+
+=cut
+
+sub next {
+    my ($self, $obj) = @_;
+
+    my $current;
+    foreach ($self->data) {
+        return $_ if $current;
+        $current = $_ if $_->{id} eq $obj->{id};
+    }
+
+    return;
+}
+
 =head2 input_field
 
 Renders a list of children for this attribute with links for adding more.
