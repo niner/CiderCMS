@@ -55,6 +55,7 @@ $appointment->insert;
 
 my $site = $model->get_object($c, 1);
 my $children = $site->attribute('children');
+
 is(scalar @{ $children->data }, 2, 'two children found');
 
 my @news = $children->objects_by_type('news');
@@ -64,5 +65,15 @@ is($news[0]->{type}, 'news', 'found object is a news');
 my @appointments = $children->objects_by_type('appointment');
 is(scalar @appointments, 1, 'one appointment child found');
 is($appointments[0]->{type}, 'appointment', 'found object is an appointment');
+
+srand(1);
+my @random = @{ $children->random };
+is($random[0]->{type}, 'news', 'news first');
+is($random[1]->{type}, 'appointment', 'appointment second');
+
+srand(2);
+@random = @{ $children->random };
+is($random[0]->{type}, 'appointment', 'appointment first');
+is($random[1]->{type}, 'news', 'news second');
 
 done_testing;

@@ -3,6 +3,8 @@ package CiderCMS::Attribute::Object;
 use strict;
 use warnings;
 
+use List::Util qw(shuffle);
+
 use base qw(CiderCMS::Attribute);
 
 =head1 NAME
@@ -61,6 +63,22 @@ sub objects_by_type {
         $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
 
     return wantarray ? @objects : \@objects;
+}
+
+=head2 random($count)
+
+Returns a random selection of child objects for this attribute
+
+=cut
+
+sub random {
+    my ($self, $count) = @_;
+
+    my @children = shuffle $self->data;
+
+    @children = @children[0 .. $count - 1] if $count and @children > $count;
+
+    return wantarray ? @children : \@children;
 }
 
 =head2 input_field
