@@ -28,7 +28,11 @@ Returns the child objects for this attribute
 sub data {
     my ($self) = @_;
 
-    return $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+    return wantarray ? @{ $self->{children} } : $self->{children} if $self->{children};
+
+    $self->{children} = [ $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id}) ];
+
+    return wantarray ? @{ $self->{children} } : $self->{children};
 }
 
 =head2 pages
