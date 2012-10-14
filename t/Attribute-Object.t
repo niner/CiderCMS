@@ -28,6 +28,16 @@ $model->create_attribute($c, {
     mandatory     => 1,
     default_value => '',
 });
+$model->create_attribute($c, {
+    type          => 'appointment',
+    id            => 'appointed',
+    name          => 'appointed',
+    sort_id       => 1,
+    data_type     => 'Date',
+    repetitive    => 0,
+    mandatory     => 1,
+    default_value => '',
+});
 
 my $news = CiderCMS::Object->new({
     c           => $c,
@@ -48,7 +58,8 @@ my $appointment = CiderCMS::Object->new({
     parent_attr => 'children',
     level       => 1,
     data        => {
-        title => 'testappointment',
+        title     => 'testappointment',
+        appointed => '2012-10-01',
     },
 });
 $appointment->insert;
@@ -81,5 +92,22 @@ is($children->previous($children[0]), undef);
 is($children->previous($children[1]), $children[0]);
 is($children->next($children[0]), $children[1]);
 is($children->next($children[1]), undef);
+
+my $appointment2 = CiderCMS::Object->new({
+    c           => $c,
+    type        => 'appointment',
+    parent      => 1,
+    parent_attr => 'children',
+    level       => 1,
+    data        => {
+        title     => 'testappointment',
+        appointed => '2012-11-01',
+    },
+});
+$appointment2->insert;
+
+my @future_appointments = $children->filtered(type => 'appointment', appointed => 'future');
+is(scalar @future_appointments, 1, 'only one appointment child found');
+is($future_appointments[0]->{id}, $appointment2->{id}, 'found object is the correct appointment');
 
 done_testing;

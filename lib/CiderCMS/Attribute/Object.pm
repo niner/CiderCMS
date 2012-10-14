@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use List::Util qw(shuffle);
+use List::MoreUtils qw(all);
 
 use base qw(CiderCMS::Attribute);
 
@@ -61,6 +62,37 @@ sub objects_by_type {
 
     my @objects = grep {$_->{type} eq $type}
         $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+
+    return wantarray ? @objects : \@objects;
+}
+
+=head2 filtered(%filters)
+
+Returns the child objects conforming to the given filters.
+Filters may be:
+    type  => 'some_type_id',
+    attr1 => 'value of attribute 1',
+    attr2 => 'value of attribute 2'
+
+=cut
+
+sub filtered {
+    my ($self, %filters) = @_;
+
+    my @objects =
+        $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+
+    if (exists $filters{type}) {
+        @objects = grep {$_->{type} eq $filters{type}} @objects;
+        delete $filters{type};
+    }
+
+    @objects = grep {
+        my $object = $_;
+        all {
+            $object->attribute($_)->filter_matches($filters{$_})
+        } keys %filters,
+    } @objects;
 
     return wantarray ? @objects : \@objects;
 }

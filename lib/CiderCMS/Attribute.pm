@@ -117,6 +117,18 @@ sub init_default {
     return;
 }
 
+=head2 filter_matches($value)
+
+Returns true if this attribute matches the given filter value.
+
+=cut
+
+sub filter_matches {
+    my ($self, $value) = @_;
+
+    return;
+}
+
 =head2 input_field
 
 Renders an input field for this attribute.

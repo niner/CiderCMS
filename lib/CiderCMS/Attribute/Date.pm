@@ -3,6 +3,8 @@ package CiderCMS::Attribute::Date;
 use strict;
 use warnings;
 
+use DateTime;
+
 use base qw(CiderCMS::Attribute);
 
 =head1 NAME
@@ -25,6 +27,23 @@ Simple date attribute
 
 sub db_type {
     return 'date';
+}
+
+=head2 filter_matches($value)
+
+Returns true if this attribute matches the given filter value.
+$value may be 'future' to check if this date lies in the future.
+
+=cut
+
+sub filter_matches {
+    my ($self, $value) = @_;
+
+    if ($value eq 'future') {
+        return DateTime->now->ymd le $self->data;
+    }
+
+    return;
 }
 
 =head1 AUTHOR
