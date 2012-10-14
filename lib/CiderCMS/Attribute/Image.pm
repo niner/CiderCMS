@@ -39,6 +39,7 @@ sub thumbnail {
 
     unless (-e "$path/$thumb_name") {
         my $image = Image::Imlib2->load("$path/$self->{data}");
+        return '#nonexisting' unless $image;
 
         if ($width and $height) {
             (($image->width / $width > $image->height / $height) ? $height : $width) = 0;

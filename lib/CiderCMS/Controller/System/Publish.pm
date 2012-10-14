@@ -40,13 +40,18 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
     find( sub {
         if (/\.html$/xm) {
             local ($INPLACE_EDIT, @ARGV) = ('', $_); # process file in place
-            s!action="index\.html"!action="http://$File::Find::name"!gxm;
+            my $uri = $File::Find::name;
+            $uri =~ s!\A ./!!xm;
+            while(<>) {
+                s!action="(?:index\.html)?"!action="http://$uri"!gxm;
+                print;
+            }
         }
     }, '.');
 
     chdir $c->req->uri->host;
 
-    system '/usr/bin/lftp', '-c', 'mirror -R -v . ' . $c->model('DB')->get_object($c, 1)->property('publish_uri');
+    system '/usr/bin/lftp', '-c', 'mirror -R --depth-first -v . ' . $c->model('DB')->get_object($c, 1)->property('publish_uri');
 
     chdir $cwd;
 
