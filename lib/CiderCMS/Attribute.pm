@@ -90,6 +90,33 @@ Default implementation does nothing.
 sub post_update {
 }
 
+=head2 meta_data
+
+Returns this attribute's meta data.
+See L<CiderCMS::Model::DB::intitialize> for a description of this data.
+
+=cut
+
+sub meta_data {
+    my ($self) = @_;
+
+    return $self->{object}{attr}{ $self->{id} };
+}
+
+=head2 init_default
+
+Sets this attribute to its default value.
+
+=cut
+
+sub init_default {
+    my ($self) = @_;
+
+    $self->set_data($self->meta_data->{default_value});
+
+    return;
+}
+
 =head2 input_field
 
 Renders an input field for this attribute.

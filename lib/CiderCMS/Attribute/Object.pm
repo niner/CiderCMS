@@ -3,6 +3,8 @@ package CiderCMS::Attribute::Object;
 use strict;
 use warnings;
 
+use List::Util qw(shuffle);
+
 use base qw(CiderCMS::Attribute);
 
 =head1 NAME
@@ -28,7 +30,11 @@ Returns the child objects for this attribute
 sub data {
     my ($self) = @_;
 
-    return $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+    return wantarray ? @{ $self->{children} } : $self->{children} if $self->{children};
+
+    $self->{children} = [ $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id}) ];
+
+    return wantarray ? @{ $self->{children} } : $self->{children};
 }
 
 =head2 pages
@@ -42,6 +48,73 @@ sub pages {
 
     my @pages = grep {not $_->type->{page_element}} $self->data;
     return wantarray ? @pages : \@pages;
+}
+
+=head2 objects_by_type($type)
+
+Returns the child objects conforming to the given $type.
+
+=cut
+
+sub objects_by_type {
+    my ($self, $type) = @_;
+
+    my @objects = grep {$_->{type} eq $type}
+        $self->{c}->model('DB')->object_children($self->{c}, $self->{object}, $self->{id});
+
+    return wantarray ? @objects : \@objects;
+}
+
+=head2 random($count)
+
+Returns a random selection of child objects for this attribute
+
+=cut
+
+sub random {
+    my ($self, $count) = @_;
+
+    my @children = shuffle $self->data;
+
+    @children = @children[0 .. $count - 1] if $count and @children > $count;
+
+    return wantarray ? @children : \@children;
+}
+
+=head2 previous($obj)
+
+Returns the previous object to the given one in the children list.
+
+=cut
+
+sub previous {
+    my ($self, $obj) = @_;
+
+    my $prev;
+    foreach ($self->data) {
+        return $prev if $_->{id} eq $obj->{id};
+        $prev = $_;
+    }
+
+    return;
+}
+
+=head2 next($obj)
+
+Returns the next object to the given one in the children list.
+
+=cut
+
+sub next {
+    my ($self, $obj) = @_;
+
+    my $current;
+    foreach ($self->data) {
+        return $_ if $current;
+        $current = $_ if $_->{id} eq $obj->{id};
+    }
+
+    return;
 }
 
 =head2 input_field
