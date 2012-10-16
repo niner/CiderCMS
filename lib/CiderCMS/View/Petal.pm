@@ -5,7 +5,7 @@ use warnings;
 
 use base 'Catalyst::View::Petal';
 
-use Petal::Utils qw( :all );
+use Petal::Utils qw( :all Reverse );
 
 =head1 NAME
 
