@@ -30,6 +30,6 @@ $model->create_attribute($c, {
 
 $mech->get_ok("http://localhost/$instance/manage");
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=news} }, 'Add a news post');
-is($mech->value('show'), 'yes', 'default to yes');
+is($mech->value('show'), '1', 'default to yes');
 
 done_testing;
