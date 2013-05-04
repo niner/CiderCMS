@@ -93,6 +93,8 @@ is($children->previous($children[1]), $children[0]);
 is($children->next($children[0]), $children[1]);
 is($children->next($children[1]), undef);
 
+my $future = DateTime->now;
+$future->add(months => 1);
 my $appointment2 = CiderCMS::Object->new({
     c           => $c,
     type        => 'appointment',
@@ -101,7 +103,7 @@ my $appointment2 = CiderCMS::Object->new({
     level       => 1,
     data        => {
         title     => 'testappointment',
-        appointed => '2012-11-01',
+        appointed => $future->ymd,
     },
 });
 $appointment2->insert;
