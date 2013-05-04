@@ -44,6 +44,10 @@ sub auto : Private {
         site    => $objects[0],
     });
 
+    if (@objects and not $objects[-1]->user_has_access) {
+        $c->detach($c->user ? '/user/access_denied' : '/user/login');
+    }
+
     return 1;
 }
 

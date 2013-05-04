@@ -447,6 +447,36 @@ sub move_to {
     return $result;
 }
 
+=head2 new_child(attribute => $attribute, type => $type, data => $data)
+
+Creates a child object in memory for the given attribute.
+
+=cut
+
+sub new_child {
+    my ($self, %params) = @_;
+
+    $params{c}           = $self->{c};
+    $params{parent}      = $self->{id};
+    $params{level}       = $self->{level};
+    $params{parent_attr} = delete $params{attribute};
+
+    return CiderCMS::Object->new(\%params);
+}
+
+=head2 user_has_access
+
+Returns whether the currently logged in user has access to this folder and all
+parent folders.
+
+=cut
+
+sub user_has_access {
+    my ($self) = @_;
+
+    return (not $self->property('restricted') or $self->{c}->user);
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

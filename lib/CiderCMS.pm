@@ -19,6 +19,7 @@ use Catalyst qw/
                 Static::Simple
 
                 FormValidator
+                Authentication
                 /;
 our $VERSION = '0.01';
 

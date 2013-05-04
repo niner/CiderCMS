@@ -99,7 +99,10 @@ sub initialize {
     my $dbh = $self->dbh;
     my $instance = $c->stash->{instance};
 
-    $dbh->do(qq(set search_path="$instance",public)) or croak qq(could not set search path "$instance",public);
+    $dbh->do(qq(set search_path="$instance",public))
+        or croak qq(could not set search path "$instance",public);
+    $c->model('Authentication')->storage->dbh->do(qq(set search_path="$instance",public))
+        or croak qq(could not set search path "$instance",public);
 
     my $types = $dbh->selectall_arrayref('select * from sys_types', {Slice => {}});
     my $attrs = $dbh->selectall_arrayref('select * from sys_attributes order by sort_id', {Slice => {}});

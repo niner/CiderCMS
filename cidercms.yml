@@ -1,0 +1,11 @@
+name: CiderCMS
+
+Plugin::Authentication:
+    default:
+        credential:
+            class: Password
+            password_hash_type: SHA-256
+        store:
+            class: DBIx::Class
+            user_model: Authentication::SysUser
+            role_column: roles
