@@ -49,7 +49,7 @@ sub create :Local :Args(0) {
         required => [qw(id title)],
     });
     if ($valid) {
-        $c->model->create_instance($c, scalar $valid->valid());
+        $c->model('DB')->create_instance($c, scalar $valid->valid());
         $c->stash({ instance => $valid->valid('id') });
         return $c->res->redirect($c->uri_for_instance('manage'));
     }
