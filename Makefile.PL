@@ -9,7 +9,7 @@ all_from 'lib/CiderCMS.pm';
 requires 'Catalyst::Runtime' => '5.80011';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
-requires 'Catalyst::Plugin::Unicode';
+requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::Plugin::Session';
 requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';

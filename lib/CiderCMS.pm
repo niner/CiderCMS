@@ -14,7 +14,7 @@ use Catalyst::Runtime 5.80;
 
 use parent qw/Catalyst/;
 use Catalyst qw/
-                Unicode
+                Unicode::Encoding
                 ConfigLoader
                 Static::Simple
 
@@ -35,7 +35,10 @@ our $VERSION = '0.01';
 # with an external configuration file acting as an override for
 # local deployment.
 
-__PACKAGE__->config( name => 'CiderCMS' );
+__PACKAGE__->config(
+    name     => 'CiderCMS',
+    encoding => 'UTF-8',
+);
 
 # Start the application
 __PACKAGE__->setup();
