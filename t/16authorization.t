@@ -56,5 +56,6 @@ $mech->submit_form_ok({
         password => 'test',
     },
 });
+$mech->content_contains('Invalid username/password');
 
 done_testing;

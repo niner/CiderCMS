@@ -15,6 +15,7 @@
     </head>
     <body>
         <form action="">
+            <p tal:condition="true: message" tal:content="message"/>
             <label>
                 User name:
                 <input type="text" name="username" tal:attributes="value username"/>
