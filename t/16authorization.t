@@ -82,6 +82,7 @@ $mech->submit_form_ok({
         password => 'test',
     },
 });
-ok($mech->find_xpath('id("object_3")'));
+$mech->content_lacks('Invalid username/password');
+ok($mech->find_xpath('id("object_3")'), 'Login successful');
 
 done_testing;

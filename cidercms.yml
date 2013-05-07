@@ -4,6 +4,7 @@ Plugin::Authentication:
     default:
         credential:
             class: Password
+            password_type: hashed
             password_hash_type: SHA-256
         store:
             class: DBIx::Class

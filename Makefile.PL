@@ -21,6 +21,7 @@ requires 'Catalyst::Model::DBI';
 requires 'Catalyst::View::Petal';
 requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
+requires 'Digest::SHA';
 requires 'Module::Pluggable';
 requires 'Image::Imlib2';
 requires 'File::Path';

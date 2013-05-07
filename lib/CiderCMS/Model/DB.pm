@@ -8,6 +8,7 @@ use File::Slurp qw(read_file);
 use File::Path qw(make_path);
 use Carp qw(croak cluck);
 use English '-no_match_vars';
+use Digest::SHA qw(sha256_hex);
 
 use CiderCMS::Object;
 
@@ -505,11 +506,12 @@ sub create_user {
 
     my $dbh = $self->dbh;
 
+
     my $id = $dbh->selectrow_array(
         'insert into sys_users (name, password) values (?, ?) returning id',
         undef,
         $data->{name},
-        $data->{password},
+        sha256_hex($data->{password}),
     );
 
     return $id;
