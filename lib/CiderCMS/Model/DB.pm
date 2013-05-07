@@ -472,6 +472,49 @@ sub move_object {
     return $result;
 }
 
+=head2 users()
+
+Returns all users as arrayref:
+    [
+        {
+            id       => 1,
+            name     => 'user1',
+            password => 'passme',
+        },
+        ...
+    ]
+
+=cut
+
+sub users {
+    my ($self) = @_;
+
+    my $dbh = $self->dbh;
+
+    return $dbh->selectall_arrayref('select * from sys_users', {Slice => {}});
+}
+
+=head2 create_user($c, {username => 'user1', password => 'passme'})
+
+Creates a new user.
+
+=cut
+
+sub create_user {
+    my ($self, $c, $data) = @_;
+
+    my $dbh = $self->dbh;
+
+    my $id = $dbh->selectrow_array(
+        'insert into sys_users (name, password) values (?, ?) returning id',
+        undef,
+        $data->{name},
+        $data->{password},
+    );
+
+    return $id;
+}
+
 =head1 SYNOPSIS
 
 See L<CiderCMS>

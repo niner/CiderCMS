@@ -14,7 +14,8 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_sys_static}/css/management.css" />
     </head>
     <body>
-        <form action="">
+        <form action="" method="post">
+            <input type="hidden" name="referer" tal:attributes="value referer"/>
             <p tal:condition="true: message" tal:content="message"/>
             <label>
                 User name:

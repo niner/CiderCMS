@@ -48,6 +48,31 @@ $mech->submit_form_ok({
 
 $mech->get_ok("http://localhost/$instance/unrestricted/index.html");
 $mech->content_lacks('Login');
+
+# Try accessing restricted content
+$mech->get_ok("http://localhost/$instance/restricted/index.html");
+$mech->content_contains('Login');
+# Try logging in with a non-existing user
+$mech->submit_form_ok({
+    with_fields => {
+        username => 'test',
+        password => 'test',
+    },
+});
+$mech->content_contains('Invalid username/password');
+
+$mech->get_ok("http://localhost/$instance/system/authorization");
+$mech->submit_form_ok({
+    with_fields => {
+        name     => 'test',
+        password => 'test',
+    },
+    button => 'save',
+});
+
+ok($mech->find_xpath('//td[a="test"]'), 'new user listed');
+
+# Now that the user exists, try to login again
 $mech->get_ok("http://localhost/$instance/restricted/index.html");
 $mech->content_contains('Login');
 $mech->submit_form_ok({
@@ -56,6 +81,6 @@ $mech->submit_form_ok({
         password => 'test',
     },
 });
-$mech->content_contains('Invalid username/password');
+ok($mech->find_xpath('id("object_3")'));
 
 done_testing;

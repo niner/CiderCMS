@@ -20,6 +20,9 @@ use Catalyst qw/
 
                 FormValidator
                 Authentication
+                Session
+                Session::State::Cookie
+                Session::Store::FastMmap
                 /;
 our $VERSION = '0.01';
 
