@@ -61,7 +61,8 @@ $mech->submit_form_ok({
 });
 $mech->content_contains('Invalid username/password');
 
-$mech->get_ok("http://localhost/$instance/system/authorization");
+$mech->get_ok("http://localhost/$instance/manage");
+$mech->follow_link_ok({url_regex => qr!/authorization!});
 $mech->submit_form_ok({
     with_fields => {
         name     => 'test',
