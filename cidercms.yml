@@ -7,6 +7,4 @@ Plugin::Authentication:
             password_type: hashed
             password_hash_type: SHA-256
         store:
-            class: DBIx::Class
-            user_model: Authentication::SysUser
-            role_column: roles
+            class: CiderCMS

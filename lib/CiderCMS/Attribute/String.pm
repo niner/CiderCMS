@@ -27,6 +27,22 @@ sub db_type {
     return 'varchar';
 }
 
+=head2 filter_matches($value)
+
+Returns true if this attribute matches the given filter value.
+For now simply matches for equality.
+
+=cut
+
+sub filter_matches {
+    my ($self, $value) = @_;
+
+    return unless defined $value;
+    return unless defined $self->data;
+
+    return $value eq $self->data;
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

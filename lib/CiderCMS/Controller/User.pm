@@ -23,23 +23,23 @@ Shows a login page.
 sub login : Private {
     my ( $self, $c ) = @_;
 
-    my $username = $c->req->param('username');
-    my $password = $c->req->param('password');
+    my $params  = $c->req->params;
+    my $referer = delete $params->{referer};
 
-    if ($username and $password) {
-        if ($c->authenticate({name => $username, password => $password})) {
-            return $c->res->redirect($c->req->param('referer') // $c->req->uri);
+    if (%$params) {
+        if ($c->authenticate($params)) {
+            return $c->res->redirect($referer // $c->req->uri);
         }
         else {
             $c->stash({
-                username => $username,
+                %$params,
                 message  => 'Invalid username/password',
             });
         }
     }
 
     $c->stash({
-        referer  => $c->req->param('referer') // $c->req->uri,
+        referer  => $referer // $c->req->uri,
         template => 'login.zpt',
     });
 

@@ -76,6 +76,29 @@ sub object_by_id {
 
 Returns the type info for this object.
 
+For example:
+    {
+        id           => 'type1',
+        name         => 'Type 1',
+        page_element => 0,
+        attributes   => [
+            # same as {attrs}{attr1}
+        ],
+        attr         => {
+            attr1 => {
+                type          => 'type1',
+                class         => 'CiderCMS::Attribute::String',
+                id            => 'attr1',
+                name          => 'Attribute 1',
+                sort_id       => 0,
+                data_type     => 'String',
+                repetitive    => 0,
+                mandatory     => 1,
+                default_value => '',
+            },
+        },
+    },
+
 =cut
 
 sub type {
