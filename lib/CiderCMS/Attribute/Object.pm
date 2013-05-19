@@ -137,7 +137,7 @@ Returns the next object to the given one in the children list.
 
 =cut
 
-sub next {
+sub next { ## no critic (ProhibitBuiltinHomonyms)
     my ($self, $obj) = @_;
 
     my $current;
