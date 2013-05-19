@@ -1,6 +1,6 @@
 <div xmlns:tal="http://purl.org/petal/1.0/" tal:omit-tag="" tal:define="image self/attribute --image">
-    <a tal:attributes="href image/data"><img tal:attributes="id string:object_${self/id}; src image/thumbnail '480' '0'; alt self/property --title"/></a>
-    <p tal:content="self/property --title"/>
+    <a tal:attributes="href image/data"><img tal:attributes="id string:object_${self/id}; src image/thumbnail '480' '0'; alt self/property --title ''"/></a>
+    <p tal:condition="true: self/property --title ''"  tal:content="self/property --title"/>
 
     <div id="gallery_imageselector">
         <div tal:condition="false: management" tal:repeat="image self/parent/property --children" tal:omit-tag="">

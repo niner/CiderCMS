@@ -10,20 +10,20 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title tal:content="context/property --title">CiderCMS</title>
+        <title tal:content="context/property --title --CiderCMS">CiderCMS</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/styles.css" />
     </head>
     <body>
         <div id="page">
             <ul id="nav">
-                <li tal:repeat="child site/children"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
+                <li tal:repeat="child site/children"><a tal:attributes="href child/uri_index" tal:define="child_type child/type/name" tal:content="child/property --title child_type"/></li>
             </ul>
 
             <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/attribute --children; pages children/pages" tal:condition="true: pages">
-                <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:content="child/property --title"/></li>
+                <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:define="child_type child/type/name" tal:content="child/property --title child_type"/></li>
             </ul>
 
-            <div id="get_object" tal:define="obj context/object_by_id '4'" tal:content="structure obj/property --text"/>
+            <div id="get_object" tal:define="obj context/object_by_id '4'" tal:content="structure obj/property --text ''"/>
 
             <div id="content" tal:content="structure content"/>
         </div>
