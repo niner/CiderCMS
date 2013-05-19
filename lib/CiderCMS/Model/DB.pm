@@ -6,7 +6,7 @@ use warnings;
 use base 'Catalyst::Model::DBI';
 use File::Slurp qw(read_file);
 use File::Path qw(make_path);
-use Carp qw(croak cluck);
+use Carp qw(croak cluck confess);
 use English '-no_match_vars';
 use Digest::SHA qw(sha256_hex);
 
@@ -63,6 +63,28 @@ sub create_instance {
     return;
 }
 
+=head2 instance_exists($instance)
+
+Returns true if an instance with the given name exists in the database.
+
+=cut
+
+sub instance_exists {
+    my ($self, $instance) = @_;
+
+    return $self->dbh->selectrow_array("
+            select count(*)
+            from pg_namespace
+            where
+                nspowner != 10
+                and nspname != 'public'
+                and nspname = ?
+        ",
+        undef,
+        $instance
+    );
+}
+
 =head2 initialize($c)
 
 Fetches type and attribute information from the DB and puts it on the stash:
@@ -100,6 +122,10 @@ sub initialize {
     my $dbh = $self->dbh;
     my $instance = $c->stash->{instance};
 
+    confess 'You did not set $c->stash->{instance} before calling initialize!' unless $instance;
+
+    return unless $self->instance_exists($instance);
+
     $dbh->do(qq(set search_path="$instance",public))
         or croak qq(could not set search path "$instance",public);
 
@@ -119,7 +145,7 @@ sub initialize {
         types => \%types,
     });
 
-    return;
+    return 1;
 }
 
 =head2 traverse_path($c, $path)
@@ -146,7 +172,7 @@ sub traverse_path {
             (@objects ? $objects[-1]->{id} : ()),
             $_,
             ($may_be_id ? $_ : ()),
-        ) or croak qq{node "$_" not found};
+        ) or croak qq{node "$_" not found\n};
         $object->{level} = $level++;
 
         push @objects, $self->inflate_object($c, $object);

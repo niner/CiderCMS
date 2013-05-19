@@ -29,12 +29,9 @@ Just throw a 404.
 sub not_found :Path {
     my ( $self, $c ) = @_;
 
-    if ($c->req->uri->path =~ m!/\z!xm) {
-        $c->req->path($c->req->path . 'index.html');
-        return $c->go('content/index_html');
-    }
-
-    $c->response->body( 'Page not found' );
+    my $dispatch_error = $c->stash->{dispatch_error} // 'Page not found';
+    $dispatch_error =~ s/\n[^\n]*\z//xm;
+    $c->response->body($dispatch_error);
     $c->response->status(404);
 
     return;

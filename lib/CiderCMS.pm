@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Catalyst::Runtime 5.80;
+use Catalyst::DispatchType::CiderCMS;
 
 # Set flags and add plugins for the application
 #

@@ -45,7 +45,7 @@ Shows a management interface for the current node.
 
 =cut
 
-sub manage : Regex('/manage\z') {
+sub manage : CiderCMS('manage') {
     my ( $self, $c ) = @_;
 
     my %params = %{ $c->req->params };
@@ -77,7 +77,7 @@ Adds a new object as child of the current node.
 
 =cut
 
-sub manage_add : Regex('/manage_add\z') {
+sub manage_add : CiderCMS('manage_add') {
     my ( $self, $c ) = @_;
 
     my %params = %{ $c->req->params };
@@ -122,7 +122,7 @@ Deletes a child of the current node.
 
 =cut
 
-sub manage_delete : Regex('/manage_delete\z') {
+sub manage_delete : CiderCMS('manage_delete') {
     my ( $self, $c ) = @_;
 
     my $id = $c->req->param('id');
@@ -140,7 +140,7 @@ Cut and past an object to a new location.
 
 =cut
 
-sub manage_paste : Regex('/manage_paste\z') {
+sub manage_paste : CiderCMS('manage_paste') {
     my ( $self, $c ) = @_;
 
     my $object = $c->model('DB')->get_object($c, $c->req->param('id'));

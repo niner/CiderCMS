@@ -24,7 +24,7 @@ Bulk import images into the gallery.
 
 =cut
 
-sub import : Regex('/import\z') {
+sub import : CiderCMS('import') {
     my ( $self, $c ) = @_;
 
     my $context = $c->stash->{context};

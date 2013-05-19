@@ -16,35 +16,16 @@ Controller for initializing and displaying content according to the URI path.
 
 =head2 auto
 
-Sets up context information according to the current path
+Check user access to the context node.
 
 =cut
 
 sub auto : Private {
     my ( $self, $c ) = @_;
 
-    my $path = $c->req->path;
-    $path =~ s!/+!/!gxm;
-    my @path = split m!/!xm, $path;
+    my $objects = $c->stash->{parents};
 
-    my $instance = shift @path;
-    unshift @path, '';
-    $c->stash->{instance} = $instance;
-
-    my $filename = pop @path; #FIXME what if there is no file name and no trailing slash?
-
-    my $model = $c->model('DB');
-    $model->initialize($c);
-
-    my @objects = $model->traverse_path($c, \@path);
-
-    $c->stash({
-        parents => \@objects,
-        context => $objects[-1],
-        site    => $objects[0],
-    });
-
-    if (@objects and not $objects[-1]->user_has_access) {
+    if ($objects and @$objects and not $objects->[-1]->user_has_access) {
         $c->detach($c->user ? '/user/access_denied' : '/user/login');
     }
 
@@ -57,7 +38,7 @@ Renders the page.
 
 =cut
 
-sub index_html : Regex('/(?:index\.html)?$') {
+sub index_html : CiderCMS('index.html') Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash({
@@ -68,6 +49,11 @@ sub index_html : Regex('/(?:index\.html)?$') {
     return;
 }
 
+sub index : CiderCMS('') Args(0) {
+    my ($self, $c) = @_;
+
+    return $self->index_html($c);
+}
 
 =head1 AUTHOR
 
