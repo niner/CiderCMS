@@ -11,11 +11,13 @@
     <table tal:condition="true: reservations">
         <thead>
             <tr>
+                <th>Benutzer</th>
                 <th>Datum</th>
             </tr>
         </thead>
         <tbody>
             <tr tal:repeat="reservation reservations">
+                <td tal:content="reservation/property --user"/>
                 <td tal:content="reservation/property --date"/>
             </tr>
         </tbody>

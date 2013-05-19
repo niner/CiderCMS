@@ -13,6 +13,8 @@ Reserve the displayed plane.
 sub reserve : CiderCMS('reserve') {
     my ( $self, $c ) = @_;
 
+    $c->detach('/user/login') unless $c->user;
+
     my $validation = $c->form(
         required => [qw(date)],
     );
@@ -25,7 +27,7 @@ sub reserve : CiderCMS('reserve') {
             type      => 'reservation',
             data      => {
                 %$valid,
-                #user => $c->user->name,
+                user => $c->user->get('username'),
             },
         )->insert;
     }
