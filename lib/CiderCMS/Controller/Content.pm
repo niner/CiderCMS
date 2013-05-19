@@ -49,6 +49,12 @@ sub index_html : CiderCMS('index.html') Args(0) {
     return;
 }
 
+=head2 index
+
+Forwards to index_html for URIs without file name.
+
+=cut
+
 sub index : CiderCMS('') Args(0) {
     my ($self, $c) = @_;
 
