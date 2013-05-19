@@ -22,7 +22,6 @@
         <ul id="navigation">
             <li><a tal:attributes="href uri_manage_content">Content</a></li>
             <li><a tal:attributes="href uri_manage_types">Types</a></li>
-            <li><a tal:attributes="href uri_authorization">Authorization</a></li>
             <li><a tal:condition="true: uri_view" tal:attributes="href uri_view">View page</a></li>
             <li tal:condition="true: actions" tal:repeat="action actions"><a tal:attributes="href action/uri" tal:content="action/title"/></li>
         </ul>

@@ -101,9 +101,3 @@ $BODY$
 LANGUAGE 'plpgsql';
 
 create trigger sys_object_au after update on sys_object for each row execute procedure sys_object_au();
-
-CREATE TABLE sys_users (
-    id serial NOT NULL primary key,
-    name varchar NOT NULL unique,
-    password varchar NOT NULL
-);

@@ -27,7 +27,6 @@ sub auto : Private {
 
     $c->stash({
         uri_manage_types   => $c->uri_for_instance('system/types'),
-        uri_authorization  => $c->uri_for_instance('system/authorization'),
         uri_manage_content => $model->get_object($c, 1)->uri_management,
         uri_view           => $c->stash->{context}->uri_index,
         management         => 1,
