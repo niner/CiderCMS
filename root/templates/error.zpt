@@ -12,9 +12,13 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title tal:content="context/property --title --CiderCMS">CiderCMS</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/styles.css" />
+        <title>CiderCMS error</title>
     </head>
-    <body>
-        <div tal:replace="structure content"/>
+    <body class="error">
+        <h1>Error</h1>
+        <p>Errors occured during processing your request:</p>
+        <ul>
+            <li tal:repeat="error errors" tal:content="error"/>
+        </ul>
     </body>
 </html>
-

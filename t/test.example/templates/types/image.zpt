@@ -1,3 +1,3 @@
 <a xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:attributes="id string:object_${self/id}; src self/property --img">
-    <img tal:define="img self/attribute --img" tal:attributes="src img/thumbnail '80' '60'; alt self/property --title; title self/property --title"/>
+    <img tal:define="img self/attribute --img" tal:attributes="src img/thumbnail '80' '60'; alt self/property --title ''; title self/property --title ''"/>
 </a>

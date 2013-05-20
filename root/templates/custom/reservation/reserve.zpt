@@ -1,0 +1,45 @@
+<div 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="reservations context/property --reservations"
+>
+
+    <div tal:replace="structure context/render"/>
+
+    <p tal:condition="false: reservations">
+        Keine Reservierungen eingetragen.
+    </p>
+
+    <table tal:condition="true: reservations">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Pilot</th>
+                <th>Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr tal:repeat="reservation reservations">
+                <td tal:content="reservation/property --date"/>
+                <td tal:content="reservation/property --user"/>
+                <td tal:content="reservation/property --info"/>
+            </tr>
+        </tbody>
+    </table>
+
+    <form action="">
+        <fieldset>
+            <legend>Neue Reservierung eintragen</legend>
+            <label class="required">
+                <span>Datum</span>
+                <input type="date" name="date" tal:attributes="value date"/>
+            </label>
+            <label>
+                <span>Info</span>
+                <textarea name="info" tal:content="info"/>
+            </label>
+            <button type="submit" name="save" value="1">Reservieren</button>
+        </fieldset>
+    </form>
+</div>

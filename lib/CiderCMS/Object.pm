@@ -113,9 +113,12 @@ Returns the data of the named attribute
 =cut
 
 sub property {
-    my ($self, $property) = @_;
+    my ($self, $property, $default) = @_;
 
-    return unless exists $self->{data}{$property};
+    unless (exists $self->{data}{$property}) {
+        return $default if @_ == 3;
+        die "unknown property $property";
+    }
     return $self->{data}{$property}->data;
 }
 
@@ -497,7 +500,7 @@ parent folders.
 sub user_has_access {
     my ($self) = @_;
 
-    return (not $self->property('restricted') or $self->{c}->user);
+    return (not $self->property('restricted', 0) or $self->{c}->user);
 }
 
 =head1 AUTHOR

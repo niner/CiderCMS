@@ -119,6 +119,39 @@ sub setup_test_environment {
     return ($instance, $c, $model, $mech);
 }
 
+=head2 populate_types(%types)
+
+=cut
+
+sub populate_types {
+    my ($self, $types) = @_;
+
+    while (my ($type, $data) = each %$types) {
+        $model->create_type(
+            $c,
+            {
+                id           => $type,
+                name         => $data->{name} // $type,
+                page_element => $data->{page_element} // 0,
+            }
+        );
+
+        my $i = 0;
+        foreach my $attr (@{ $data->{attributes} }) {
+            $model->create_attribute($c, {
+                type          => $type,
+                id            => $attr->{id},
+                name          => $data->{name} // ucfirst($attr->{id}),
+                sort_id       => $i++,
+                data_type     => $attr->{data_type} // ucfirst($attr->{id}),
+                repetitive    => $attr->{repetitive} // 0,
+                mandatory     => $attr->{mandatory}  // 0,
+                default_value => $attr->{default_value},
+            });
+        }
+    }
+}
+
 =head2 END
 
 On process exit, the test instance will be cleaned up again.
