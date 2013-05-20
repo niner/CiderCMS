@@ -34,6 +34,10 @@ CiderCMS::Test->populate_types({
                 id            => 'password',
                 mandatory     => 1,
             },
+            {
+                id            => 'name',
+                data_type     => 'String',
+            },
         ],
     },
     reservation => {
@@ -47,7 +51,11 @@ CiderCMS::Test->populate_types({
             {
                 id            => 'user',
                 data_type     => 'String',
-            }
+            },
+            {
+                id            => 'info',
+                data_type     => 'String',
+            },
         ],
     },
 
@@ -80,6 +88,7 @@ $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=user} }, 'Add a use
 $mech->submit_form_ok({
     with_fields => {
         username => 'test',
+        name     => 'test',
         password => 'test',
     },
     button => 'save',
@@ -112,10 +121,12 @@ my $date = DateTime->now->ymd('-');
 $mech->submit_form_ok({
     with_fields => {
         date => $date,
+        info => 'Testflug',
     }
 });
 $mech->content_lacks('Keine Reservierungen eingetragen.');
 ok($mech->find_xpath(qq{//td[text()="$date"]}), 'reserved date listed');
 ok($mech->find_xpath(qq{//td[text()="test"]}), 'reserving user listed');
+ok($mech->find_xpath(qq{//td[text()="Testflug"]}), 'Info listed');
 
 done_testing;

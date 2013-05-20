@@ -17,6 +17,7 @@ sub reserve : CiderCMS('reserve') {
 
     my $validation = $c->form(
         required => [qw(date)],
+        optional => [qw(info)],
     );
 
     if ($validation) {
@@ -27,7 +28,7 @@ sub reserve : CiderCMS('reserve') {
             type      => 'reservation',
             data      => {
                 %$valid,
-                user => $c->user->get('username'),
+                user => $c->user->get('name'),
             },
         )->insert;
     }
