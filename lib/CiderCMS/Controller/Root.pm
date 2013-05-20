@@ -38,13 +38,47 @@ sub not_found :Path {
 }
 
 
-=head2 end
+=head2 render
 
 Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {
+sub render : ActionClass('RenderView') {
+    return;
+}
+
+=head2 end
+
+Render a view or display a custom error page in case of an error happened.
+
+=cut
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward('render');
+
+    if (@{ $c->error }) {
+        $c->res->status(500);
+
+        warn join "\n", @{ $c->error };
+
+        # avoid disclosure of the application's path
+        my @errors = @{ $c->error };
+        my $home = $c->config->{home};
+        s!$home/!!g foreach @errors;
+
+        $c->stash({
+            template => 'error.zpt',
+            errors   => \@errors,
+        });
+
+        $c->forward('render');
+
+        $c->clear_errors;
+    }
+
     return;
 }
 
