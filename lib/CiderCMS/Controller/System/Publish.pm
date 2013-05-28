@@ -65,7 +65,7 @@ sub publish : PathPart('system/publish') Chained('/system/init') {
 CiderCMS->register_management_action(__PACKAGE__, sub {
         my ($self, $c) = @_;
 
-        return {title => 'Publish', uri => $c->uri_for_instance('system/publish')} if $c->stash->{site}->property('publish_uri');
+        return {title => 'Publish', uri => $c->uri_for_instance('system/publish')} if $c->stash->{site}->property('publish_uri', undef);
 
         return;
     });
