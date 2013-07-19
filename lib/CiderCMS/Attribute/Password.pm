@@ -30,7 +30,7 @@ Sets this attributes data to the given value.
 sub set_data {
     my ($self, $data) = @_;
 
-    return $self->{data} = sha256_hex($data);
+    return $self->{data} = defined $data ? sha256_hex($data) : undef;
 }
 
 =head1 AUTHOR
