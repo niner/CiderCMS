@@ -28,12 +28,17 @@
         </tbody>
     </table>
 
-    <form action="">
+    <form action="" name="new_reservation">
         <fieldset>
             <legend>Neue Reservierung eintragen</legend>
             <label class="required">
                 <span>Datum</span>
                 <input type="date" name="date" tal:attributes="value date"/>
+                <script type="text/javascript" tal:attributes="src string:${uri_sys_static}/js/calendar.js" />
+                <script type="text/javascript" tal:content="string:A_TCALDEF['imgpath'] = '${uri_sys_static}/images/calendar/'" />
+                <script type="text/javascript">
+                    new tcal ({'formname': 'new_reservation', 'controlname': 'date'});
+                </script>
             </label>
             <label>
                 <span>Info</span>
