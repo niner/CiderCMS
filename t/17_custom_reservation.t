@@ -49,6 +49,16 @@ CiderCMS::Test->populate_types({
                 mandatory     => 1,
             },
             {
+                id            => 'start',
+                data_type     => 'Time',
+                mandatory     => 1,
+            },
+            {
+                id            => 'end',
+                data_type     => 'Time',
+                mandatory     => 1,
+            },
+            {
                 id            => 'user',
                 data_type     => 'String',
             },
@@ -120,8 +130,10 @@ $mech->content_contains('Keine Reservierungen eingetragen.');
 my $date = DateTime->now->ymd('-');
 $mech->submit_form_ok({
     with_fields => {
-        date => $date,
-        info => 'Testflug',
+        date  => $date,
+        start => '08:00',
+        end   => '11:30',
+        info  => 'Testflug',
     }
 });
 $mech->content_lacks('Keine Reservierungen eingetragen.');

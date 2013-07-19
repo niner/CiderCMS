@@ -16,7 +16,7 @@ sub reserve : CiderCMS('reserve') {
     $c->detach('/user/login') unless $c->user;
 
     my $validation = $c->form(
-        required => [qw(date)],
+        required => [qw(date start end)],
         optional => [qw(info)],
     );
 

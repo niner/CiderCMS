@@ -7,14 +7,16 @@
 
     <div tal:replace="structure context/render"/>
 
-    <p tal:condition="false: reservations">
+    <p tal:condition="false: reservations" class="no_reservations">
         Keine Reservierungen eingetragen.
     </p>
 
-    <table tal:condition="true: reservations">
+    <table tal:condition="true: reservations" class="reservations">
         <thead>
             <tr>
                 <th>Datum</th>
+                <th>Von</th>
+                <th>Bis</th>
                 <th>Pilot</th>
                 <th>Info</th>
             </tr>
@@ -22,16 +24,18 @@
         <tbody>
             <tr tal:repeat="reservation reservations">
                 <td tal:content="reservation/property --date"/>
+                <td tal:content="reservation/property --start"/>
+                <td tal:content="reservation/property --end"/>
                 <td tal:content="reservation/property --user"/>
                 <td tal:content="reservation/property --info"/>
             </tr>
         </tbody>
     </table>
 
-    <form action="" name="new_reservation">
+    <form action="" name="new_reservation" class="new_reservation" method="post">
         <fieldset>
             <legend>Neue Reservierung eintragen</legend>
-            <label class="required">
+            <label class="required date">
                 <span>Datum</span>
                 <input type="date" name="date" tal:attributes="value date"/>
                 <script type="text/javascript" tal:attributes="src string:${uri_sys_static}/js/calendar.js" />
@@ -40,7 +44,15 @@
                     new tcal ({'formname': 'new_reservation', 'controlname': 'date'});
                 </script>
             </label>
-            <label>
+            <label class="start">
+                <span>Von</span>
+                <input type="time" name="start" tal:attributes="value start"/>
+            </label>
+            <label class="end">
+                <span>Bis</span>
+                <input type="time" name="end" tal:attributes="value start"/>
+            </label>
+            <label class="info">
                 <span>Info</span>
                 <textarea name="info" tal:content="info"/>
             </label>
