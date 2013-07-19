@@ -31,6 +31,8 @@ sub reserve : CiderCMS('reserve') {
                 user => $c->user->get('name'),
             },
         )->insert;
+
+        return $c->res->redirect($c->stash->{context}->uri . '/reserve');
     }
 
     my $content = $c->view('Petal')->render_template(
