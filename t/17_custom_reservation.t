@@ -127,18 +127,30 @@ $mech->submit_form_ok({
     },
 });
 $mech->content_contains('Keine Reservierungen eingetragen.');
-my $date = DateTime->now->ymd('-');
+my $date = DateTime->now;
 $mech->submit_form_ok({
     with_fields => {
-        date  => $date,
+        date  => $date->ymd,
         start => '08:00',
         end   => '11:30',
         info  => 'Testflug',
     }
 });
 $mech->content_lacks('Keine Reservierungen eingetragen.');
-ok($mech->find_xpath(qq{//td[text()="$date"]}), 'reserved date listed');
+ok($mech->find_xpath(qq{//td[text()="Heute"]}), "Today's reservation listed");
 ok($mech->find_xpath(qq{//td[text()="test"]}), 'reserving user listed');
 ok($mech->find_xpath(qq{//td[text()="Testflug"]}), 'Info listed');
+
+$date->add(days => 1);
+$mech->submit_form_ok({
+    with_fields => {
+        date  => $date->ymd,
+        start => '08:00',
+        end   => '11:30',
+        info  => 'Testflug',
+    }
+});
+ok($mech->find_xpath(qq{//td[text()="Heute"]}), "Today's reservation still listed");
+ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
 
 done_testing;

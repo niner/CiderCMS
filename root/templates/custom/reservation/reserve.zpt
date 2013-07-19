@@ -23,7 +23,8 @@
         </thead>
         <tbody>
             <tr tal:repeat="reservation reservations">
-                <td tal:content="reservation/property --date"/>
+                <td tal:define="date reservation/attribute --date" tal:condition="false: date/is_today" tal:content="date/data"/>
+                <td tal:define="date reservation/attribute --date" tal:condition="true: date/is_today">Heute</td>
                 <td tal:define="start reservation/attribute --start" tal:content="start/format '%H:%M'"/>
                 <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
                 <td tal:content="reservation/property --user"/>
