@@ -1,3 +1,10 @@
-<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" class="news" tal:attributes="id string:news_${self/id}">
+<div
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderCMS"
+    tal:define="date self/attribute --testdate"
+>
     <div class="date" tal:content="self/property --testdate"/>
+    <div class="date_today" tal:condition="true: date/is_today">today</div>
+    <div class="date_today" tal:condition="false: date/is_today">another day</div>
 </div>

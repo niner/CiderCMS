@@ -22,16 +22,33 @@ CiderCMS::Test->populate_types({
 $mech->get_ok("http://localhost/$instance/manage");
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
 
+my $today = DateTime->today;
 $mech->submit_form_ok({
     with_fields => {
-        testdate => '2013-07-03',
+        testdate => $today->ymd,
     },
     button => 'save',
 });
 
 $mech->get_ok("http://localhost/$instance/manage");
 
-is('' . $mech->find_xpath('//div[@class="date"]/text()'), '2013-07-03', 'date displayed');
+is('' . $mech->find_xpath('//div[@class="date"]/text()'), $today->ymd, 'date displayed');
+is('' . $mech->find_xpath('//div[@class="date_today"]/text()'), 'today', 'today recoginzed');
+
+$mech->follow_link_ok({ url_regex => qr{/2/manage} });
+$mech->submit_form_ok({
+    with_fields => {
+        testdate => $today->clone->add(days => 1)->ymd,
+    },
+    button => 'save',
+});
+
+$mech->get_ok("http://localhost/$instance/manage");
+
+is(
+    '' . $mech->find_xpath('//div[@class="date_today"]/text()'),
+    'another day',
+    'tomorrow recoginzed'
+);
 
 done_testing;
-

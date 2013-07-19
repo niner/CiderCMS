@@ -46,6 +46,18 @@ sub filter_matches {
     return;
 }
 
+=head2 is_today()
+
+Returns true if the stored day is today.
+
+=cut
+
+sub is_today {
+    my ($self, $value) = @_;
+
+    return DateTime->now->ymd eq $self->data;
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
