@@ -33,18 +33,6 @@ sub set_data {
     return $self->{data} = sha256_hex($data);
 }
 
-=head2 prepare_update()
-
-=cut
-
-sub prepare_update {
-    my ($self) = @_;
-
-    $self->set_data($self->data);
-
-    return;
-}
-
 =head1 AUTHOR
 
 Stefan Seifert

@@ -122,13 +122,45 @@ $mech->submit_form_ok({
 
 ok($mech->find_xpath('//div[text()="test"]'), 'new user listed');
 
-# Now that the user exists, try to login again
+# Try logging in with the wrong password
+$mech->get_ok("http://localhost/$instance/restricted/index.html");
+$mech->content_contains('Login');
+$mech->submit_form_ok({
+    with_fields => {
+        username => 'test',
+        password => 'wrong',
+    },
+});
+$mech->content_contains('Invalid username/password');
+
+# Now that the user exists, try to login again with correct credentials
 $mech->get_ok("http://localhost/$instance/restricted/index.html");
 $mech->content_contains('Login');
 $mech->submit_form_ok({
     with_fields => {
         username => 'test',
         password => 'test',
+    },
+});
+$mech->content_lacks('Invalid username/password');
+ok($mech->find_xpath('id("object_4")'), 'Login successful');
+
+$mech->get_ok("http://localhost/$instance/users/manage");
+$mech->follow_link_ok({text => 'User'});
+$mech->submit_form_ok({
+    with_fields => {
+        password => 'test2',
+    },
+    button => 'save',
+});
+$mech->cookie_jar({}); # Logout
+
+$mech->get_ok("http://localhost/$instance/restricted/index.html");
+$mech->content_contains('Login');
+$mech->submit_form_ok({
+    with_fields => {
+        username => 'test',
+        password => 'test2',
     },
 });
 $mech->content_lacks('Invalid username/password');

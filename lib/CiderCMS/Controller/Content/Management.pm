@@ -90,11 +90,10 @@ sub manage_add : CiderCMS('manage_add') {
     my $object = $context->new_child(
         attribute => $parent_attr,
         type      => $type,
-        data      => \%params,
     );
 
     if ($save) {
-        $object->insert({after => $after});
+        $object->insert({after => $after, data => \%params});
         return $c->res->redirect(($object->type->{page_element} ? $context : $object)->uri_management());
     }
     else {

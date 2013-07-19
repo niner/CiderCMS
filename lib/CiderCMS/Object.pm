@@ -379,6 +379,10 @@ Inserts the object into the database.
 sub insert {
     my ($self, $params) = @_;
 
+    if ($params->{data}) {
+        $self->update_data(delete $params->{data});
+    }
+
     $self->prepare_attributes;
 
     my $result = $self->{c}->model('DB')->insert_object($self->{c}, $self, $params);
@@ -443,7 +447,7 @@ sub get_dirty_columns {
 
         if ($attr->db_type) {
             push @columns, $id;
-            push @values, $attr->{data}; #maybe introduce a $attr->raw_data?
+            push @values, $attr->{data}; #TODO introduce an $attr->raw_data
         }
     }
 
