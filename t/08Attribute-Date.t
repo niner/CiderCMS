@@ -1,33 +1,37 @@
 use strict;
 use warnings;
-use Test::More;
-use FindBin qw($Bin);
 use utf8;
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 6 );
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
+use Test::More;
 
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
+CiderCMS::Test->populate_types({
+    tester => {
+        name       => 'Tester',
+        attributes => [
+            {
+                id            => 'testdate',
+                data_type     => 'Date',
+                mandatory     => 1,
+            },
+        ],
+        template => 'date_test.zpt',
+    },
+});
 
-$mech->get_ok( 'http://localhost/test.example/manage' );
+$mech->get_ok("http://localhost/$instance/manage");
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
 
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add the News folder');
 $mech->submit_form_ok({
     with_fields => {
-        title => 'News',
+        testdate => '2013-07-03',
     },
     button => 'save',
 });
 
-# Add some news to our folder
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=news} }, 'Add a news post');
-$mech->submit_form_ok({
-    with_fields => {
-        date  => '2009-11-01',
-        title => 'Test news!',
-        text  => 'Test text for the test news',
-    },
-    button => 'save',
-});
+$mech->get_ok("http://localhost/$instance/manage");
+
+is('' . $mech->find_xpath('//div[@class="date"]/text()'), '2013-07-03', 'date displayed');
+
+done_testing;
+
