@@ -7,6 +7,7 @@ use utf8;
 use Test::More;
 use Exporter;
 use FindBin qw($Bin); ## no critic (ProhibitPackageVars)
+use File::Copy qw(copy);
 use File::Path qw(remove_tree);
 use English '-no_match_vars';
 
@@ -148,6 +149,13 @@ sub populate_types {
                 mandatory     => $attr->{mandatory}  // 0,
                 default_value => $attr->{default_value},
             });
+        }
+
+        if ($data->{template}) {
+            copy
+                "$Bin/test.example/templates/types/$data->{template}",
+                "$Bin/../root/instances/$instance/templates/types/$type.zpt"
+                or die "could not copy template $data->{template}";
         }
     }
 }
