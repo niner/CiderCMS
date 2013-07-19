@@ -127,6 +127,7 @@ div.child div.folder a {
 label {
     display: block;
     clear: left;
+    overflow: auto;
 }
 
 label span {
@@ -141,4 +142,11 @@ label input[name=date] {
 textarea {
     width: 42em;
     height: 35em;
+}
+
+.repeat_error {
+    display: none;
+    float: none;
+    width: auto;
+    margin-left: 20%;
 }
