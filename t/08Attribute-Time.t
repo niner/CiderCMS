@@ -31,6 +31,15 @@ $mech->submit_form_ok({
 
 $mech->get_ok("http://localhost/$instance/manage");
 
-is('' . $mech->find_xpath('//div[@class="time"]/text()'), '08:00:00', 'time displayed');
+is(
+    '' . $mech->find_xpath('//div[@class="time"]/text()'),
+    '08:00:00',
+    'time displayed'
+);
+is(
+    '' . $mech->find_xpath('//div[@class="time_hm"]/text()'),
+    '08:00',
+    'time/format pattern %H:%M works'
+);
 
 done_testing;

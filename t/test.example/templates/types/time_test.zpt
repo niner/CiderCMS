@@ -1,3 +1,4 @@
-<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" class="news" tal:attributes="id string:news_${self/id}">
+<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
     <div class="time" tal:content="self/property --testtime"/>
+    <div class="time_hm" tal:define="time self/attribute --testtime" tal:content="time/format '%H:%M'"/>
 </div>
