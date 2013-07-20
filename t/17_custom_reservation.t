@@ -66,6 +66,10 @@ CiderCMS::Test->populate_types({
                 id            => 'info',
                 data_type     => 'String',
             },
+            {
+                id            => 'cancelled_by',
+                data_type     => 'String',
+            },
         ],
     },
 
@@ -150,7 +154,11 @@ $mech->submit_form_ok({
         info  => 'Testflug',
     }
 });
-ok($mech->find_xpath(qq{//td[text()="Heute"]}), "Today's reservation still listed");
+ok($mech->find_xpath(q{//td[text()="Heute"]}), "Today's reservation still listed");
 ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
+
+$mech->get_ok($mech->find_xpath(q{//tr[td="Heute"]/td/a[@class="cancel"]/@href}));
+is('' . $mech->find_xpath(q{//td[text()="Heute"]}), '', "Today's reservation gone");
+ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation still listed");
 
 done_testing;

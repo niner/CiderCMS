@@ -29,6 +29,9 @@
                 <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
                 <td tal:content="reservation/property --user"/>
                 <td tal:content="reservation/property --info"/>
+                <td>
+                    <a class="cancel" tal:attributes="href string:${uri_cancel}/${reservation/id}">stornieren</a>
+                </td>
             </tr>
         </tbody>
     </table>
