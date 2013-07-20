@@ -67,7 +67,6 @@ content nodes. If all checks are successful succeeds for the registered action.
 sub match {
     my ( $self, $c, $path ) = @_;
 
-    return if @{ $c->req->args };
     $path =~ s!/+!/!gxm;
     my @path = split m!/!xm, $path;
 
@@ -75,7 +74,14 @@ sub match {
     $c->stash->{instance} = $instance;
 
     my $filename = pop @path // ''; # empty path means / -> use index action
-    unless (exists $self->_paths->{$filename}) {
+    unless (
+        exists $self->_paths->{$filename}
+        and (
+            not exists $self->_paths->{$filename}->attributes->{Args}
+            or not defined $self->_paths->{$filename}->attributes->{Args}
+            or $self->_paths->{$filename}->attributes->{Args}[0] == @{ $c->req->args }
+        )
+    ) {
         push @path, $filename;
         $filename = '';
     }
