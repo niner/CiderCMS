@@ -37,7 +37,7 @@ For now simply matches for equality.
 sub filter_matches {
     my ($self, $value) = @_;
 
-    return unless defined $value;
+    return not defined $self->data unless defined $value;
     return unless defined $self->data;
 
     return $value eq $self->data;
