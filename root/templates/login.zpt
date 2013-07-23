@@ -14,17 +14,18 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_sys_static}/css/management.css" />
     </head>
     <body>
+        <h1>CiderCMS Login</h1>
         <form action="" method="post">
             <input type="hidden" name="referer" tal:attributes="value referer"/>
             <input type="hidden" name="parent" value="2"/>
             <input type="hidden" name="parent_attr" value="children"/>
             <p tal:condition="true: message" tal:content="message"/>
             <label>
-                User name:
+                <span>User name:</span>
                 <input type="text" name="username" tal:attributes="value username"/>
             </label>
             <label>
-                Password:
+                <span>Password:</span>
                 <input type="password" name="password"/>
             </label>
             <button type="submit">Login</button>
