@@ -64,7 +64,7 @@ sub cancel : CiderCMS('cancel') Args(1) {
     my $context = $c->stash->{context};
     my $reservation = $c->model('DB')->get_object($c, $id, $context->{level} + 1);
     if ($reservation->{parent} == $context->{id}) {
-        $reservation->delete_from_db;
+        $reservation->update({data => {cancelled_by => $c->user->get('name')}});
     }
 
     return $c->res->redirect($c->stash->{context}->uri . '/reserve');

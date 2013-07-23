@@ -2,7 +2,10 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
-    tal:define="reservations context/property --reservations"
+    tal:define="
+        reservations_attr context/attribute --reservations;
+        reservations reservations_attr/filtered --cancelled_by undef --date 'future'
+    "
 >
 
     <div tal:replace="structure context/render"/>

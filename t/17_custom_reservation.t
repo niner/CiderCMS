@@ -161,4 +161,7 @@ $mech->get_ok($mech->find_xpath(q{//tr[td="Heute"]/td/a[@class="cancel"]/@href})
 is('' . $mech->find_xpath(q{//td[text()="Heute"]}), '', "Today's reservation gone");
 ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation still listed");
 
+$mech->get_ok("http://localhost/$instance/airplanes/dimona/6/manage");
+is($mech->value('cancelled_by'), 'test');
+
 done_testing;
