@@ -10,11 +10,11 @@
 
     <div tal:replace="structure context/render"/>
 
-    <p tal:condition="false: reservations" class="no_reservations">
+    <p tal:condition="false: reservations" class="no_reservations" id="reservations">
         Keine Reservierungen eingetragen.
     </p>
 
-    <table tal:condition="true: reservations" class="reservations">
+    <table tal:condition="true: reservations" class="reservations" id="reservations">
         <thead>
             <tr>
                 <th>Datum</th>
@@ -39,7 +39,7 @@
         </tbody>
     </table>
 
-    <form action="" name="new_reservation" class="new_reservation" method="post">
+    <form action="#reservations" name="new_reservation" class="new_reservation" method="post">
         <fieldset>
             <legend>Neue Reservierung eintragen</legend>
             <label class="required date">
