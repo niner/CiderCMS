@@ -15,25 +15,15 @@ sub reserve : CiderCMS('reserve') {
 
     $c->detach('/user/login') unless $c->user;
 
-    my $validation = $c->form(
-        required => [qw(date start end)],
-        optional => [qw(info)],
-    );
-
-    if ($validation) {
-        my $valid = $validation->valid;
-
-        $c->stash->{context}->new_child(
-            attribute => 'reservations',
-            type      => 'reservation',
-            data      => {
-                %$valid,
-                user => $c->user->get('name'),
-            },
-        )->insert;
-
+    my $params = $c->req->params;
+    $params->{type}        = 'reservation';
+    $params->{parent_attr} = 'reservations';
+    $params->{user}        = $c->user->get('name');
+    if ($c->forward('/content/management/manage_add')) {
         return $c->res->redirect($c->stash->{context}->uri . '/reserve');
     }
+
+    $_ = join ', ', @$_ foreach values %{ $c->stash->{errors} };
 
     my $content = $c->view('Petal')->render_template(
         $c,

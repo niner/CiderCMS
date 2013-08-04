@@ -117,11 +117,9 @@ sub manage_add : CiderCMS('manage_add') {
         after       => $after,
         parent_attr => $parent_attr,
         uri_action  => $context->uri . '/manage_add',
-    });
-
-    $c->stash({
-        template => 'manage.zpt',
-        content  => $object->edit_form($errors),
+        template    => 'manage.zpt',
+        content     => $object->edit_form($errors),
+        errors      => $errors // {},
     });
 
     return;

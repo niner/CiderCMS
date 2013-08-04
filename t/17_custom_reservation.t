@@ -138,7 +138,8 @@ $mech->submit_form_ok({
         start => '08:00',
         end   => '11:30',
         info  => 'Testflug',
-    }
+    },
+    button => 'save',
 });
 $mech->content_lacks('Keine Reservierungen eingetragen.');
 ok($mech->find_xpath(qq{//td[text()="Heute"]}), "Today's reservation listed");
@@ -152,7 +153,8 @@ $mech->submit_form_ok({
         start => '08:00',
         end   => '11:30',
         info  => 'Testflug',
-    }
+    },
+    button => 'save',
 });
 ok($mech->find_xpath(q{//td[text()="Heute"]}), "Today's reservation still listed");
 ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
@@ -163,5 +165,19 @@ ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reserva
 
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/6/manage");
 is($mech->value('cancelled_by'), 'test');
+
+# test error handling
+
+$mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
+$mech->submit_form_ok({
+    with_fields => {
+        date  => 'invalid',
+        start => 'nonsense',
+        end   => 'forget',
+        info  => '',
+    },
+    button => 'save',
+});
+ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid date found');
 
 done_testing;

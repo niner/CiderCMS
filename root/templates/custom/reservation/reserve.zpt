@@ -44,6 +44,7 @@
             <legend>Neue Reservierung eintragen</legend>
             <label class="required date">
                 <span>Datum</span>
+                <span class="errors" tal:condition="true: errors/date" tal:content="errors/date"/>
                 <input type="date" name="date" tal:attributes="value date"/>
                 <script type="text/javascript" tal:attributes="src string:${uri_sys_static}/js/calendar.js" />
                 <script type="text/javascript" tal:content="string:A_TCALDEF['imgpath'] = '${uri_sys_static}/images/calendar/'" />
@@ -53,14 +54,17 @@
             </label>
             <label class="start">
                 <span>Von</span>
+                <span class="errors" tal:condition="true: errors/start" tal:content="errors/start"/>
                 <input type="time" name="start" tal:attributes="value start"/>
             </label>
             <label class="end">
                 <span>Bis</span>
+                <span class="errors" tal:condition="true: errors/end" tal:content="errors/end"/>
                 <input type="time" name="end" tal:attributes="value start"/>
             </label>
             <label class="info">
                 <span>Info</span>
+                <span class="errors" tal:condition="true: errors/info" tal:content="errors/info"/>
                 <textarea name="info" tal:content="info"/>
             </label>
             <button type="submit" name="save" value="1">Reservieren</button>
