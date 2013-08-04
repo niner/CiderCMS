@@ -46,6 +46,16 @@ is('' . $mech->find_xpath('//div[@class="date_today"]/text()'), 'today', 'today 
 $mech->follow_link_ok({ url_regex => qr{/2/manage} });
 $mech->submit_form_ok({
     with_fields => {
+        testdate => 'invalid',
+    },
+    button => 'save',
+});
+ok(
+    $mech->find_xpath('//span[text() = "invalid"]'),
+    'error message for invalid date on update found'
+);
+$mech->submit_form_ok({
+    with_fields => {
         testdate => $today->clone->add(days => 1)->ymd,
     },
     button => 'save',

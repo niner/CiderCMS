@@ -51,11 +51,17 @@ sub manage : CiderCMS('manage') {
     my %params = %{ $c->req->params };
     my $save = delete $params{save};
     my $context = $c->stash->{context};
+    $context->update_data(\%params);
 
+    my $errors;
     if ($save) {
-        $context->update({data => \%params});
-        # return to the parent for page_elements and stay at the element for pages.
-        return $c->res->redirect(($context->type->{page_element} ? $context->parent : $context)->uri_management());
+        unless ($errors = $context->validate) {
+            $context->update;
+            # return to the parent for page_elements and stay at the element for pages.
+            return $c->res->redirect(
+                ($context->type->{page_element} ? $context->parent : $context)->uri_management()
+            );
+        }
     }
 
     $c->stash({ # values used by edit_form()
@@ -65,7 +71,7 @@ sub manage : CiderCMS('manage') {
 
     $c->stash({
         template => 'manage.zpt',
-        content  => $c->stash->{context}->edit_form(),
+        content  => $c->stash->{context}->edit_form($errors),
     });
 
     return;
