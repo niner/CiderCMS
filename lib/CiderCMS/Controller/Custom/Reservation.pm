@@ -29,6 +29,7 @@ sub reserve : CiderCMS('reserve') {
         $c,
         {
             %{ $c->stash },
+            %$params,
             template => 'custom/reservation/reserve.zpt',
             uri_cancel => $c->stash->{context}->uri . '/cancel',
         },
