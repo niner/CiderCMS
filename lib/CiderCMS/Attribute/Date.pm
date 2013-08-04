@@ -29,6 +29,20 @@ sub db_type {
     return 'date';
 }
 
+=head2 validate
+
+=cut
+
+sub validate {
+    my ($self) = @_;
+
+    return
+        $self->SUPER::validate,
+        ($self->{data} and $self->{data} !~ /\A \d{4}-\d{2}-\d{2} \z/xm)
+            ? 'invalid'
+            : ();
+}
+
 =head2 filter_matches($value)
 
 Returns true if this attribute matches the given filter value.

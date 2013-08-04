@@ -22,6 +22,14 @@ CiderCMS::Test->populate_types({
 $mech->get_ok("http://localhost/$instance/manage");
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
 
+$mech->submit_form_ok({
+    with_fields => {
+        testdate => 'invalid',
+    },
+    button => 'save',
+});
+ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid date found');
+
 my $today = DateTime->today;
 $mech->submit_form_ok({
     with_fields => {

@@ -117,6 +117,20 @@ sub init_default {
     return;
 }
 
+=head2 validate
+
+Validates this attribute's data.
+Default implementation just checks if mandatory data is present.
+
+=cut
+
+sub validate {
+    my ($self) = @_;
+
+    return 'missing' if $self->{mandatory} and not defined $self->{data};
+    return;
+}
+
 =head2 filter_matches($value)
 
 Returns true if this attribute matches the given filter value.
@@ -129,7 +143,7 @@ sub filter_matches {
     return;
 }
 
-=head2 input_field
+=head2 input_field($errors)
 
 Renders an input field for this attribute.
 Uses this attribute's class name for selecting the template.
@@ -138,8 +152,9 @@ Override for anything more complicated than a simple input field.
 =cut
 
 sub input_field {
-    my ($self) = @_;
+    my ($self, $errors) = @_;
 
+    $errors //= [];
     my $c = $self->{c};
 
     my $template = ref $self;
@@ -148,7 +163,8 @@ sub input_field {
 
     return $c->view()->render_template($c, {
         template => "attributes/$template.zpt",
-        self => $self,
+        self     => $self,
+        errors   => join(', ', @$errors),
     });
 }
 

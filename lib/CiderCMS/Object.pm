@@ -299,15 +299,17 @@ sub fs_path {
     return ( ($parent ? $parent->fs_path : $self->{c}->fs_path_for_instance()) . "/$self->{id}" );
 }
 
-=head2 edit_form()
+=head2 edit_form($errors)
 
 Renders the form for editing this object.
+The optional $errors may be a hash reference with error messages for attributes.
 
 =cut
 
 sub edit_form {
-    my ($self) = @_;
+    my ($self, $errors) = @_;
 
+    $errors //= {};
     my $c = $self->{c};
 
     return $c->view()->render_template($c, {
@@ -315,7 +317,9 @@ sub edit_form {
         template   => 'edit.zpt',
         self       => $self,
         attributes => [
-            map { $self->{data}{$_->{id}}->input_field } @{ $self->{attributes} },
+            map {
+                $self->{data}{$_->{id}}->input_field($errors->{$_->{id}})
+            } @{ $self->{attributes} },
         ],
     });
 }
@@ -336,6 +340,30 @@ sub render {
         template => "types/$self->{type}.zpt",
         self     => $self,
     });
+}
+
+=head2 validate()
+
+Validate the object's data.
+Returns a hash containing messages for violated constraints:
+    {
+        attr1 => ['missing'],
+        attr2 => ['invalid', 'wrong'],
+    }
+
+=cut
+
+sub validate {
+    my ($self) = @_;
+
+    my %results;
+    foreach (values %{ $self->{data} }) {
+        my @result = $_->validate;
+        $results{ $_->{id} } = \@result if @result;
+    }
+
+    return \%results if keys %results;
+    return;
 }
 
 =head2 prepare_attributes()

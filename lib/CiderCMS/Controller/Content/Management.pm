@@ -91,10 +91,16 @@ sub manage_add : CiderCMS('manage_add') {
         attribute => $parent_attr,
         type      => $type,
     );
+    $object->update_data(\%params);
 
+    my $errors;
     if ($save) {
-        $object->insert({after => $after, data => \%params});
-        return $c->res->redirect(($object->type->{page_element} ? $context : $object)->uri_management());
+        unless ($errors = $object->validate) {
+            $object->insert({after => $after});
+            return $c->res->redirect(
+                ($object->type->{page_element} ? $context : $object)->uri_management()
+            );
+        }
     }
     else {
         $object->init_defaults;
@@ -109,7 +115,7 @@ sub manage_add : CiderCMS('manage_add') {
 
     $c->stash({
         template => 'manage.zpt',
-        content  => $object->edit_form(),
+        content  => $object->edit_form($errors),
     });
 
     return;
