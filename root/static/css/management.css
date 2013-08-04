@@ -130,13 +130,25 @@ label {
     overflow: auto;
 }
 
-label span {
+label > span {
     float: left;
     width: 20%;
 }
 
 label input[name=date] {
     width: 7em;
+}
+
+label span.errors {
+    color: red;
+}
+
+label span.errors:before {
+    content: "(";
+}
+
+label span.errors:after {
+    content: ")";
 }
 
 textarea {
