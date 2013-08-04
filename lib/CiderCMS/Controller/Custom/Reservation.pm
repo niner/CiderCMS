@@ -25,12 +25,13 @@ sub reserve : CiderCMS('reserve') {
 
     $_ = join ', ', @$_ foreach values %{ $c->stash->{errors} };
 
+    $c->stash->{reservation} = 1;
     my $content = $c->view('Petal')->render_template(
         $c,
         {
             %{ $c->stash },
             %$params,
-            template => 'custom/reservation/reserve.zpt',
+            template   => 'custom/reservation/reserve.zpt',
             uri_cancel => $c->stash->{context}->uri . '/cancel',
         },
     );
