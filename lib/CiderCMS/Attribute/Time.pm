@@ -29,6 +29,23 @@ sub db_type {
     return 'time';
 }
 
+=head2 validate
+
+=cut
+
+sub validate {
+    my ($self) = @_;
+
+    return
+        $self->SUPER::validate,
+        (
+            $self->{data}
+            and $self->{data} !~ /\A (?: [01]\d | 2[0-3]) : [0-5][0-9] (?: [0-5][0-9])?\z/xm
+        )
+            ? 'invalid'
+            : ();
+}
+
 =head2 format($format)
 
 Returns a representation of the stored time according to the given format.

@@ -24,6 +24,13 @@ $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a t
 
 $mech->submit_form_ok({
     with_fields => {
+        testtime => '25:12',
+    },
+    button => 'save',
+});
+ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid time found');
+$mech->submit_form_ok({
+    with_fields => {
         testtime => '08:00',
     },
     button => 'save',
