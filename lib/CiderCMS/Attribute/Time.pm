@@ -53,7 +53,7 @@ sub validate {
         $self->SUPER::validate,
         (
             $self->{data}
-            and $self->{data} !~ /\A (?: [01]?\d | 2[0-3]) : [0-5][0-9] (?: [0-5][0-9])?\z/xm
+            and $self->{data} !~ /\A (?: [01]?\d | 2[0-3]) : [0-5][0-9] (?: : [0-5][0-9])?\z/xm
         )
             ? 'invalid'
             : ();
