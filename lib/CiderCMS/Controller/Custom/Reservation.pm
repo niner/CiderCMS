@@ -31,12 +31,14 @@ sub reserve : CiderCMS('reserve') {
         $errors = $object->validate;
         unless ($errors) {
             if (defined $time_limit) {
+                my $limit = DateTime->now(time_zone => 'local')
+                    ->set_time_zone('floating')
+                    ->add(hours => $time_limit);
+
                 $params->{start} = sprintf '%02i:%02i', split /:/, $params->{start};
-                my $start = DateTime::Format::ISO8601->parse_datetime(
+                my $start = DateTime::Format::ISO8601->new(base_datetime => $limit)->parse_datetime(
                     "$params->{date}T$params->{start}"
                 );
-
-                my $limit = DateTime->now->add(hours => $time_limit);
 
                 $errors->{date} = ['too close'] if $start->datetime lt $limit->datetime;
             }
