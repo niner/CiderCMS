@@ -86,6 +86,10 @@ CiderCMS::Test->populate_types({
                 data_type     => 'Object',
                 repetitive    => 1,
             },
+            {
+                id            => 'reservation_time_limit',
+                data_type     => 'Integer',
+            },
         ]
     },
 });
@@ -118,7 +122,7 @@ $mech->submit_form_ok({
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=airplane} }, 'Add an airplane');
 $mech->submit_form_ok({
     with_fields => {
-        title => 'Dimona',
+        title                  => 'Dimona',
     },
     button => 'save'
 });
@@ -166,6 +170,16 @@ ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reserva
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/6/manage");
 is($mech->value('cancelled_by'), 'test');
 
+# Update to test advance time limit
+$mech->get_ok("http://localhost/$instance/airplanes/dimona/manage");
+$mech->submit_form_ok({
+    with_fields => {
+        title                  => 'Dimona',
+        reservation_time_limit => 24,
+    },
+    button => 'save'
+});
+
 # test error handling
 
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
@@ -179,5 +193,33 @@ $mech->submit_form_ok({
     button => 'save',
 });
 ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid date found');
+
+my $now = DateTime->now;
+$mech->submit_form_ok({
+    with_fields => {
+        date  => $now->ymd,
+        start => $now->hms,
+        end   => $now->clone->add(hours => 1)->hms,
+        info  => 'too close',
+    },
+    button => 'save',
+});
+ok($mech->find_xpath('//span[text() = "too close"]'), 'error message for too close date found');
+
+$now = DateTime->now->add(days => 2)->add(hours => 4);
+$mech->submit_form_ok({
+    with_fields => {
+        date  => $now->ymd,
+        start => $now->hms,
+        end   => $now->clone->add(hours => 1)->hms,
+        info  => 'too close',
+    },
+    button => 'save',
+});
+is(
+    '' . $mech->find_xpath('//span[text() = "too close"]'),
+    '',
+    'error message for too close date found'
+);
 
 done_testing;

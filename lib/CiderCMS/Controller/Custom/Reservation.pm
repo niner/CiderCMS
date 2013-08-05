@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
+use DateTime::Format::ISO8601;
+
 =head2 reserve
 
 Reserve the displayed plane.
@@ -16,14 +18,38 @@ sub reserve : CiderCMS('reserve') {
     $c->detach('/user/login') unless $c->user;
 
     my $params = $c->req->params;
-    $params->{type}        = 'reservation';
-    $params->{parent_attr} = 'reservations';
-    $params->{user}        = $c->user->get('name');
-    if ($c->forward('/content/management/manage_add')) {
-        return $c->res->redirect($c->stash->{context}->uri . '/reserve');
-    }
+    my $save   = delete $params->{save};
+    my $object = $c->stash->{context}->new_child(
+        attribute => 'reservations',
+        type      => 'reservation',
+    );
+    my $time_limit = $c->stash->{context}->property('reservation_time_limit', undef);
+    $object->update_data({%$params, user => $c->user->get('name')});
 
-    $_ = join ', ', @$_ foreach values %{ $c->stash->{errors} };
+    my $errors = {};
+    if ($save) {
+        $errors = $object->validate;
+        unless ($errors) {
+            if (defined $time_limit) {
+                my $start = DateTime::Format::ISO8601->parse_datetime(
+                    "$params->{date}T$params->{start}"
+                );
+
+                my $limit = DateTime->now->add(hours => $time_limit);
+
+                $errors->{date} = ['too close'] if $start->datetime lt $limit->datetime;
+            }
+        }
+        unless ($errors) {
+            $object->insert;
+            return $c->res->redirect($c->stash->{context}->uri . '/reserve');
+        }
+
+        $_ = join ', ', @$_ foreach values %$errors;
+    }
+    else {
+        $object->init_defaults;
+    }
 
     $c->stash->{reservation} = 1;
     my $content = $c->view('Petal')->render_template(
@@ -33,6 +59,7 @@ sub reserve : CiderCMS('reserve') {
             %$params,
             template   => 'custom/reservation/reserve.zpt',
             uri_cancel => $c->stash->{context}->uri . '/cancel',
+            errors     => $errors,
         },
     );
 
