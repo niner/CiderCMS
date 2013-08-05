@@ -4,7 +4,9 @@
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     tal:define="
         reservations_attr context/attribute --reservations;
-        reservations reservations_attr/filtered --cancelled_by undef --date 'future'
+        reservations_search reservations_attr/search --cancelled_by undef --date 'future';
+        reservations_sorted reservations_search/sort --date --start --end;
+        reservations reservations_sorted/list;
     "
 >
 
@@ -21,21 +23,24 @@
                 <th>Von</th>
                 <th>Bis</th>
                 <th>Pilot</th>
-                <th>Info</th>
             </tr>
         </thead>
         <tbody>
-            <tr tal:repeat="reservation reservations">
-                <td tal:define="date reservation/attribute --date" tal:condition="false: date/is_today" tal:content="date/data"/>
-                <td tal:define="date reservation/attribute --date" tal:condition="true: date/is_today">Heute</td>
-                <td tal:define="start reservation/attribute --start" tal:content="start/format '%H:%M'"/>
-                <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
-                <td tal:content="reservation/property --user"/>
-                <td tal:content="reservation/property --info"/>
-                <td>
-                    <a class="cancel" tal:attributes="href string:${uri_cancel}/${reservation/id}">stornieren</a>
-                </td>
-            </tr>
+            <tbody tal:repeat="reservation reservations">
+                <tr>
+                    <td tal:define="date reservation/attribute --date" tal:condition="false: date/is_today" tal:content="date/data"/>
+                    <td tal:define="date reservation/attribute --date" tal:condition="true: date/is_today">Heute</td>
+                    <td tal:define="start reservation/attribute --start" tal:content="start/format '%H:%M'"/>
+                    <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
+                    <td tal:content="reservation/property --user"/>
+                    <td>
+                        <a class="cancel" tal:attributes="href string:${uri_cancel}/${reservation/id}">stornieren</a>
+                    </td>
+                </tr>
+                <tr tal:condition="true: reservation/property --info">
+                    <td class="info" colspan="5" tal:content="reservation/property --info"/>
+                </tr>
+            </tbody>
         </tbody>
     </table>
 

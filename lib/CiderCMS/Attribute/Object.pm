@@ -5,6 +5,7 @@ use warnings;
 
 use List::Util qw(shuffle);
 use List::MoreUtils qw(all);
+use CiderCMS::Search;
 
 use base qw(CiderCMS::Attribute);
 
@@ -95,6 +96,27 @@ sub filtered {
     } @objects;
 
     return wantarray ? @objects : \@objects;
+}
+
+=head2 search(%filters)
+
+Returns a search object containing the given filters.
+Filters may be:
+    type  => 'some_type_id',
+    attr1 => 'value of attribute 1',
+    attr2 => 'value of attribute 2'
+
+=cut
+
+sub search {
+    my ($self, %filters) = @_;
+
+    return CiderCMS::Search->new({
+        c           => $self->{c},
+        parent      => $self->{object},
+        parent_attr => $self->{id},
+        filters     => \%filters,
+    });
 }
 
 =head2 random($count)
