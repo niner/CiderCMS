@@ -31,6 +31,7 @@ sub reserve : CiderCMS('reserve') {
         $errors = $object->validate;
         unless ($errors) {
             if (defined $time_limit) {
+                $params->{start} = sprintf '%02i:%02i', split /:/, $params->{start};
                 my $start = DateTime::Format::ISO8601->parse_datetime(
                     "$params->{date}T$params->{start}"
                 );
