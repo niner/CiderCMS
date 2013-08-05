@@ -27,6 +27,19 @@ sub db_type {
     return 'integer';
 }
 
+=head2 set_data($data)
+
+Sets this attributes data to the given value.
+
+=cut
+
+sub set_data {
+    my ($self, $data) = @_;
+
+    return $self->{data} = $data if defined $data and $data ne '';
+    return $self->{data} = undef;
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
