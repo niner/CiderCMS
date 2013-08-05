@@ -59,6 +59,10 @@
                 <span>Bis <span class="errors" tal:condition="true: errors/end" tal:content="errors/end"/></span>
                 <input type="time" name="end" tal:attributes="value end"/>
             </label>
+            <label class="user">
+                <span>Pilot <span class="errors" tal:condition="true: errors/user" tal:content="errors/user"/></span>
+                <input type="text" name="user" tal:attributes="value user"/>
+            </label>
             <label class="info">
                 <span>Info <span class="errors" tal:condition="true: errors/info" tal:content="errors/info"/></span>
                 <textarea name="info" tal:content="info"/>

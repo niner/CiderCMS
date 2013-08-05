@@ -24,7 +24,7 @@ sub reserve : CiderCMS('reserve') {
         type      => 'reservation',
     );
     my $time_limit = $c->stash->{context}->property('reservation_time_limit', undef);
-    $object->update_data({%$params, user => $c->user->get('name')});
+    $object->update_data($params);
 
     my $errors = {};
     if ($save) {
@@ -58,6 +58,7 @@ sub reserve : CiderCMS('reserve') {
     my $content = $c->view('Petal')->render_template(
         $c,
         {
+            user       => $c->user->get('name'),
             %{ $c->stash },
             %$params,
             template   => 'custom/reservation/reserve.zpt',
