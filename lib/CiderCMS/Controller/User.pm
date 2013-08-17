@@ -28,7 +28,7 @@ sub login : Private {
 
     if (%$params) {
         if ($c->authenticate($params)) {
-            return $c->res->redirect($referer // $c->req->uri);
+            return $c->res->redirect($referer // $c->stash->{uri_raw});
         }
         else {
             $c->stash({
@@ -39,7 +39,7 @@ sub login : Private {
     }
 
     $c->stash({
-        referer  => $referer // $c->req->uri,
+        referer  => $referer // $c->stash->{uri_raw},
         template => 'login.zpt',
     });
 
