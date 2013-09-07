@@ -70,4 +70,4 @@ $mech->submit_form_ok({
 
 ok($sent_mail =~ /Subject: Testform/, 'Subject of sent mail correct');
 ok($sent_mail =~ /To: nine/, 'Recipient of sent mail correct');
-ok($sent_mail =~ /\n\nbar: Bar\nBaz\nfoo: Foo/s, 'Text of sent mail correct');
+like($sent_mail, qr/\n\nbar: Bar\r?\nBaz\nfoo: Foo/s, 'Text of sent mail correct');
