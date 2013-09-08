@@ -90,7 +90,8 @@ CiderCMS::Test->populate_types({
                 id            => 'reservation_time_limit',
                 data_type     => 'Integer',
             },
-        ]
+        ],
+        template => 'airplane.zpt'
     },
 });
 
@@ -112,7 +113,7 @@ $mech->submit_form_ok({
     button => 'save',
 });
 $mech->get_ok("http://localhost/$instance/manage");
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a normal folder');
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add the airplane folder');
 $mech->submit_form_ok({
     with_fields => {
         title => 'Airplanes',
@@ -127,6 +128,7 @@ $mech->submit_form_ok({
     button => 'save'
 });
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/index.html");
+$mech->content_contains('Keine Reservierungen eingetragen.');
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
 $mech->submit_form_ok({
     with_fields => {
@@ -134,7 +136,6 @@ $mech->submit_form_ok({
         password => 'test',
     },
 });
-$mech->content_contains('Keine Reservierungen eingetragen.');
 my $date = DateTime->now;
 $mech->submit_form_ok({
     with_fields => {
@@ -163,7 +164,10 @@ $mech->submit_form_ok({
 ok($mech->find_xpath(q{//td[text()="Heute"]}), "Today's reservation still listed");
 ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
 
-$mech->get_ok($mech->find_xpath(q{//tr[td="Heute"]/td/a[@class="cancel"]/@href}));
+$mech->get_ok(
+    $mech->find_xpath(q{//tr[td="Heute"]/td/a[@class="cancel"]/@href}),
+    'cancel reservation'
+);
 is('' . $mech->find_xpath(q{//td[text()="Heute"]}), '', "Today's reservation gone");
 ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation still listed");
 

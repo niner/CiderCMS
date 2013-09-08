@@ -1,0 +1,43 @@
+<div
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:define-macro="list"
+    tal:define="
+        reservations_attr context/attribute --reservations;
+        reservations_search reservations_attr/search --cancelled_by undef --date 'future';
+        reservations_sorted reservations_search/sort --date --start --end;
+        reservations reservations_sorted/list;
+    ">
+    <p tal:condition="false: reservations" class="no_reservations" id="reservations">
+        Keine Reservierungen eingetragen.
+    </p>
+
+    <table tal:condition="true: reservations" class="reservations" id="reservations">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Von</th>
+                <th>Bis</th>
+                <th>Pilot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tbody tal:repeat="reservation reservations">
+                <tr>
+                    <td tal:define="date reservation/attribute --date" tal:condition="false: date/is_today" tal:content="date/data"/>
+                    <td tal:define="date reservation/attribute --date" tal:condition="true: date/is_today">Heute</td>
+                    <td tal:define="start reservation/attribute --start" tal:content="start/format '%H:%M'"/>
+                    <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
+                    <td tal:content="reservation/property --user"/>
+                    <td>
+                        <a class="cancel" tal:attributes="href string:${context/uri}/cancel/${reservation/id}">stornieren</a>
+                    </td>
+                </tr>
+                <tr tal:condition="true: reservation/property --info">
+                    <td class="info" colspan="5" tal:content="reservation/property --info"/>
+                </tr>
+            </tbody>
+        </tbody>
+    </table>
+    <a tal:condition="false:reservation" tal:attributes="href string:${self/uri}/reserve">Neue Reservierung</a>
+</div>

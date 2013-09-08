@@ -12,38 +12,6 @@
 
     <div tal:replace="structure context/render"/>
 
-    <p tal:condition="false: reservations" class="no_reservations" id="reservations">
-        Keine Reservierungen eingetragen.
-    </p>
-
-    <table tal:condition="true: reservations" class="reservations" id="reservations">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Von</th>
-                <th>Bis</th>
-                <th>Pilot</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tbody tal:repeat="reservation reservations">
-                <tr>
-                    <td tal:define="date reservation/attribute --date" tal:condition="false: date/is_today" tal:content="date/data"/>
-                    <td tal:define="date reservation/attribute --date" tal:condition="true: date/is_today">Heute</td>
-                    <td tal:define="start reservation/attribute --start" tal:content="start/format '%H:%M'"/>
-                    <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
-                    <td tal:content="reservation/property --user"/>
-                    <td>
-                        <a class="cancel" tal:attributes="href string:${uri_cancel}/${reservation/id}">stornieren</a>
-                    </td>
-                </tr>
-                <tr tal:condition="true: reservation/property --info">
-                    <td class="info" colspan="5" tal:content="reservation/property --info"/>
-                </tr>
-            </tbody>
-        </tbody>
-    </table>
-
     <form action="#reservations" name="new_reservation" class="new_reservation" method="post">
         <fieldset>
             <legend>Neue Reservierung eintragen</legend>
