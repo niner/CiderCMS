@@ -47,11 +47,13 @@ sub set_data {
 =cut
 
 sub validate {
-    my ($self) = @_;
+    my ($self, $data) = @_;
+
+    my $value = $data->{ $self->id };
 
     return
-        $self->SUPER::validate,
-        ($self->{data} and $self->{data} !~ /\A \d{4}-\d{2}-\d{2} \z/xm)
+        $self->SUPER::validate($data),
+        ($value and $value !~ /\A \d{4}-\d{2}-\d{2} \z/xm)
             ? 'invalid'
             : ();
 }

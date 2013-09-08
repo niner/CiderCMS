@@ -156,8 +156,8 @@ Updates this object's data from a hashref.
 sub update_data {
     my ($self, $data) = @_;
 
-    foreach (keys %$data) {
-        $self->set_property($_, $data->{$_});
+    foreach (values %{ $self->{data} }) {
+        $_->set_data_from_form($data);
     }
 
     return;
@@ -342,9 +342,9 @@ sub render {
     });
 }
 
-=head2 validate()
+=head2 validate($data)
 
-Validate the object's data.
+Validate the given data.
 Returns a hash containing messages for violated constraints:
     {
         attr1 => ['missing'],
@@ -354,11 +354,11 @@ Returns a hash containing messages for violated constraints:
 =cut
 
 sub validate {
-    my ($self) = @_;
+    my ($self, $data) = @_;
 
     my %results;
     foreach (values %{ $self->{data} }) {
-        my @result = $_->validate;
+        my @result = $_->validate($data);
         $results{ $_->{id} } = \@result if @result;
     }
 

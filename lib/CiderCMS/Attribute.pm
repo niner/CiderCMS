@@ -36,6 +36,18 @@ sub new {
     return $self;
 }
 
+=head2 id
+
+Returns this attribute's id.
+
+=cut
+
+sub id {
+    my ($self) = @_;
+
+    return $self->{id};
+}
+
 =head2 db_type
 
 Returns the DB data type (if any) for this attribute
@@ -60,7 +72,7 @@ sub data {
 
 =head2 set_data($data)
 
-Sets this attributes data to the given value.
+Sets this attribute's data to the given value.
 
 =cut
 
@@ -68,6 +80,20 @@ sub set_data {
     my ($self, $data) = @_;
 
     return $self->{data} = $data;
+}
+
+=head2 set_data_from_form($data)
+
+Sets this attribute's data from submitted form data.
+
+=cut
+
+sub set_data_from_form {
+    my ($self, $data) = @_;
+
+    return unless exists $data->{ $self->id };
+
+    return $self->set_data($data->{ $self->id });
 }
 
 =head2 prepare_update
@@ -125,9 +151,9 @@ Default implementation just checks if mandatory data is present.
 =cut
 
 sub validate {
-    my ($self) = @_;
+    my ($self, $data) = @_;
 
-    return 'missing' if $self->{mandatory} and not defined $self->{data};
+    return 'missing' if $self->{mandatory} and not defined $data->{ $self->id };
     return;
 }
 

@@ -24,11 +24,10 @@ sub reserve : CiderCMS('reserve') {
         type      => 'reservation',
     );
     my $time_limit = $c->stash->{context}->property('reservation_time_limit', undef);
-    $object->update_data($params);
 
     my $errors = {};
     if ($save) {
-        $errors = $object->validate;
+        $errors = $object->validate($params);
         unless ($errors) {
             if (defined $time_limit) {
                 my $limit = DateTime->now(time_zone => 'local')
@@ -44,7 +43,7 @@ sub reserve : CiderCMS('reserve') {
             }
         }
         unless ($errors) {
-            $object->insert;
+            $object->insert({data => $params});
             return $c->res->redirect($c->stash->{context}->uri . '/reserve');
         }
 

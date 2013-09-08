@@ -47,13 +47,15 @@ sub set_data {
 =cut
 
 sub validate {
-    my ($self) = @_;
+    my ($self, $data) = @_;
+
+    my $value = $data->{ $self->id };
 
     return
-        $self->SUPER::validate,
+        $self->SUPER::validate($data),
         (
-            $self->{data}
-            and $self->{data} !~ /\A (?: [01]?\d | 2[0-3]) : [0-5][0-9] (?: : [0-5][0-9])?\z/xm
+            $value
+            and $value !~ /\A (?: [01]?\d | 2[0-3]) : [0-5][0-9] (?: : [0-5][0-9])?\z/xm
         )
             ? 'invalid'
             : ();

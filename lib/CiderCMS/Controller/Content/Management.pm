@@ -51,12 +51,11 @@ sub manage : CiderCMS('manage') {
     my %params = %{ $c->req->params };
     my $save = delete $params{save};
     my $context = $c->stash->{context};
-    $context->update_data(\%params);
 
     my $errors;
     if ($save) {
-        unless ($errors = $context->validate) {
-            $context->update;
+        unless ($errors = $context->validate(\%params)) {
+            $context->update({data => \%params});
             # return to the parent for page_elements and stay at the element for pages.
             return $c->res->redirect(
                 ($context->type->{page_element} ? $context->parent : $context)->uri_management()
@@ -97,12 +96,11 @@ sub manage_add : CiderCMS('manage_add') {
         attribute => $parent_attr,
         type      => $type,
     );
-    $object->update_data(\%params);
 
     my $errors;
     if ($save) {
-        unless ($errors = $object->validate) {
-            $object->insert({after => $after});
+        unless ($errors = $object->validate(\%params)) {
+            $object->insert({after => $after, data => \%params});
             return $c->res->redirect(
                 ($object->type->{page_element} ? $context : $object)->uri_management()
             );
