@@ -170,6 +170,21 @@ ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reserva
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/6/manage");
 is($mech->value('cancelled_by'), 'test');
 
+$mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
+$mech->submit_form_ok({
+    with_fields => {
+        start_date => $date->ymd,
+        start_time => '11:00',
+        end        => '12:30',
+        info       => 'Testflug2',
+    },
+    button => 'save',
+});
+ok(
+    $mech->find_xpath('//span[text() = "conflicting existent reservation"]'),
+    'error message for conflict with existent reservation found'
+);
+
 # Update to test advance time limit
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/manage");
 $mech->submit_form_ok({
@@ -219,7 +234,7 @@ $mech->submit_form_ok({
 is(
     '' . $mech->find_xpath('//span[text() = "too close"]'),
     '',
-    'error message for too close date found'
+    'error message for too close date gone'
 );
 
 done_testing;
