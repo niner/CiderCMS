@@ -45,12 +45,8 @@ CiderCMS::Test->populate_types({
         page_element => 1,
         attributes   => [
             {
-                id            => 'date',
-                mandatory     => 1,
-            },
-            {
                 id            => 'start',
-                data_type     => 'Time',
+                data_type     => 'DateTime',
                 mandatory     => 1,
             },
             {
@@ -139,10 +135,10 @@ $mech->submit_form_ok({
 my $date = DateTime->now;
 $mech->submit_form_ok({
     with_fields => {
-        date  => $date->ymd,
-        start => '08:00',
-        end   => '11:30',
-        info  => 'Testflug',
+        start_date => $date->ymd,
+        start_time => '08:00',
+        end        => '11:30',
+        info       => 'Testflug',
     },
     button => 'save',
 });
@@ -154,10 +150,10 @@ ok($mech->find_xpath(qq{//td[text()="Testflug"]}), 'Info listed');
 $date->add(days => 1);
 $mech->submit_form_ok({
     with_fields => {
-        date  => $date->ymd,
-        start => '08:00',
-        end   => '11:30',
-        info  => 'Testflug',
+        start_date => $date->ymd,
+        start_time => '08:00',
+        end        => '11:30',
+        info       => 'Testflug',
     },
     button => 'save',
 });
@@ -189,10 +185,10 @@ $mech->submit_form_ok({
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
 $mech->submit_form_ok({
     with_fields => {
-        date  => 'invalid',
-        start => 'nonsense',
-        end   => 'forget',
-        info  => '',
+        start_date => 'invalid',
+        start_time => 'nonsense',
+        end        => 'forget',
+        info       => '',
     },
     button => 'save',
 });
@@ -201,10 +197,10 @@ ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid d
 my $now = DateTime->now;
 $mech->submit_form_ok({
     with_fields => {
-        date  => $now->ymd,
-        start => $now->hms,
-        end   => $now->clone->add(hours => 1)->hms,
-        info  => 'too close',
+        start_date => $now->ymd,
+        start_time => $now->hms,
+        end        => $now->clone->add(hours => 1)->hms,
+        info       => 'too close',
     },
     button => 'save',
 });
@@ -213,10 +209,10 @@ ok($mech->find_xpath('//span[text() = "too close"]'), 'error message for too clo
 $now = DateTime->now->add(days => 2)->add(hours => 4);
 $mech->submit_form_ok({
     with_fields => {
-        date  => $now->ymd,
-        start => $now->hms,
-        end   => $now->clone->add(hours => 1)->hms,
-        info  => 'too close',
+        start_date => $now->ymd,
+        start_time => $now->hms,
+        end        => $now->clone->add(hours => 1)->hms,
+        info       => 'too close',
     },
     button => 'save',
 });

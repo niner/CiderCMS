@@ -34,12 +34,12 @@ sub reserve : CiderCMS('reserve') {
                     ->set_time_zone('floating')
                     ->add(hours => $time_limit);
 
-                $params->{start} = sprintf '%02i:%02i', split /:/, $params->{start};
+                $params->{start} = sprintf '%02i:%02i', split /:/, $params->{start_time};
                 my $start = DateTime::Format::ISO8601->new(base_datetime => $limit)->parse_datetime(
-                    "$params->{date}T$params->{start}"
+                    "$params->{start_date}T$params->{start_time}"
                 );
 
-                $errors->{date} = ['too close'] if $start->datetime lt $limit->datetime;
+                $errors->{start} = ['too close'] if $start->datetime lt $limit->datetime;
             }
         }
         unless ($errors) {
@@ -86,7 +86,8 @@ sub cancel : CiderCMS('cancel') Args(1) {
     my $context = $c->stash->{context};
     my $reservation = $c->model('DB')->get_object($c, $id, $context->{level} + 1);
     if ($reservation->{parent} == $context->{id}) {
-        $reservation->update({data => {cancelled_by => $c->user->get('name')}});
+        $reservation->set_property(cancelled_by => $c->user->get('name'));
+        $reservation->update;
     }
 
     return $c->res->redirect($c->stash->{context}->uri . '/reserve');

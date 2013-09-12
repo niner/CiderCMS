@@ -2,12 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
-    tal:define="
-        reservations_attr context/attribute --reservations;
-        reservations_search reservations_attr/search --cancelled_by undef --date 'future';
-        reservations_sorted reservations_search/sort --date --start --end;
-        reservations reservations_sorted/list;
-    "
 >
 
     <div tal:replace="structure context/render"/>
@@ -16,8 +10,8 @@
         <fieldset>
             <legend>Neue Reservierung eintragen</legend>
             <label class="required date">
-                <span>Datum <span class="errors" tal:condition="true: errors/date" tal:content="errors/date"/></span>
-                <input type="date" name="date" tal:attributes="value date"/>
+                <span>Datum <span class="errors" tal:condition="true: errors/start" tal:content="errors/start"/></span>
+                <input type="date" name="start_date" tal:attributes="value start_date"/>
                 <script type="text/javascript" tal:attributes="src string:${uri_sys_static}/js/calendar.js" />
                 <script type="text/javascript" tal:content="string:A_TCALDEF['imgpath'] = '${uri_sys_static}/images/calendar/'" />
                 <script type="text/javascript">
@@ -25,8 +19,8 @@
                 </script>
             </label>
             <label class="start">
-                <span>Von <span class="errors" tal:condition="true: errors/start" tal:content="errors/start"/></span>
-                <input type="time" name="start" tal:attributes="value start"/>
+                <span>Von </span>
+                <input type="time" name="start_time" tal:attributes="value start_time"/>
             </label>
             <label class="end">
                 <span>Bis <span class="errors" tal:condition="true: errors/end" tal:content="errors/end"/></span>
