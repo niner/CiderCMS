@@ -522,6 +522,23 @@ sub new_child {
     return CiderCMS::Object->new(\%params);
 }
 
+=head2 create_child(attribute => $attribute, type => $type, data => $data)
+
+Creates a child object in the database for the given attribute.
+
+=cut
+
+sub create_child {
+    my ($self, %params) = @_;
+
+    # Don't give data to new_child. Instead give it to insert so it gets treated like
+    # data subitted through the management UI.
+    my $data = delete $params{data};
+    my $child = $self->new_child(%params);
+    $child->insert({data => $data});
+    return $child;
+}
+
 =head2 user_has_access
 
 Returns whether the currently logged in user has access to this folder and all

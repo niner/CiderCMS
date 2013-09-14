@@ -91,38 +91,34 @@ CiderCMS::Test->populate_types({
     },
 });
 
-$mech->get_ok("http://localhost/$instance/manage");
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a normal folder');
-$mech->submit_form_ok({
-    with_fields => {
-        title => 'Users',
-    },
-    button => 'save'
-});
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=user} }, 'Add a user');
-$mech->submit_form_ok({
-    with_fields => {
-        username => 'test',
-        name     => 'test',
-        password => 'test',
-    },
-    button => 'save',
-});
-$mech->get_ok("http://localhost/$instance/manage");
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add the airplane folder');
-$mech->submit_form_ok({
-    with_fields => {
-        title => 'Airplanes',
-    },
-    button => 'save',
-});
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=airplane} }, 'Add an airplane');
-$mech->submit_form_ok({
-    with_fields => {
-        title                  => 'Dimona',
-    },
-    button => 'save'
-});
+my $root = $model->get_object($c, 1);
+    my $users = $root->create_child(
+        attribute => 'children',
+        type      => 'folder',
+        data      => { title => 'Users' },
+    );
+        $users->create_child(
+            attribute => 'children',
+            type      => 'user',
+            data      => {
+                username => 'test',
+                name     => 'test',
+                password => 'test',
+            },
+        );
+    my $airplanes = $root->create_child(
+        attribute => 'children',
+        type      => 'folder',
+        data      => { title => 'Airplanes' },
+    );
+        $airplanes->create_child(
+            attribute => 'children',
+            type      => 'airplane',
+            data      => {
+                title => 'Dimona',
+            },
+        );
+
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/index.html");
 $mech->content_contains('Keine Reservierungen eingetragen.');
 $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
