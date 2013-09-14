@@ -243,19 +243,17 @@ sub create_type {
     my $id = $data->{id};
     $data->{page_element} ||= 0;
 
-    $dbh->do('begin');
+    $self->txn_do(sub {
+        $dbh->do('insert into sys_types (id, name, page_element) values (?, ?, ?)', undef, $id, $data->{name}, $data->{page_element});
 
-    $dbh->do('insert into sys_types (id, name, page_element) values (?, ?, ?)', undef, $id, $data->{name}, $data->{page_element});
+        $dbh->do(q/set client_min_messages='warning'/); # avoid the CREATE TABLE / PRIMARY KEY will create implicit index NOTICE
+        $dbh->do(qq/create table "$id" (id integer not null, parent integer, parent_attr varchar, sort_id integer default 0 not null, type varchar not null references sys_types (id) default '$id', changed timestamp not null default now(), tree_changed timestamp not null default now(), active_start timestamp, active_end timestamp, dcid varchar)/);
+        $dbh->do(q/set client_min_messages='notice'/); # back to full information
 
-    $dbh->do(q/set client_min_messages='warning'/); # avoid the CREATE TABLE / PRIMARY KEY will create implicit index NOTICE
-    $dbh->do(qq/create table "$id" (id integer not null, parent integer, parent_attr varchar, sort_id integer default 0 not null, type varchar not null references sys_types (id) default '$id', changed timestamp not null default now(), tree_changed timestamp not null default now(), active_start timestamp, active_end timestamp, dcid varchar)/);
-    $dbh->do(q/set client_min_messages='notice'/); # back to full information
-
-    $dbh->do(qq/create trigger "${id}_bi" before insert on "$id" for each row execute procedure sys_objects_bi()/);
-    $dbh->do(qq/create trigger "${id}_bu" before update on "$id" for each row execute procedure sys_objects_bu()/);
-    $dbh->do(qq/create trigger "${id}_ad" after  delete on "$id" for each row execute procedure sys_objects_ad()/);
-
-    $dbh->do('commit');
+        $dbh->do(qq/create trigger "${id}_bi" before insert on "$id" for each row execute procedure sys_objects_bi()/);
+        $dbh->do(qq/create trigger "${id}_bu" before update on "$id" for each row execute procedure sys_objects_bu()/);
+        $dbh->do(qq/create trigger "${id}_ad" after  delete on "$id" for each row execute procedure sys_objects_ad()/);
+    });
 
     my $path = $c->fs_path_for_instance . '/../templates/types';
     unless (-e "$path/$data->{id}.zpt" or -e $c->config->{root} . "/templates/types/$data->{id}.zpt") { #TODO: put this stuff in it's own class. CiderCMS::Type?
@@ -283,12 +281,12 @@ sub update_type {
     $data->{page_element} ||= 0;
 
     if ($data->{id} ne $id) {
-        $dbh->do('begin');
-        $dbh->do('set constraints "sys_attributes_type_fkey" deferred');
-        $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
-        $dbh->do(q/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
-        $dbh->do(qq/alter table "$id" rename to "$data->{id}"/);
-        $dbh->do('commit');
+        $self->txn_do(sub {
+            $dbh->do('set constraints "sys_attributes_type_fkey" deferred');
+            $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
+            $dbh->do(q/update sys_attributes set type = ? where type = ?/, undef, $data->{id}, $id);
+            $dbh->do(qq/alter table "$id" rename to "$data->{id}"/);
+        });
     }
     else {
         $dbh->do('update sys_types set id = ?, name = ?, page_element = ? where id = ?', undef, @$data{qw(id name page_element)}, $id);
@@ -310,18 +308,16 @@ sub create_attribute {
 
     $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
 
-    $dbh->do('begin');
+    $self->txn_do(sub {
+        $dbh->do('insert into sys_attributes (type, id, name, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name data_type repetitive mandatory default_value)});
 
-    $dbh->do('insert into sys_attributes (type, id, name, data_type, repetitive, mandatory, default_value) values (?, ?, ?, ?, ?, ?, ?)', undef, @$data{qw(type id name data_type repetitive mandatory default_value)});
-
-    if (my $data_type = "CiderCMS::Attribute::$data->{data_type}"->db_type) {
-        my $query = qq/alter table "$data->{type}" add column "$data->{id}" $data_type/;
-        $query .= ' not null' if $data->{mandatory};
-        $query .= ' default ' . $dbh->quote($data->{default}) if defined $data->{default} and $data->{default} ne '';
-        $dbh->do($query);
-    }
-
-    $dbh->do('commit');
+        if (my $data_type = "CiderCMS::Attribute::$data->{data_type}"->db_type) {
+            my $query = qq/alter table "$data->{type}" add column "$data->{id}" $data_type/;
+            $query .= ' not null' if $data->{mandatory};
+            $query .= ' default ' . $dbh->quote($data->{default}) if defined $data->{default} and $data->{default} ne '';
+            $dbh->do($query);
+        }
+    });
 
     $self->initialize($c);
 
@@ -341,9 +337,9 @@ sub update_attribute {
 
     $_ = $_ ? 1 : 0 foreach @$data{qw(mandatory repetitive)};
 
-    $dbh->do('begin');
-    $dbh->do('update sys_attributes set id = ?, sort_id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id sort_id name data_type repetitive mandatory default_value)}, $type, $id);
-    $dbh->do('commit');
+    $self->txn_do(sub {
+        $dbh->do('update sys_attributes set id = ?, sort_id = ?, name = ?, data_type = ?, repetitive = ?, mandatory = ?, default_value = ? where type = ? and id = ?', undef, @$data{qw(id sort_id name data_type repetitive mandatory default_value)}, $type, $id);
+    });
 
     return;
 }
@@ -401,25 +397,21 @@ sub insert_object {
     my $dbh = $self->dbh;
     my $type = $object->{type};
 
-    $dbh->do('begin');
+    local $dbh->{RaiseError} = 1;
 
-    $object->{sort_id} = $self->create_insert_aisle({c => $c, parent => $object->{parent}, attr => $object->{parent_attr}, count => 1, after => $params->{after}});
+    return $self->txn_do(sub {
+        $object->{sort_id} = $self->create_insert_aisle({c => $c, parent => $object->{parent}, attr => $object->{parent_attr}, count => 1, after => $params->{after}});
 
-    my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
+        my ($columns, $values) = $object->get_dirty_columns(); # DBIx::Class::Row yeah
 
-    my $insert_statement = qq{insert into "$type" (} . join (q{, }, map { qq{"$_"} } @sys_object_columns, @$columns) . ') values (' . join (q{, }, map { '?' } @sys_object_columns, @$columns) . ')';
+        my $insert_statement = qq{insert into "$type" (} . join (q{, }, map { qq{"$_"} } @sys_object_columns, @$columns) . ') values (' . join (q{, }, map { '?' } @sys_object_columns, @$columns) . ')';
 
-    if (my $retval = $dbh->do($insert_statement, undef, (map { $object->{$_} } @sys_object_columns), @$values)) {
-        $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
+        if (my $retval = $dbh->do($insert_statement, undef, (map { $object->{$_} } @sys_object_columns), @$values)) {
+            $object->{id} = $dbh->last_insert_id(undef, undef, 'sys_object', undef, {sequence => 'sys_object_id_seq'});
 
-        $dbh->do('commit');
-        return $retval;
-    }
-    else {
-        $dbh->do('rollback');
-
-        croak $dbh->errstr;
-    }
+            return $retval;
+        }
+    });
 }
 
 =head2 update_object($c, $object)
@@ -495,6 +487,34 @@ sub move_object {
     }
 
     return $result;
+}
+
+=head2 txn_do($code)
+
+Run $sub in a transaction. Rollback transaction if $sub dies.
+
+=cut
+
+sub txn_do {
+    my ($self, $code) = @_;
+
+    my $dbh = $self->dbh;
+
+    my $in_txn = not $dbh->{AutoCommit};
+
+    $dbh->begin_work unless $in_txn;
+
+    my ($result, @results);
+    if (wantarray) {
+        @results = $code->();
+    }
+    else {
+        $result = $code->();
+    }
+
+    $dbh->commit unless $in_txn or $dbh->{AutoCommit};
+
+    return wantarray ? @results : $result;
 }
 
 =head1 SYNOPSIS
