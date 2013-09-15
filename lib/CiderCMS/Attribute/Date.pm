@@ -72,6 +72,10 @@ sub filter_matches {
         return DateTime->now->ymd le $self->data;
     }
 
+    if ($value eq 'today') {
+        return DateTime->now->ymd eq $self->data;
+    }
+
     return;
 }
 
