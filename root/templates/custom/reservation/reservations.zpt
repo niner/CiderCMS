@@ -7,7 +7,12 @@
         reservations_search reservations_attr/search --cancelled_by undef --start 'future';
         reservations_sorted reservations_search/sort --start --end;
         reservations reservations_sorted/list;
+        active_reservation_search reservations_attr/search --cancelled_by undef --start 'past' --start 'today' --end 'future';
+        active_reservation active_reservation_search/list
     ">
+
+    <p tal:condition="false: active_reservation" class="no_active_reservation">Frei</p>
+
     <p tal:condition="false: reservations" class="no_reservations" id="reservations">
         Keine Reservierungen eingetragen.
     </p>
