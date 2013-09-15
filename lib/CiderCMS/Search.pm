@@ -5,7 +5,7 @@ use warnings;
 
 use Hash::Merge qw(merge);
 use Scalar::Util qw(weaken);
-use List::MoreUtils qw(all);
+use List::MoreUtils qw(natatime);
 
 =head1 NAME
 
@@ -54,16 +54,18 @@ sub list {
 
     my $filters = $self->{filters};
 
-    if (exists $filters->{type}) {
-        @objects = grep {$_->{type} eq $filters->{type}} @objects;
-        delete $filters->{type};
-    }
-
     @objects = grep {
         my $object = $_;
-        all {
-            $object->attribute($_)->filter_matches($filters->{$_})
-        } keys %$filters,
+        my $matches = 1;
+        my $i = natatime 2, @$filters;
+
+        while ($matches and my ($filter, $value) = $i->()) {
+            $matches &&= $filter eq 'type'
+                ? $object->{type} eq $value
+                : $object->attribute($filter)->filter_matches($value)
+        }
+
+        $matches;
     } @objects;
 
     if ($self->{sort}) {

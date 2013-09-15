@@ -109,13 +109,13 @@ Filters may be:
 =cut
 
 sub search {
-    my ($self, %filters) = @_;
+    my ($self, @filters) = @_;
 
     return CiderCMS::Search->new({
         c           => $self->{c},
         parent      => $self->{object},
         parent_attr => $self->{id},
-        filters     => \%filters,
+        filters     => \@filters,
     });
 }
 
