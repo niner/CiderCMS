@@ -83,6 +83,31 @@ sub object {
     return DateTime::Format::ISO8601->parse_datetime($self->data =~ s/ /T/r);
 }
 
+=head2 filter_matches($value)
+
+Returns true if this attribute matches the given filter value.
+$value may be 'future' to check if this date lies in the future.
+
+=cut
+
+sub filter_matches {
+    my ($self, $value) = @_;
+
+    if ($value eq 'past') {
+        return DateTime->now > $self->object;
+    }
+
+    if ($value eq 'future') {
+        return DateTime->now < $self->object;
+    }
+
+    if ($value eq 'today') {
+        return DateTime->now->ymd eq $self->object->ymd;
+    }
+
+    return;
+}
+
 =head2 is_today()
 
 Returns true if the stored day is today.
