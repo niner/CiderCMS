@@ -75,6 +75,23 @@ sub format {
     return strftime($format, $s, $m, $h, 0, 0, 0);
 }
 
+=head2 filter_matches($value)
+
+Returns true if this attribute matches the given filter value.
+$value may be 'future' to check if this date lies in the future.
+
+=cut
+
+sub filter_matches {
+    my ($self, $value) = @_;
+
+    if ($value eq 'future') {
+        return DateTime->now->hms(':') le $self->data;
+    }
+
+    return;
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
