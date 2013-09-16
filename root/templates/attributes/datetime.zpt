@@ -2,6 +2,6 @@
     <span tal:content="self/name"/>
     <span class="errors" tal:condition="true: errors" tal:content="errors"/>
     <input type="text" size="10" tal:attributes="name string:${self/id}_date; value if: self/data then: self/ymd else: undef"/>
-    <script type="text/javascript" tal:content="string:new tcal ({'formname': 'edit_object_form', 'controlname': '${self/id}'})"/>
+    <script type="text/javascript" tal:content="string:new tcal ({'formname': 'edit_object_form', 'controlname': '${self/id}_date'})"/>
     <input type="time" size="5" tal:attributes="name string:${self/id}_time; value if: self/data then: self/time else: undef"/>
 </label>
