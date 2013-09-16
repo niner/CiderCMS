@@ -26,22 +26,22 @@
                 <th>Pilot</th>
             </tr>
         </thead>
-        <tbody>
-            <tbody tal:repeat="reservation reservations">
-                <tr tal:define="start reservation/attribute --start">
-                    <td tal:condition="false: start/is_today" tal:content="start/ymd"/>
-                    <td tal:condition="true: start/is_today">Heute</td>
-                    <td tal:content="start/format '%H:%M'"/>
-                    <td tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
-                    <td tal:content="reservation/property --user"/>
-                    <td>
-                        <a class="cancel" tal:attributes="href string:${context/uri}/cancel/${reservation/id}">stornieren</a>
-                    </td>
-                </tr>
-                <tr tal:condition="true: reservation/property --info">
-                    <td class="info" colspan="5" tal:content="reservation/property --info"/>
-                </tr>
-            </tbody>
+        <tbody tal:repeat="reservation reservations">
+            <tr tal:define="start reservation/attribute --start">
+                <td class="start_date" tal:attributes="data-date start/ymd">
+                    <span tal:condition="false: start/is_today" tal:content="start/ymd"/>
+                    <span tal:condition="true: start/is_today">Heute</td>
+                </td>
+                <td class="start_time" tal:content="start/format '%H:%M'"/>
+                <td class="end_time" tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
+                <td class="user" tal:content="reservation/property --user"/>
+                <td>
+                    <a class="cancel" tal:attributes="href string:${context/uri}/cancel/${reservation/id}">stornieren</a>
+                </td>
+            </tr>
+            <tr tal:condition="true: reservation/property --info">
+                <td class="info" colspan="5" tal:content="reservation/property --info"/>
+            </tr>
         </tbody>
     </table>
     <a tal:condition="false:reservation" tal:attributes="href string:${self/uri}/reserve">Neue Reservierung</a>
