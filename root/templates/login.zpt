@@ -30,8 +30,11 @@
             </label>
             <button type="submit">Login</button>
         </form>
-        <p tal:define="users context/object_by_id '2'" tal:condition="true: users/attribute --registration" class="registration">
-            <a tal:define="registration users/attribute --registration" tal:attributes="href registration/data/0/uri_index">
+        <p
+            tal:define="users context/object_by_id '2'; registration users/property --registration undef"
+            tal:condition="true: registration"
+            class="registration">
+            <a tal:attributes="href registration/0/uri_index">
                 Neuen Benutzer registrieren
             </a>
         </p>

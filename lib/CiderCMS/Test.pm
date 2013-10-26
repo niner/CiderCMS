@@ -9,6 +9,7 @@ use Exporter;
 use FindBin qw($Bin); ## no critic (ProhibitPackageVars)
 use File::Copy qw(copy);
 use File::Path qw(remove_tree);
+use File::Slurp qw(write_file);
 use English '-no_match_vars';
 
 use base qw(Exporter);
@@ -158,6 +159,12 @@ sub populate_types {
                 or die "could not copy template $data->{template}";
         }
     }
+}
+
+sub write_template {
+    my ($self, $file, $contents) = @_;
+
+    write_file("$Bin/../root/instances/$instance/templates/types/$file.zpt", $contents);
 }
 
 =head2 END

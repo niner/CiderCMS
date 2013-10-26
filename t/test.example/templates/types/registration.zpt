@@ -1,0 +1,24 @@
+<form
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderCMS"
+    tal:attributes="id string:object_${self/id}; action string:${context/uri}/register"
+    method="post"
+>
+    <div tal:condition="true: c/req/params/username">
+        <span tal:replace=""/>
+    </div>
+    <label>
+        <span>Benutzername:</span>
+        <input type="text" name="username" tal:attributes="value username"/>
+    </label>
+    <label>
+        <span>Passwort:</span>
+        <input type="password" name="password"/>
+    </label>
+    <label>
+        <span>Email:</span>
+        <input type="text" name="email" tal:attributes="value email"/>
+    </label>
+    <button type="submit">Registrieren</button>
+</form>
