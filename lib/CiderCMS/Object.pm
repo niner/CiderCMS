@@ -7,6 +7,7 @@ use Scalar::Util qw(weaken);
 use List::MoreUtils qw(any);
 use File::Path qw(mkpath);
 use File::Copy qw(move);
+use Carp qw(croak);
 
 use CiderCMS::Attribute;
 
@@ -518,6 +519,9 @@ sub new_child {
     $params{parent}      = $self->{id};
     $params{level}       = $self->{level};
     $params{parent_attr} = delete $params{attribute};
+
+    croak "Invalid attribute: $params{parent_attr}"
+        unless exists $self->{data}{ $params{parent_attr} };
 
     return CiderCMS::Object->new(\%params);
 }
