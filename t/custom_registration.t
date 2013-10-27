@@ -2,9 +2,12 @@ use strict;
 use warnings;
 use utf8;
 
-use CiderCMS::Test (test_instance => 1, mechanize => 1);
 use Test::More;
+BEGIN { $ENV{EMAIL_SENDER_TRANSPORT} = 'Test' }
+
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
 use FindBin qw($Bin);
+use Regexp::Common qw(URI);
 
 my ($root, $users, $restricted);
 setup_test_instance();
@@ -143,6 +146,10 @@ sub setup_registration_type {
                     id        => 'success',
                     data_type => 'Object',
                 },
+                {
+                    id        => 'verified',
+                    data_type => 'Object',
+                },
             ],
         },
     });
@@ -165,11 +172,6 @@ sub setup_registration_objects {
         type      => 'registration',
         data      => {},
     );
-        $registration->create_child(
-            attribute => 'children',
-            type      => 'textarea',
-            data      => { text => 'Test' },
-        );
         my $success = $registration->create_child(
             attribute => 'success',
             type      => 'folder',
@@ -179,6 +181,16 @@ sub setup_registration_objects {
                 attribute => 'children',
                 type      => 'textarea',
                 data      => { text => 'Success! Please check your email.' },
+            );
+        my $verified = $registration->create_child(
+            attribute => 'verified',
+            type      => 'folder',
+            data      => { title => 'Verified' },
+        );
+            $verified->create_child(
+                attribute => 'children',
+                type      => 'textarea',
+                data      => { text => 'Success! You are now registered.' },
             );
 }
 
@@ -202,6 +214,23 @@ sub test_registration {
     });
     $mech->content_contains('Success! Please check your email.');
 
+    my @deliveries = Email::Sender::Simple->default_transport->deliveries;
+    is(scalar @deliveries, 1, 'Confirmation message sent');
+    my $envelope = $deliveries[0]->{envelope};
+    is_deeply($envelope->{to}, ['test@localhost'], 'Confirmation message recipient correct');
+    is($envelope->{from}, "noreply\@$instance", 'Confirmation message sender correct');
+    my $email = $deliveries[0]->{email};
+    is(
+        $email->get_header("Subject"),
+        "Bestätigung der Anmeldung zu $instance",
+        'Confirmation message subject correct'
+    );
+
+    my ($link) = $email->get_body =~ /($RE{URI}{HTTP})/;
+    $mech->get_ok($link);
+    $mech->content_lacks('Login');
+    $mech->content_contains('Success! You are now registered.');
+
     $mech->get_ok("http://localhost/$instance/restricted/index.html");
     $mech->content_contains('Login');
     $mech->submit_form_ok({
@@ -210,4 +239,7 @@ sub test_registration {
             password => 'testpass',
         },
     });
+    $mech->content_lacks('Login');
+    $mech->content_lacks('Invalid username/password');
+    $mech->title_is('Restricted');
 }
