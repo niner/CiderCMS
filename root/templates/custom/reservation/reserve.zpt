@@ -20,11 +20,11 @@
             </label>
             <label class="start">
                 <span>Von </span>
-                <input type="time" name="start_time" tal:attributes="value start_time"/>
+                <input type="time" name="start_time" tal:attributes="value start_time" placeholder="14:00"/>
             </label>
             <label class="end">
                 <span>Bis <span class="errors" tal:condition="true: errors/end" tal:content="errors/end"/></span>
-                <input type="time" name="end" tal:attributes="value end"/>
+                <input type="time" name="end" tal:attributes="value end" placeholder="16:00"/>
             </label>
             <label class="user">
                 <span>Pilot <span class="errors" tal:condition="true: errors/user" tal:content="errors/user"/></span>
