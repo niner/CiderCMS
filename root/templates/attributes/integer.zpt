@@ -1,4 +1,5 @@
 <label xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS">
     <span tal:content="self/name"/>
+    <span class="errors" tal:condition="true: errors" tal:content="errors"/>
     <input type="text" size="8" tal:attributes="name self/id; value self/data"/>
 </label>

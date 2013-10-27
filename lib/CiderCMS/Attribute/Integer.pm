@@ -40,6 +40,21 @@ sub set_data {
     return $self->{data} = undef;
 }
 
+=head2 validate
+
+Check if $data is a valid number.
+
+=cut
+
+sub validate {
+    my ($self, $data) = @_;
+
+    my $number = $data->{ $self->id };
+    return 'missing' if $self->{mandatory} and (not defined $number or $number eq '');
+    return 'invalid' if $number and $number =~ /\D/;
+    return;
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
