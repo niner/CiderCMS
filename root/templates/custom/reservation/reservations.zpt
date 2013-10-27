@@ -36,7 +36,7 @@
                 <td class="end_time" tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
                 <td class="user" tal:content="reservation/property --user"/>
                 <td>
-                    <a class="cancel" tal:attributes="href string:${context/uri}/cancel/${reservation/id}">stornieren</a>
+                    <a class="cancel" tal:attributes="href string:${context/uri}/cancel/${reservation/id}" onclick="return confirm('Reservierung stornieren?');">stornieren</a>
                 </td>
             </tr>
             <tr tal:condition="true: reservation/property --info">
