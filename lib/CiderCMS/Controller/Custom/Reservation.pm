@@ -54,6 +54,7 @@ sub reserve : CiderCMS('reserve') {
     }
 
     $c->stash->{reservation} = 1;
+    $c->stash->{reserve} = 1;
     my $content = $c->view('Petal')->render_template(
         $c,
         {
