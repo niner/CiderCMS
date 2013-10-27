@@ -37,6 +37,7 @@ requires 'MIME::Lite';
 requires 'Email::Sender::Simple';
 requires 'Email::Stuffer';
 requires 'Regexp::Common::URI';
+catalyst_ignore('root'); # avoid copying root/static/instances
 catalyst;
 
 install_script glob('script/*.pl');
