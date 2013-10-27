@@ -209,6 +209,12 @@ sub test_registration {
         with_fields => {
             username => 'testname',
             password => 'testpass',
+        },
+    });
+    $mech->content_contains('missing');
+    $mech->submit_form_ok({
+        with_fields => {
+            password => 'testpass',
             email    => 'test@localhost',
         },
     });

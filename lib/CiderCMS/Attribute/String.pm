@@ -27,6 +27,19 @@ sub db_type {
     return 'varchar';
 }
 
+=head2 validate
+
+Check if string is not empty.
+
+=cut
+
+sub validate {
+    my ($self, $data) = @_;
+
+    return 'missing' if $self->{mandatory} and not $data->{ $self->id };
+    return;
+}
+
 =head2 filter_matches($value)
 
 Returns true if this attribute matches the given filter value.

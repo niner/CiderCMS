@@ -9,15 +9,15 @@
         <span tal:replace=""/>
     </div>
     <label>
-        <span>Benutzername:</span>
+        <span>Benutzername: <span class="errors" tal:condition="true: errors" tal:content="errors/username"/></span>
         <input type="text" name="username" tal:attributes="value username"/>
     </label>
     <label>
-        <span>Passwort:</span>
+        <span>Passwort: <span class="errors" tal:condition="true: errors" tal:content="errors/password"/></span>
         <input type="password" name="password"/>
     </label>
     <label>
-        <span>Email:</span>
+        <span>Email: <span class="errors" tal:condition="true: errors" tal:content="errors/email"/></span>
         <input type="text" name="email" tal:attributes="value email"/>
     </label>
     <button type="submit">Registrieren</button>

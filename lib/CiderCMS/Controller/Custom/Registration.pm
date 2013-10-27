@@ -26,6 +26,7 @@ sub register : CiderCMS('register') {
 
     my $errors = $object->validate($params);
     if ($errors) {
+        $_ = join ', ', @$_ foreach values %$errors;
         $c->stash({
             %$params,
             errors => $errors,
