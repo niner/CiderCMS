@@ -118,7 +118,7 @@ sub property {
 
     unless (exists $self->{data}{$property}) {
         return $default if @_ == 3;
-        die "unknown property $property";
+        croak "unknown property $property";
     }
     return $self->{data}{$property}->data;
 }
