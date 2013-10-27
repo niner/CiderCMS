@@ -182,10 +182,18 @@ $model->txn_do(sub {
         'error message for conflict with existent reservation found'
     );
 
+    $mech->get_ok("http://localhost/system/logout");
+    $mech->get_ok("http://localhost/$instance/airplanes/dimona/index.html");
     $mech->get_ok(
         $mech->find_xpath(q{//tr/td/a[@class="cancel"]/@href}),
         'cancel reservation'
     );
+    $mech->submit_form_ok({
+        with_fields => {
+            username => 'test',
+            password => 'test',
+        },
+    });
     $mech->submit_form_ok({
         with_fields => {
             start_date => $date->ymd,

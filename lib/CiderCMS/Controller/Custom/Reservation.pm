@@ -140,6 +140,8 @@ Cancel the given reservation.
 sub cancel : CiderCMS('cancel') Args(1) {
     my ($self, $c, $id) = @_;
 
+    $c->detach('/user/login') unless $c->user;
+
     my $context = $c->stash->{context};
     my $reservation = $c->model('DB')->get_object($c, $id, $context->{level} + 1);
     if ($reservation->{parent} == $context->{id}) {
