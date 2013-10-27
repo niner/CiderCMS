@@ -483,7 +483,7 @@ sub get_dirty_columns {
     return \@columns, \@values;
 }
 
-=head2 move_to(parent => $parent, after => $after)
+=head2 move_to(parent => $parent, parent_attr => $parent_attr, after => $after)
 
 Moves this object (and it's subtree) to a new parent and or sort position
 

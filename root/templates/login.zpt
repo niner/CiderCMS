@@ -34,7 +34,7 @@
             tal:define="users context/object_by_id '2'; registration users/property --registration undef"
             tal:condition="true: registration"
             class="registration">
-            <a tal:attributes="href registration/0/uri_index">
+            <a tal:attributes="href string:${registration/0/uri}/index.html">
                 Neuen Benutzer registrieren
             </a>
         </p>

@@ -34,6 +34,9 @@ requires 'File::Find';
 requires 'File::Slurp';
 requires 'Cwd';
 requires 'MIME::Lite';
+requires 'Email::Sender::Simple';
+requires 'Email::Stuffer';
+requires 'Regexp::Common::URI';
 catalyst;
 
 install_script glob('script/*.pl');
