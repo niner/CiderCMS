@@ -1,38 +1,63 @@
 use strict;
 use warnings;
-use Test::More;
-use FindBin qw($Bin);
 use utf8;
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 8 );
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
+use Test::More;
 
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
-
-$mech->get_ok( 'http://localhost/test.example/system/types' );
-
-$mech->follow_link_ok({ url_regex => qr{image/edit} }, 'Edit image type' );
-$mech->submit_form_ok({
-    with_fields => {
-        id        => 'width',
-        name      => 'Image width',
-        data_type => 'Integer',
+CiderCMS::Test->populate_types({
+    tester => {
+        name       => 'Tester',
+        attributes => [
+            {
+                id            => 'number',
+                data_type     => 'Integer',
+                mandatory     => 1,
+            },
+        ],
+        page_element => 1,
+        template => 'integer_test.zpt',
     },
-}, 'Add width attribute');
+});
 
-$mech->get_ok( 'http://localhost/test.example/manage' );
+$mech->get_ok("http://localhost/$instance/manage");
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
 
-# Try some image
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=image} }, 'Add an image');
 $mech->submit_form_ok({
     with_fields => {
-        img   => "$Bin/../root/static/images/catalyst_logo.png",
-        width => 100,
-    }      ,
+        number => '',
+    },
     button => 'save',
 });
-my $image = $mech->find_image(url_regex => qr{catalyst_logo});
-$mech->get_ok($image->url);
-$mech->back;
+
+$mech->content_contains('missing');
+
+$mech->submit_form_ok({
+    with_fields => {
+        number => 'FooBar',
+    },
+    button => 'save',
+});
+
+$mech->content_contains('invalid');
+
+$mech->submit_form_ok({
+    with_fields => {
+        number => '0 or 1',
+    },
+    button => 'save',
+});
+
+$mech->content_contains('invalid');
+
+$mech->submit_form_ok({
+    with_fields => {
+        number => '0',
+    },
+    button => 'save',
+});
+
+$mech->get_ok("http://localhost/$instance/index.html");
+is('' . $mech->find_xpath('//div'), '0', 'Integer saved');
+
+done_testing;
