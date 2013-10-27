@@ -46,6 +46,11 @@ sub login : Private {
     return;
 }
 
+=head2 logout
+
+See L<CiderCMS::Controller::System::logout>
+
+=cut
 
 =head1 AUTHOR
 

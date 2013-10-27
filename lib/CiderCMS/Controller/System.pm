@@ -60,6 +60,21 @@ sub create :Local :Args(0) {
     return;
 }
 
+=head2 logout
+
+Ends the user's session
+
+=cut
+
+sub logout : Local :Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->logout;
+
+    return $c->res->redirect($c->req->referer) if $c->req->referer;
+    return $c->res->body('User logged out');
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

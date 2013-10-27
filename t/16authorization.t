@@ -153,7 +153,7 @@ $mech->submit_form_ok({
     },
     button => 'save',
 });
-$mech->cookie_jar({}); # Logout
+$mech->get_ok("http://localhost/system/logout");
 
 $mech->get_ok("http://localhost/$instance/restricted/index.html");
 $mech->content_contains('Login');
