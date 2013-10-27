@@ -182,6 +182,24 @@ $model->txn_do(sub {
         'error message for conflict with existent reservation found'
     );
 
+    $mech->get_ok(
+        $mech->find_xpath(q{//tr/td/a[@class="cancel"]/@href}),
+        'cancel reservation'
+    );
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => $date->ymd,
+            start_time => $date->clone->add(hours => 2)->hour . ':00',
+            end        => $date->clone->add(hours => 3)->hour . ':30',
+            info       => 'Testflug2',
+        },
+        button => 'save',
+    });
+    ok(
+        not($mech->find_xpath('//span[text() = "conflicting existent reservation"]')),
+        'error message for conflict with existent reservation not found anymore'
+    );
+
     $model->dbh->rollback;
 });
 

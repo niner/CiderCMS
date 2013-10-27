@@ -101,11 +101,11 @@ sub check_time_limit {
 sub check_conflicts {
     my ($self, $c, $start, $end) = @_;
 
-    my $reservations = $c->stash->{context}->property('reservations');
+    my $reservations = $c->stash->{context}->attribute('reservations');
 
     my $new = create_datetime_span($start, $end);
 
-    foreach my $existing (@$reservations) {
+    foreach my $existing (@{ $reservations->filtered(cancelled_by => undef) }) {
         my $existing = create_datetime_span(
             $existing->attribute('start')->object,
             $existing->property('end')
