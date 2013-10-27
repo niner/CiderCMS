@@ -44,5 +44,5 @@
             </tr>
         </tbody>
     </table>
-    <a tal:condition="false:reservation" tal:attributes="href string:${self/uri}/reserve">Neue Reservierung</a>
+    <a class="new_reservation" tal:condition="false:reservation" tal:attributes="href string:${self/uri}/reserve">Neue Reservierung</a>
 </div>
