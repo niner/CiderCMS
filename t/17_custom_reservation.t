@@ -140,7 +140,7 @@ $model->txn_do(sub {
         button => 'save',
     });
     $mech->content_lacks('Keine Reservierungen eingetragen.');
-    ok($mech->find_xpath(qq{//td[text()="Heute"]}), "Today's reservation listed");
+    ok($mech->find_xpath(qq{//td[span="Heute"]}), "Today's reservation listed");
     ok($mech->find_xpath(qq{//td[text()="test"]}), 'reserving user listed');
     ok($mech->find_xpath(qq{//td[text()="Testflug"]}), 'Info listed');
 
@@ -154,15 +154,15 @@ $model->txn_do(sub {
         },
         button => 'save',
     });
-    ok($mech->find_xpath(q{//td[text()="Heute"]}), "Today's reservation still listed");
-    ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
+    ok($mech->find_xpath(q{//td[span="Heute"]}), "Today's reservation still listed");
+    ok($mech->find_xpath(q{//td[span="} . $date->ymd . q{"]}), "Tomorrow's reservation listed");
 
     $mech->get_ok(
         $mech->find_xpath(q{//tr[td="Heute"]/td/a[@class="cancel"]/@href}),
         'cancel reservation'
     );
     is('' . $mech->find_xpath(q{//td[text()="Heute"]}), '', "Today's reservation gone");
-    ok($mech->find_xpath(q{//td[text()="} . $date->ymd . q{"]}), "Tomorrow's reservation still listed");
+    ok($mech->find_xpath(q{//td[span="} . $date->ymd . q{"]}), "Tomorrow's reservation still listed");
 
     $mech->get_ok("http://localhost/$instance/airplanes/dimona/6/manage");
     is($mech->value('cancelled_by'), 'test');

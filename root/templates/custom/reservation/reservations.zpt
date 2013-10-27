@@ -30,7 +30,7 @@
             <tr tal:define="start reservation/attribute --start">
                 <td class="start_date" tal:attributes="data-date start/ymd">
                     <span tal:condition="false: start/is_today" tal:content="start/ymd"/>
-                    <span tal:condition="true: start/is_today">Heute</td>
+                    <span tal:condition="true: start/is_today">Heute</span>
                 </td>
                 <td class="start_time" tal:content="start/format '%H:%M'"/>
                 <td class="end_time" tal:define="end reservation/attribute --end" tal:content="end/format '%H:%M'"/>
