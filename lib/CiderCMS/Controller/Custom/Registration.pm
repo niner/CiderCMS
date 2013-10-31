@@ -25,6 +25,9 @@ sub register : CiderCMS('register') {
     );
 
     my $errors = $object->validate($params);
+    unless ($errors) {
+        $errors = check_email_whitelist($c, $params);
+    }
     if ($errors) {
         $_ = join ', ', @$_ foreach values %$errors;
         $c->stash({
@@ -54,6 +57,19 @@ untenstehende Regeln akzeptieren:\n\n"
     }
 
     return;
+}
+
+sub check_email_whitelist {
+    my ($c, $params) = @_;
+
+    my $whitelist = $c->config->{registration_email_whitelist}
+        or return;
+
+    my %whitelist = map { $_ => 1 } @$whitelist;
+
+    return if $whitelist{$params->{email}};
+
+    return { email => ['invalid'] };
 }
 
 sub verify : CiderCMS('verify_registration') {

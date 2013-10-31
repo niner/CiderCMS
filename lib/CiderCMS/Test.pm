@@ -108,6 +108,8 @@ sub setup_instance {
 sub setup_test_environment {
     my ($self, %params) = @_;
 
+    $ENV{ CIDERCMS_CONFIG_LOCAL_SUFFIX } = 'test';
+
     my $instance = 'test' . int(10 + rand() * 99989) . '.example';
 
     my $mech;

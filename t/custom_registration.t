@@ -201,10 +201,19 @@ sub test_registration_not_offered {
 }
 
 sub test_registration {
+    start_registration();
+    test_validation();
+    test_success();
+}
+
+sub start_registration {
     $mech->get_ok("http://localhost/$instance/restricted/index.html");
     $mech->content_contains('Login');
     $mech->content_contains('Neuen Benutzer registrieren');
     $mech->follow_link_ok({text => 'Neuen Benutzer registrieren'});
+}
+
+sub test_validation {
     $mech->submit_form_ok({
         with_fields => {
             username => 'testname',
@@ -215,11 +224,20 @@ sub test_registration {
     $mech->submit_form_ok({
         with_fields => {
             password => 'testpass',
+            email    => 'test@not-allowed.example',
+        },
+    });
+    $mech->content_contains('invalid');
+    $mech->submit_form_ok({
+        with_fields => {
+            password => 'testpass',
             email    => 'test@localhost',
         },
     });
     $mech->content_contains('Success! Please check your email.');
+}
 
+sub test_success {
     my @deliveries = Email::Sender::Simple->default_transport->deliveries;
     is(scalar @deliveries, 1, 'Confirmation message sent');
     my $envelope = $deliveries[0]->{envelope};
