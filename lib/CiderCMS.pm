@@ -76,7 +76,7 @@ sub prepare_path {
         my $path = $instance . $uri->path;
 
         $uri->path($path);
-        $self->request->path($path);
+        $self->request->path($path) unless $self->req->path =~ /\Asystem/;
 
         $uri->path_query('');
         $uri->fragment(undef);
