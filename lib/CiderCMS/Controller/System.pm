@@ -75,6 +75,12 @@ sub logout : Local :Args(0) {
     return $c->res->body('User logged out');
 }
 
+sub instance_logout : PathPart('system/logout') Chained('init') {
+    my ( $self, $c ) = @_;
+
+    $c->forward('logout');
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
