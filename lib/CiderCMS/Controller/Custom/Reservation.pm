@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
-use DateTime::Format::ISO8601;
 use DateTime::Span;
 use Hash::Merge qw(merge);
 
@@ -31,10 +30,8 @@ sub reserve : CiderCMS('reserve') {
         $errors = $object->validate($params);
         unless ($errors) {
             $params->{start_time} = sprintf '%02i:%02i', split /:/, $params->{start_time};
-            my $start = DateTime::Format::ISO8601->new(
-                base_datetime => DateTime->now(time_zone => 'floating'),
-            )->parse_datetime(
-                "$params->{start_date}T$params->{start_time}"
+            my $start = CiderCMS::Attribute::DateTime->parse_datetime(
+                "$params->{start_date} $params->{start_time}"
             );
 
             $errors = merge(

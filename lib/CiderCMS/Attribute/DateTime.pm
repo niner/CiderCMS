@@ -6,6 +6,7 @@ use v5.14;
 
 use DateTime;
 use DateTime::Format::Flexible;
+use DateTime::Format::ISO8601;
 
 use base qw(CiderCMS::Attribute::Date CiderCMS::Attribute::Time);
 
@@ -41,7 +42,7 @@ sub set_data_from_form {
     my ($self, $data) = @_;
 
     my $value = $data->{ $self->id . '_date' } . ' ' . $data->{ $self->id . '_time' };
-    $value = parse_datetime($value);
+    $value = $self->parse_datetime($value);
 
     return $self->set_data($value->iso8601);
 }
@@ -59,17 +60,17 @@ sub validate {
     return 'missing' if $self->{mandatory} and not defined $value;
 
     my $parsed = eval {
-        parse_datetime($value);
+        $self->parse_datetime($value);
     };
     return 'invalid' if $@;
     return;
 }
 
 sub parse_datetime {
-    my ($value) = @_;
+    my ($self, $value) = @_;
 
     $value .= ':0' unless $value =~ /\d+:\d+:\d+/;
-    DateTime::Format::Flexible->parse_datetime($value, european => 1);
+    return DateTime::Format::Flexible->parse_datetime($value, european => 1);
 }
 
 =head2 object

@@ -226,6 +226,19 @@ $model->txn_do(sub {
     });
     ok($mech->find_xpath('//span[text() = "invalid"]'), 'error message for invalid date found');
 
+    $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
+    my $year = DateTime->now->add(years => 1)->year;
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => "6.12.$year",
+            start_time => '10:00',
+            end        => '13:00',
+            info       => '',
+        },
+        button => 'save',
+    });
+    ok(not($mech->find_xpath('//span[text() = "invalid"]')), 'valid date -> no error message');
+
     $model->dbh->rollback;
 });
 
