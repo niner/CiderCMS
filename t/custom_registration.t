@@ -228,7 +228,7 @@ sub test_validation {
             email    => 'test@not-allowed.example',
         },
     });
-    $mech->content_contains('invalid');
+    $mech->content_contains('Emailadresse nicht in der Mitgliederliste');
     $mech->submit_form_ok({
         with_fields => {
             password => 'testpass',

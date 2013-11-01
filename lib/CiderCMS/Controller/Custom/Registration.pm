@@ -73,7 +73,7 @@ sub check_email_whitelist {
 
     return if $whitelist{$params->{email}};
 
-    return { email => ['invalid'] };
+    return { email => ['Emailadresse nicht in der Mitgliederliste'] };
 }
 
 sub check_duplicates {
