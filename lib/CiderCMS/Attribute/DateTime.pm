@@ -5,6 +5,7 @@ use warnings;
 use v5.14;
 
 use DateTime;
+use DateTime::Format::Flexible;
 
 use base qw(CiderCMS::Attribute::Date CiderCMS::Attribute::Time);
 
@@ -40,8 +41,9 @@ sub set_data_from_form {
     my ($self, $data) = @_;
 
     my $value = $data->{ $self->id . '_date' } . ' ' . $data->{ $self->id . '_time' };
+    $value = parse_datetime($value);
 
-    return $self->set_data($value);
+    return $self->set_data($value->iso8601);
 }
 
 =head2 validate
@@ -54,21 +56,20 @@ sub validate {
     my $date = $data->{ $self->id . '_date' };
     my $time = $data->{ $self->id . '_time' };
     my $value = $date ? $time ? "$date $time" : $date : undef;
+    return 'missing' if $self->{mandatory} and not defined $value;
 
-    return
-        ( ($self->{mandatory} and not defined $value) ? 'missing' : ()),
-        (
-            $value 
-            and $value !~ /
-                \A
-                \d{4}-\d{2}-\d{2}
-                (?: T | \s )
-                (?: [01]?\d | 2[0-3]) : [0-5][0-9] (?: : [0-5][0-9])?
-                \z
-            /xm
-        )
-            ? 'invalid'
-            : ();
+    my $parsed = eval {
+        parse_datetime($value);
+    };
+    return 'invalid' if $@;
+    return;
+}
+
+sub parse_datetime {
+    my ($value) = @_;
+
+    $value .= ':0' unless $value =~ /\d+:\d+:\d+/;
+    DateTime::Format::Flexible->parse_datetime($value, european => 1);
 }
 
 =head2 object

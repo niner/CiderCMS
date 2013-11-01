@@ -98,4 +98,32 @@ is(
     'tomorrow recognized'
 );
 
+$mech->get_ok("http://localhost/$instance/manage");
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
+
+$mech->submit_form_ok({
+    with_fields => {
+        test_date => '9.12.2012',
+        test_time => '10:12',
+    },
+    button => 'save',
+});
+$mech->content_lacks('invalid');
+is($mech->value('test_date'), '2012-12-09');
+is($mech->value('test_time'), '10:12:00');
+
+$mech->get_ok("http://localhost/$instance/manage");
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=tester} }, 'Add a tester');
+
+$mech->submit_form_ok({
+    with_fields => {
+        test_date => '2013-8-9',
+        test_time => '8:30',
+    },
+    button => 'save',
+});
+$mech->content_lacks('invalid');
+is($mech->value('test_date'), '2013-08-09');
+is($mech->value('test_time'), '08:30:00');
+
 done_testing;

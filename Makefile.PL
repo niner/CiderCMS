@@ -23,6 +23,7 @@ requires 'Petal::Utils';
 requires 'Catalyst::Plugin::FormValidator';
 requires 'DateTime';
 requires 'DateTime::Format::ISO8601';
+requires 'DateTime::Format::Flexible';
 requires 'DateTime::Span';
 requires 'Digest::SHA';
 requires 'Module::Pluggable';
