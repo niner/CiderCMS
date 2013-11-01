@@ -8,6 +8,7 @@ use parent 'Catalyst::Controller';
 use Email::Sender::Simple;
 use Email::Stuffer;
 use Encode qw(encode);
+use Hash::Merge qw(merge);
 
 =head2 register
 
@@ -26,7 +27,10 @@ sub register : CiderCMS('register') {
 
     my $errors = $object->validate($params);
     unless ($errors) {
-        $errors = check_email_whitelist($c, $params);
+        $errors = merge(
+            $self->check_email_whitelist($c, $params),
+            $self->check_duplicates($c, $params),
+        );
     }
     if ($errors) {
         $_ = join ', ', @$_ foreach values %$errors;
@@ -60,7 +64,7 @@ untenstehende Regeln akzeptieren:\n\n"
 }
 
 sub check_email_whitelist {
-    my ($c, $params) = @_;
+    my ($self, $c, $params) = @_;
 
     my $whitelist = $c->config->{registration_email_whitelist}
         or return;
@@ -70,6 +74,18 @@ sub check_email_whitelist {
     return if $whitelist{$params->{email}};
 
     return { email => ['invalid'] };
+}
+
+sub check_duplicates {
+    my ($self, $c, $params) = @_;
+
+    my $username = $params->{username};
+    my $context  = $c->stash->{context};
+
+    my $unverified = $context->attribute('children')->filtered(username => $username);
+    my $registered = $context->parent->attribute('children')->filtered(username => $username);
+
+    return { username => ['bereits vergeben'] } if @$unverified or @$registered;
 }
 
 sub verify : CiderCMS('verify_registration') {
@@ -87,4 +103,3 @@ sub verify : CiderCMS('verify_registration') {
 }
 
 1;
-

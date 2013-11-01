@@ -204,6 +204,7 @@ sub test_registration {
     start_registration();
     test_validation();
     test_success();
+    test_duplicate();
 }
 
 sub start_registration {
@@ -266,4 +267,36 @@ sub test_success {
     $mech->content_lacks('Login');
     $mech->content_lacks('Invalid username/password');
     $mech->title_is('Restricted');
+}
+
+sub test_duplicate {
+    $mech->get_ok("http://localhost/system/logout");
+    start_registration();
+    $mech->submit_form_ok({
+        with_fields => {
+            username => 'testname',
+            password => 'testpass',
+            email    => 'test@localhost',
+        },
+    });
+    $mech->content_contains('bereits vergeben', 'duplicate registered found');
+
+    $mech->submit_form_ok({
+        with_fields => {
+            username => 'testname2',
+            password => 'testpass',
+            email    => 'test@localhost',
+        },
+    });
+    $mech->content_contains('Success! Please check your email.');
+
+    start_registration();
+    $mech->submit_form_ok({
+        with_fields => {
+            username => 'testname2',
+            password => 'testpass',
+            email    => 'test@localhost',
+        },
+    });
+    $mech->content_contains('bereits vergeben', 'duplicate unverified found');
 }
