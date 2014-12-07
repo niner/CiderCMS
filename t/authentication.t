@@ -166,4 +166,20 @@ $mech->submit_form_ok({
 $mech->content_lacks('Invalid username/password');
 ok($mech->find_xpath('id("object_4")'), 'Login successful');
 
+# Test subfolder of restricted folder
+$mech->get_ok("http://localhost/$instance/restricted/manage");
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a sub folder to restricted folder');
+$mech->submit_form_ok({
+    with_fields => {
+        title      => 'Subfolder',
+    },
+    button => 'save',
+});
+$mech->get_ok("http://localhost/$instance/restricted/subfolder/index.html");
+$mech->content_lacks('Login');
+
+$mech->get_ok("http://localhost/system/logout");
+$mech->get_ok("http://localhost/$instance/restricted/subfolder/index.html");
+$mech->content_contains('Login');
+
 done_testing;

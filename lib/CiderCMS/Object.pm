@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(weaken);
-use List::MoreUtils qw(any);
+use List::MoreUtils qw(any none);
 use File::Path qw(mkpath);
 use File::Copy qw(move);
 use Carp qw(croak);
@@ -190,6 +190,22 @@ sub parent {
     return unless $self->{parent};
 
     return $self->{c}->model('DB')->get_object($self->{c}, $self->{parent}, $self->{level} - 1);
+}
+
+=head2 parents
+
+Returns the parent chain of this object including the object itself.
+
+=cut
+
+sub parents {
+    my ($self) = @_;
+
+    my $parent = $self;
+    my @parents = $parent;
+    unshift @parents, $parent while $parent = $parent->parent;
+
+    return \@parents;
 }
 
 =head2 parent_by_level($level)
@@ -553,7 +569,9 @@ parent folders.
 sub user_has_access {
     my ($self) = @_;
 
-    return (not $self->property('restricted', 0) or $self->{c}->user);
+    my $user = $self->{c}->user;
+    return 1 if $user;
+    return none { $_->property('restricted', 0) } @{ $self->parents };
 }
 
 =head1 AUTHOR
