@@ -15,7 +15,6 @@ use Catalyst::DispatchType::CiderCMS;
 
 use parent qw/Catalyst/;
 use Catalyst qw/
-                Unicode::Encoding
                 ConfigLoader
                 Static::Simple
 

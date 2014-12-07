@@ -6,7 +6,7 @@ use inc::Module::Install;
 name 'CiderCMS';
 all_from 'lib/CiderCMS.pm';
 
-requires 'Catalyst::Runtime' => '5.80011';
+requires 'Catalyst::Runtime' => '5.90070';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode::Encoding';
