@@ -92,7 +92,7 @@ CREATE OR REPLACE FUNCTION sys_object_au() RETURNS TRIGGER AS
 $BODY$
 DECLARE
 BEGIN
-    IF OLD.sort_id IS DISTINCT FROM NEW.sort_id OR OLD.parent IS DISTINCT FROM NEW.parent OR OLD.parent_attr IS DISTINCT FROM NEW.parent_attr THEN
+    IF pg_trigger_depth() < 2 AND (OLD.sort_id IS DISTINCT FROM NEW.sort_id OR OLD.parent IS DISTINCT FROM NEW.parent OR OLD.parent_attr IS DISTINCT FROM NEW.parent_attr) THEN
         EXECUTE 'update ' || quote_ident(NEW.type) || ' set sort_id=' || NEW.sort_id || ', parent=' || NEW.parent || ', parent_attr=''' || NEW.parent_attr || ''' where id=' || NEW.id;
     END IF;
     RETURN NEW;
