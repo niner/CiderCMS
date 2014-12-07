@@ -117,6 +117,7 @@ sub setup_test_environment {
 
     my $c     = CiderCMS->new;
     my $model = $c->model('DB');
+    $c->req->_set_env({});
 
     $self->setup_instance($instance, $c, $model);
 
