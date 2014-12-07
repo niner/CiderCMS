@@ -183,6 +183,7 @@ END {
         $model->dbh->do(q{set client_min_messages='notice'});
         remove_tree("$Bin/../root/instances/$instance");
     }
+    undef $mech;
 }
 
 1;
