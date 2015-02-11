@@ -5,7 +5,10 @@ function cut(id) {
 
 function paste(link, after) {
     id = document.cookie.match(/\bid=\d+/);
-    location.href = link.href + ';' + id + ';after=' + after;
+    var href = link.href + ';' + id;
+    if (after)
+        href += ';after=' + after;
+    location.href = href;
     return false;
 }
 
