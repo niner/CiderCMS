@@ -38,7 +38,8 @@ sub thumbnail {
     $thumb_name =~ s/(\. \w+) \z/_${width}_${height}$1/xm;
 
     unless (-e "$path/$thumb_name") {
-        my $image = Image::Imlib2->load("$path/$self->{data}");
+        my $image = eval { Image::Imlib2->load("$path/$self->{data}"); };
+        warn $@ if $@;
         return '#nonexisting' unless $image;
 
         if ($width and $height) {
