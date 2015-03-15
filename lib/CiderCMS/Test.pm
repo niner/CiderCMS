@@ -87,6 +87,23 @@ sub init_mechanize {
     return $mech;
 }
 
+=head2 context
+
+Returns a $c object for tests.
+
+=cut
+
+sub context {
+    my ($self) = @_;
+
+    require Catalyst::Test;
+    Catalyst::Test->import('CiderCMS');
+    my ($res, $c) = ctx_request('/system/create');
+    delete $c->stash->{$_} foreach keys %{ $c->stash };
+
+    return $c;
+}
+
 =head2 setup_instance($instance, $c, $model)
 
 =cut
@@ -115,9 +132,8 @@ sub setup_test_environment {
     my $mech;
     $mech = $self->init_mechanize if $params{mechanize};
 
-    my $c     = CiderCMS->new;
+    my $c     = $self->context;
     my $model = $c->model('DB');
-    $c->req->_set_env({});
 
     $self->setup_instance($instance, $c, $model);
 
