@@ -379,7 +379,27 @@ sub close_aisle {
     my ($self, $c, $parent, $attr, $sort_id) = @_;
 
     my $dbh = $self->dbh;
-    $dbh->do('update sys_object set sort_id = sort_id - 1 where parent = ? and parent_attr = ? and sort_id > ?', undef, $parent->{id}, $attr, $sort_id);
+    # ugly hack to prevent PostgreSQL from complaining about a violated unique constraint:
+    $dbh->do('
+            update sys_object
+            set sort_id = -sort_id
+            where parent = ? and parent_attr = ? and sort_id > ?
+        ',
+        undef,
+        $parent->{id},
+        $attr,
+        $sort_id,
+    );
+    $dbh->do('
+            update sys_object
+            set sort_id = -sort_id - 1
+            where parent = ? and parent_attr = ? and sort_id < ?
+        ',
+        undef,
+        $parent->{id},
+        $attr,
+        -$sort_id,
+    );
     return;
 }
 

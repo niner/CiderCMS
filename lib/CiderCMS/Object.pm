@@ -522,6 +522,20 @@ sub move_to {
     return $result;
 }
 
+=head2 refersh()
+
+Reloads this object from the database.
+
+=cut
+
+sub refresh {
+    my ($self) = @_;
+
+    my $fresh = $self->{c}->model('DB')->get_object($self->{c}, $self->{id});
+    %$self = %$fresh;
+    return $self;
+}
+
 =head2 new_child(attribute => $attribute, type => $type, data => $data)
 
 Creates a child object in memory for the given attribute.
