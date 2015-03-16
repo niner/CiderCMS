@@ -509,6 +509,23 @@ sub move_object {
     return $result;
 }
 
+=head2 instances()
+
+Returns a list of all instances.
+
+=cut
+
+sub instances {
+    my ($self) = @_;
+
+    return $self->dbh->selectcol_arrayref(q[
+        select nspname
+        from pg_namespace
+        where nspowner != 10 and nspname != 'public'
+        order by nspname
+    ]);
+}
+
 =head2 txn_do($code)
 
 Run $sub in a transaction. Rollback transaction if $sub dies.
