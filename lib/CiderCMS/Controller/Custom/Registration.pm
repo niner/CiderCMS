@@ -83,7 +83,7 @@ sub check_duplicates {
     my $context  = $c->stash->{context};
 
     my $unverified = $context->attribute('children')->filtered(username => $username);
-    my $registered = $context->parent->attribute('children')->filtered(username => $username);
+    my $registered = $self->list($c)->attribute('children')->filtered(username => $username);
 
     return { username => ['bereits vergeben'] } if @$unverified or @$registered;
 }
@@ -97,9 +97,15 @@ sub verify : CiderCMS('verify_registration') {
     die "No user found for " . $c->req->params->{email} unless @$users;
 
     my $user = $users->[0];
-    $user->move_to(parent => $c->stash->{context}->parent, parent_attr => 'children');
+    $user->move_to(parent => $self->list($c), parent_attr => 'children');
 
     return $c->res->redirect($c->stash->{context}->property('verified')->[0]->uri_index);
+}
+
+sub list {
+    my ($self, $c) = @_;
+
+    return $c->stash->{context}->object_by_id($c->stash->{context}->property('list'));
 }
 
 1;

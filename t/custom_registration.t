@@ -139,6 +139,10 @@ sub setup_registration_type {
             template   => 'registration.zpt',
             attributes => [
                 {
+                    id        => 'list',
+                    data_type => 'Integer',
+                },
+                {
                     id        => 'children',
                     data_type => 'Object',
                 },
@@ -170,7 +174,9 @@ sub setup_registration_objects {
     my $registration = $users->create_child(
         attribute => 'registration',
         type      => 'registration',
-        data      => {},
+        data      => {
+            list => $users->{id},
+        },
     );
         my $success = $registration->create_child(
             attribute => 'success',
