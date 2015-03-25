@@ -2,35 +2,12 @@ use strict;
 use warnings;
 use utf8;
 
-use CiderCMS::Test (test_instance => 1, mechanize => 1);
+use CiderCMS::Test (test_instance => 1);
 use Test::More;
 
 CiderCMS::Test->populate_types({
-    folder => {
-        name       => 'Folder',
-        attributes => [
-            {
-                id            => 'title',
-                data_type     => 'Title',
-                mandatory     => 1,
-            },
-            {
-                id            => 'children',
-                data_type     => 'Object',
-                mandatory     => 0,
-            },
-        ],
-    },
-    textfield => {
-        name => 'Textfield',
-        attributes => [
-            {
-                id            => 'text',
-                data_type     => 'Text',
-                mandatory     => 1,
-            },
-        ],
-    },
+    CiderCMS::Test->std_folder_type,
+    CiderCMS::Test->std_textfield_type,
 });
 
 my $root = $model->get_object($c, 1);

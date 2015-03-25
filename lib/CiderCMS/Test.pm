@@ -180,6 +180,46 @@ sub populate_types {
     }
 }
 
+=head3 std_folder_type
+
+=cut
+
+sub std_folder_type {
+    return folder => {
+        name       => 'Folder',
+        attributes => [
+            {
+                id            => 'title',
+                data_type     => 'Title',
+                mandatory     => 1,
+            },
+            {
+                id            => 'children',
+                data_type     => 'Object',
+                mandatory     => 0,
+                repetitive    => 1,
+            },
+        ],
+    };
+}
+
+=head3 std_textfield_type
+
+=cut
+
+sub std_textfield_type {
+    return textfield => {
+        name => 'Textfield',
+        attributes => [
+            {
+                id            => 'text',
+                data_type     => 'Text',
+                mandatory     => 1,
+            },
+        ],
+    };
+}
+
 sub write_template {
     my ($self, $file, $contents) = @_;
 

@@ -7,20 +7,7 @@ use Test::More;
 use File::Slurp;
 
 CiderCMS::Test->populate_types({
-    folder => {
-        name       => 'Folder',
-        attributes => [
-            {
-                id            => 'title',
-                mandatory     => 1,
-            },
-            {
-                id            => 'children',
-                data_type     => 'Object',
-                repetitive    => 1,
-            },
-        ],
-    },
+    CiderCMS::Test->std_folder_type,
     user => {
         name         => 'User',
         page_element => 1,
