@@ -65,7 +65,7 @@ div.child {
 
 div.child div.actions {
     float: left;
-    width: 140px; /* icons have static width */
+    width: 170px; /* icons have static width */
 }
 
 div.child div.actions > .icon {

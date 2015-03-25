@@ -15,6 +15,7 @@
         <div tal:condition="true: children" tal:repeat="child children" class="child" tal:attributes="class string:child ${child/type/id}; id string:child_${child/id}">
             <div class="actions">
                 <div><a tal:attributes="href child/uri_management" tal:content="child/type/name"/></div>
+                <input type="checkbox" class="cidercms_multi_selector" tal:attributes="data-id child/id"/>
                 <a class="icon" tal:attributes="href child/uri_management"><img tal:attributes="src string:${uri_sys_static}/images/icons/edit.png" title="edit" alt="edit"/></a>
                 <span class="icon" tal:attributes="onclick string:cut(${child/id})"><img tal:attributes="src string:${uri_sys_static}/images/icons/cut.png" title="cut" alt="cut"/></span>
                 <a class="icon paste" tal:attributes="href string:${self/object/uri_management}_paste?attribute=${self/id}; onclick string:return paste(this, ${child/id})"><img tal:attributes="src string:${uri_sys_static}/images/icons/paste.png" title="paste" alt="paste"/></a>

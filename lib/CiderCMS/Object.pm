@@ -73,6 +73,18 @@ sub object_by_id {
     return $self->{c}->model('DB')->get_object($self->{c}, $id);
 }
 
+=head2 id
+
+Returns this object's id.
+
+=cut
+
+sub id {
+    my ($self) = @_;
+
+    return $self->{id};
+}
+
 =head2 type
 
 Returns the type info for this object.

@@ -1,11 +1,30 @@
+'use strict;'
+
+function find_selected_ids() {
+    var checkboxes = document.querySelectorAll('input.cidercms_multi_selector');
+    var ids = [];
+    [].forEach.call(checkboxes, function (checkbox) {
+        if (checkbox.checked)
+            ids.push(checkbox.getAttribute('data-id'));
+    });
+    return ids;
+}
+
 function cut(id) {
+    var selected = find_selected_ids();
+    if (selected.length)
+        id = selected.join(',')
     document.cookie = 'id=' + id + '; path=/'
     return;
 }
 
 function paste(link, after) {
-    id = document.cookie.match(/\bid=\d+/);
-    var href = link.href + ';' + id;
+    var ids = document.cookie.match(/\bid=(\d+(,\d+)+)/)[1].split(',');
+
+    var href = link.href;
+    ids.forEach(function(id) {
+        href += ';id=' + id;
+    });
     if (after)
         href += ';after=' + after;
     location.href = href;

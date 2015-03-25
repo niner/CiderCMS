@@ -150,9 +150,25 @@ Cut and past an object to a new location.
 sub manage_paste : CiderCMS('manage_paste') {
     my ( $self, $c ) = @_;
 
-    my $object = $c->model('DB')->get_object($c, $c->req->param('id'));
+    my @ids = $c->req->param('id');
+    my $db = $c->model('DB');
 
-    $object->move_to(parent => $c->stash->{context}, parent_attr => scalar $c->req->param('attribute'), after => scalar $c->req->param('after'));
+    $db->txn_do(sub {
+        my $after = $c->req->params->{after};
+        my $attribute = $c->req->params->{attribute};
+
+        foreach my $id (@ids) {
+            my $object = $db->get_object($c, $id);
+            next unless $object;
+            $object->move_to(
+                parent      => $c->stash->{context},
+                parent_attr => $attribute,
+                after       => $after,
+            );
+            $object->refresh;
+            $after = $object;
+        }
+    });
 
     return $c->res->redirect($c->stash->{context}->uri_management());
 }
