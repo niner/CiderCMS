@@ -543,10 +543,10 @@ sub txn_do {
 
     my ($result, @results);
     if (wantarray) {
-        @results = $code->();
+        @results = eval { $code->() };
     }
     else {
-        $result = $code->();
+        $result = eval { $code->() };
     }
 
     $dbh->commit unless $in_txn or $dbh->{AutoCommit};
