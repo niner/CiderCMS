@@ -27,17 +27,21 @@ foreach my $instance (@{ $model->instances }) {
                 $sort_id     = 0;
                 $parent      = $object->{parent};
                 $parent_attr = $object->{parent_attr};
-            }
-            $sort_id++;
-            if ($object->{sort_id} != $sort_id) {
-                say "$object->{parent}/$object->{parent_attr}: $object->{sort_id} => $sort_id";
                 $dbh->do(
-                    "update $sys_object set sort_id = ? where id = ?",
+                    "update $sys_object set sort_id = -sort_id where parent = ? and parent_attr = ?",
                     undef,
-                    $sort_id,
-                    $object->{id},
+                    $parent,
+                    $parent_attr,
                 );
             }
+            $sort_id++;
+            say "$object->{parent}/$object->{parent_attr}: $object->{sort_id} => $sort_id";
+            $dbh->do(
+                "update $sys_object set sort_id = ? where id = ?",
+                undef,
+                $sort_id,
+                $object->{id},
+            );
         }
     });
 }
