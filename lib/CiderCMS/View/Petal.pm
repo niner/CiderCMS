@@ -40,7 +40,11 @@ sub process {
 
     $c->stash({
         uri_root       => $c->uri_for('/'),
-        uri_sys_static => $c->uri_for($ENV{CIDERCMS_INSTANCE} ? '/sys_static' : '/static'),
+        uri_sys_static => $c->uri_for(
+            $c->request->header('cidercms_instance')
+            ? '/sys_static'
+            : '/static',
+        ),
     });
 
     return $self->SUPER::process($c);
@@ -67,7 +71,11 @@ sub render_template {
     return $template->process({
         c              => $c,
         uri_static     => ($c->stash->{uri_static} or $c->uri_static_for_instance()),
-        uri_sys_static => $c->uri_for($ENV{CIDERCMS_INSTANCE} ? '/sys_static' : '/static'),
+        uri_sys_static => $c->uri_for(
+            $c->request->header('cidercms_instance')
+            ? '/sys_static'
+            : '/static',
+        ),
         %$stash,
     });
 }

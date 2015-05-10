@@ -59,7 +59,7 @@ CiderCMS is a very flexible CMS.
 
 =head2 prepare_path
 
-Checks for an CIDERCMS_INSTANCE environment variable and prepends it to the path if present.
+Checks for an cidercms_instance HTTP header and prepends it to the path if present.
 
 =cut
 
@@ -69,7 +69,7 @@ sub prepare_path {
     $self->maybe::next::method(@args);
 
     my $uri_raw = $self->request->uri->clone;
-    if (my $instance = $ENV{CIDERCMS_INSTANCE}) {
+    if (my $instance = $self->request->header('cidercms_instance')) {
         my $uri = $uri_raw->clone;
 
         my $path = $instance . $uri->path;
@@ -90,13 +90,6 @@ sub prepare_path {
     }
 
     return;
-}
-
-if ($ENV{CIDERCMS_INSTANCE}) {
-    __PACKAGE__->config->{static}{include_path} = [
-        __PACKAGE__->config->{root} . '/instances/',
-        __PACKAGE__->config->{root},
-    ];
 }
 
 =head2 uri_for_instance(@path)

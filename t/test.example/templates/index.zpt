@@ -19,9 +19,11 @@
                 <li tal:repeat="child site/children"><a tal:attributes="href child/uri_index" tal:define="child_type child/type/name" tal:content="child/property --title child_type"/></li>
             </ul>
 
-            <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/attribute --children; pages children/pages" tal:condition="true: pages">
-                <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:define="child_type child/type/name" tal:content="child/property --title child_type"/></li>
-            </ul>
+            <div tal:define="root context/parent_by_level '1'" tal:condition="true: root" tal:omit-tag="">
+                <ul id="subnav" tal:define="root context/parent_by_level '1'; children root/attribute --children; pages children/pages" tal:condition="true: pages">
+                    <li tal:repeat="child pages"><a tal:attributes="href child/uri_index" tal:define="child_type child/type/name" tal:content="child/property --title child_type"/></li>
+                </ul>
+            </div>
 
             <div id="get_object" tal:define="obj context/object_by_id '4'" tal:content="structure obj/property --text ''"/>
 

@@ -209,7 +209,8 @@ sub std_folder_type {
 
 sub std_textfield_type {
     return textfield => {
-        name => 'Textfield',
+        name         => 'Textfield',
+        page_element => 1,
         attributes => [
             {
                 id            => 'text',

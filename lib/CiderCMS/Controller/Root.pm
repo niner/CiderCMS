@@ -26,7 +26,7 @@ Just throw a 404.
 
 =cut
 
-sub not_found :Path {
+sub not_found :Private {
     my ( $self, $c ) = @_;
 
     my $dispatch_error = $c->stash->{dispatch_error} // 'Page not found';
@@ -35,6 +35,18 @@ sub not_found :Path {
     $c->response->status(404);
 
     return;
+}
+
+sub default : Path {
+    my ($self, $c) = @_;
+
+    my $path = $c->config->{root} . '/instances/' . $c->req->path;
+
+    if (-e $path and -f $path and -s $path) {
+        return $c->serve_static_file($path);
+    }
+
+    $c->forward($c->controller->action_for('not_found'));
 }
 
 
