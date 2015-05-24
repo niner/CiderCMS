@@ -4,45 +4,64 @@ use Test::More;
 use FindBin qw($Bin);
 use utf8;
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 49 );
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
 
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
+CiderCMS::Test->populate_types({
+    CiderCMS::Test->std_folder_type,
+    CiderCMS::Test->std_textfield_type,
+    image => {
+        name         => 'Image',
+        page_element => 1,
+        attributes   => [
+            {
+                id            => 'img',
+                name          => 'Image file',
+                data_type     => 'Image',
+                mandatory     => 1,
+            },
+            {
+                id            => 'title',
+                name          => 'Title',
+                data_type     => 'String',
+                mandatory     => 0,
+            },
+        ],
+        template => 'image.zpt',
+    },
+});
 
-$mech->get_ok( 'http://localhost/test.example/manage' );
+$mech->get_ok("http://localhost/$instance/manage");
 
-# Create a new textarea
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a textarea');
+# Create a new textfield
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textfield} }, 'Add a textfield');
 $mech->submit_form_ok({
     with_fields => {
         text => 'Foo qux baz!',
     },
     button => 'save',
 });
-$mech->content_like(qr/Foo qux baz!/, 'New textarea present');
+$mech->content_like(qr/Foo qux baz!/, 'New textfield present');
 
-# Edit the textarea
-$mech->follow_link_ok({ url_regex => qr{2/manage} }, 'Edit textarea');
+# Edit the textfield
+$mech->follow_link_ok({ url_regex => qr{2/manage} }, 'Edit textfield');
 $mech->submit_form_ok({
     with_fields => {
         text => 'Foo bar baz!',
     },
     button => 'save',
 });
-$mech->content_like(qr/Foo bar baz!/, 'New textarea content');
+$mech->content_like(qr/Foo bar baz!/, 'New textfield content');
 
-# Add a second textarea and delete it
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a second textarea');
+# Add a second textfield and delete it
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textfield} }, 'Add a second textfield');
 $mech->submit_form_ok({
     with_fields => {
         text => 'Delete me!',
     }      ,
     button => 'save',
 });
-$mech->content_like(qr/Delete me!/, 'New textarea content');
-$mech->follow_link_ok({ url_regex => qr{manage_delete\b.*\bid=3} }, 'Delete new textarea');
+$mech->content_like(qr/Delete me!/, 'New textfield content');
+$mech->follow_link_ok({ url_regex => qr{manage_delete\b.*\bid=3} }, 'Delete new textfield');
 $mech->content_unlike(qr/Delete me!/, 'Textarea gone');
 
 # Try some image
@@ -67,8 +86,8 @@ $mech->submit_form_ok({
 $mech->title_is('Edit Folder', 'Editing folder');
 ok($mech->uri->path =~ m!/folder_1/!, 'dcid set correctly');
 
-# Add a textarea to our folder
-$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textarea} }, 'Add a textarea');
+# Add a textfield to our folder
+$mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=textfield} }, 'Add a textfield');
 $mech->submit_form_ok({
     with_fields => {
         text => 'Page 1',
@@ -77,7 +96,7 @@ $mech->submit_form_ok({
 });
 $mech->title_is('Edit Folder', 'Editing folder again');
 
-$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+$mech->follow_link_ok({ url_regex => qr($instance/manage) }, 'Back to top level');
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder} }, 'Add a folder');
 $mech->submit_form_ok({
     with_fields => {
@@ -92,7 +111,7 @@ $mech->submit_form_ok({
     },
     button => 'save',
 });
-$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+$mech->follow_link_ok({ url_regex => qr($instance/manage) }, 'Back to top level');
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=folder}, n => 3 }, 'Add a folder');
 $mech->submit_form_ok({
     with_fields => {
@@ -107,7 +126,7 @@ $mech->submit_form_ok({
     button => 'save',
 });
 ok($mech->value('title') eq 'Folder 2', 'Title updated');
-$mech->follow_link_ok({ url_regex => qr(test.example/manage) }, 'Back to top level');
+$mech->follow_link_ok({ url_regex => qr($instance/manage) }, 'Back to top level');
 
 $mech->content_like(qr((?s)folder_0.*folder_1.*folder_2), 'Folders in correct order');
 
@@ -148,11 +167,13 @@ SKIP: {
     $mech->follow_link_ok({ url_regex => qr{folder_2/manage} }, 'Folder 2 works');
     $mech->back;
 
-    # now move the textarea to folder_3 to set up for the content tests
+    # now move the textfield to folder_3 to set up for the content tests
     $xpath = Test::XPath->new( xml => $mech->content, is_html => 1 );
     $xpc = $xpath->xpc;
-    my $textarea_id = $xpc->findvalue('//div[@class="child textarea"][1]/@id');
-    ($textarea_id) = $textarea_id =~ /child_(\d+)/;
+    my $textfield_id = $xpc->findvalue('//div[@class="child textfield"][1]/@id');
+    ($textfield_id) = $textfield_id =~ /child_(\d+)/;
     $mech->follow_link_ok({ url_regex => qr{folder_3/manage} });
-    $mech->get_ok($mech->uri . "_paste?attribute=children;id=$textarea_id");
+    $mech->get_ok($mech->uri . "_paste?attribute=children;id=$textfield_id");
 }
+
+done_testing;

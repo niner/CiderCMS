@@ -218,6 +218,7 @@ sub std_textfield_type {
                 mandatory     => 1,
             },
         ],
+        template => 'textfield.zpt',
     };
 }
 
