@@ -1,45 +1,40 @@
 use strict;
 use warnings;
+
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
 use Test::More;
 use FindBin qw($Bin);
 use utf8;
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 12 );
-
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
-
-$mech->get_ok( 'http://localhost/test.example/system/types' );
-
 # add a File type to test File attributes
-$mech->submit_form_ok({
-    with_fields => {
-        id           => 'file',
-        name         => 'File',
+CiderCMS::Test->populate_types({
+    CiderCMS::Test->std_folder_type,
+    file => {
+        name       => 'File',
+        attributes => [
+            {
+                id            => 'file',
+                mandatory     => 1,
+            },
+            {
+                id            => 'title',
+                data_type     => 'String',
+                mandatory     => 0,
+            },
+        ],
         page_element => 1,
+        template => 'file.zpt'
     },
-    button => 'save',
-}, 'Create File type');
-$mech->submit_form_ok({
-    with_fields => {
-        id        => 'file',
-        name      => 'File',
-        data_type => 'File',
-        mandatory => 1,
-    },
-}, 'Add file attribute');
-$mech->submit_form_ok({
-    with_fields => {
-        id        => 'title',
-        name      => 'Title',
-        data_type => 'String',
-        mandatory => 0,
-    },
-}, 'Add title attribute');
+});
 
-$mech->get_ok( 'http://localhost/test.example/manage' );
+my $root = $model->get_object($c, 1);
+    my $folder = $root->create_child(
+        attribute => 'children',
+        type      => 'folder',
+        data      => { title => 'Folder 0' },
+    );
+
+$mech->get_ok("http://localhost/$instance/manage");
 
 # Try some file
 $mech->follow_link_ok({ url_regex => qr{manage_add\b.*\btype=file} }, 'Add a file');
@@ -69,3 +64,5 @@ SKIP: {
 
     $mech->follow_link_ok({ text => 'Testfile' });
 }
+
+done_testing;
