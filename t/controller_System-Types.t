@@ -1,16 +1,11 @@
 use strict;
 use warnings;
+
+use CiderCMS::Test (test_instance => 1, mechanize => 1);
 use Test::More;
 use FindBin qw($Bin);
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderCMS'";
-plan $@
-    ? ( skip_all => 'Test::WWW::Mechanize::Catalyst required' )
-    : ( tests => 40 );
-
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
-
-$mech->get_ok( 'http://localhost/test.example/system/types' );
+$mech->get_ok("http://localhost/$instance/system/types");
 
 # check basic form setup
 $mech->follow_link_ok({url_regex => qr(site/edit)}, 'Edit Site');
@@ -38,7 +33,7 @@ ok($mech->value('id')   eq 'textfield', 'ID field correct');
 ok($mech->value('name') eq 'Textfield', 'name field correct');
 ok($mech->value('page_element'), 'page_element checked');
 
-ok(-e "$Bin/../root/instances/test.example/templates/types/textfield.zpt", 'template got created');
+ok(-e "$Bin/../root/instances/$instance/templates/types/textfield.zpt", 'template got created');
 
 # add the text attribute
 $mech->submit_form_ok({
@@ -74,7 +69,7 @@ $mech->submit_form_ok({
 }, 'Rename textfield to textarea');
 
 # accessing the old name throws an expected error
-ok($mech->get('http://localhost/test.example/system/types/textfield/edit')->is_error, 'Old type name gone');
+ok($mech->get("http://localhost/$instance/system/types/textfield/edit")->is_error, 'Old type name gone');
 $mech->back;
 
 $mech->follow_link_ok({url_regex => qr(/types$)}, 'Back to types');
@@ -194,6 +189,8 @@ $mech->submit_form_ok({
 }, 'Add image file attribute');
 
 # beef up our layout
-system ('/bin/cp', '-r', "$Bin/test.example/templates", "$Bin/test.example/static", "$Bin/../root/instances/test.example/");
+system ('/bin/cp', '-r', "$Bin/test.example/templates", "$Bin/test.example/static", "$Bin/../root/instances/$instance/");
 
 $mech->follow_link_ok({url_regex => qr{/manage\z}}, 'Follow link to content management');
+
+done_testing;
