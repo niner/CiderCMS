@@ -37,6 +37,7 @@ sub reserve : CiderCMS('reserve') {
             $errors = merge(
                 $self->check_time_limit($c, $start),
                 $self->check_end_limit($c, $params->{end}),
+                $self->check_weekdays_limit($c, $start),
                 $self->check_conflicts($c, $start, $params->{end}),
             );
         }
@@ -103,6 +104,22 @@ sub check_end_limit {
     return unless $end_limit;
 
     return {end => ['too late']} if $end gt $end_limit;
+
+    return;
+}
+
+=head3 check_weekdays_limit($c, $end)
+
+=cut
+
+sub check_weekdays_limit {
+    my ($self, $c, $start) = @_;
+
+    my $weekdays_limit = $c->stash->{context}->property('reservation_weekdays_limit', undef);
+    return unless $weekdays_limit;
+    my %weekdays = map { $_ => 1 } split /,/, $weekdays_limit;
+
+    return {start => ['invalid weekday']} unless exists $weekdays{ $start->dow };
 
     return;
 }

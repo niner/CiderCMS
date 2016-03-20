@@ -77,6 +77,10 @@ CiderCMS::Test->populate_types({
                 id            => 'reservation_end_limit',
                 data_type     => 'Time',
             },
+            {
+                id            => 'reservation_weekdays_limit',
+                data_type     => 'String',
+            },
         ],
         template => 'airplane.zpt'
     },
@@ -110,7 +114,7 @@ my $root = $model->get_object($c, 1);
             },
         );
 
-$model->txn_do(sub {
+ok $model->txn_do(sub {
     $mech->get_ok("http://localhost/$instance/airplanes/dimona/index.html");
     $mech->content_contains('Keine Reservierungen eingetragen.');
     $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
@@ -202,7 +206,7 @@ $model->txn_do(sub {
     $model->dbh->rollback;
 });
 
-$model->txn_do(sub {
+ok $model->txn_do(sub {
     # test error handling
 
     $mech->get_ok("http://localhost/$instance/airplanes/dimona/reserve");
@@ -233,7 +237,7 @@ $model->txn_do(sub {
     $model->dbh->rollback;
 });
 
-$model->txn_do(sub {
+ok $model->txn_do(sub {
     # Update to test advance time limit
     $dimona->set_property(reservation_time_limit => 24);
     $dimona->update;
@@ -269,7 +273,7 @@ $model->txn_do(sub {
     $model->dbh->rollback;
 });
 
-$model->txn_do(sub {
+ok $model->txn_do(sub {
     $mech->get_ok("http://localhost/$instance/airplanes/dimona/index.html");
 
     ok($mech->find_xpath(qq{//p[text()="Frei"]}), "No reservation active for now");
@@ -291,7 +295,7 @@ $model->txn_do(sub {
     $model->dbh->rollback;
 });
 
-$model->txn_do(sub {
+ok $model->txn_do(sub {
     # Update to test end time limit
     $dimona->set_property(reservation_end_limit => '16:00');
     $dimona->update;
@@ -327,6 +331,49 @@ $model->txn_do(sub {
         '' . $mech->find_xpath('//span[text() = "too late"]'),
         '',
         'error message for too late date gone',
+    );
+
+    $model->dbh->rollback;
+});
+
+ok $model->txn_do(sub {
+    # Update to test weekday limit
+    $dimona->set_property(reservation_weekdays_limit => '6,7');
+    $dimona->update;
+
+    # next Monday but at least a week away to avoid "too close"
+    my $monday = DateTime->now->clone->add(days => 7 + 8 - DateTime->now->dow);
+    my $start = $monday->set_hour(10)->set_minute(0)->set_second(0);
+    my $end   = $start->clone->set_hour(12);
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => $start->ymd,
+            start_time => $start->hms,
+            end        => $end->hms,
+            info       => 'weekday test',
+        },
+        button => 'save',
+    });
+    ok(
+        $mech->find_xpath('//span[text() = "invalid weekday"]'),
+        'error message for invalid weekday found',
+    );
+
+    $start->add(days => 5); # try again on Saturday
+    $end = $start->clone->set_hour(12);
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => $start->ymd,
+            start_time => $start->hms,
+            end        => $end->hms,
+            info       => 'weekday test fixed',
+        },
+        button => 'save',
+    });
+    is(
+        '' . $mech->find_xpath('//span[text() = "invalid weekday"]'),
+        '',
+        'error message for invalid weekday gone',
     );
 
     $model->dbh->rollback;
