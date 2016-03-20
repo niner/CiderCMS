@@ -73,6 +73,10 @@ CiderCMS::Test->populate_types({
                 id            => 'reservation_time_limit',
                 data_type     => 'Integer',
             },
+            {
+                id            => 'reservation_end_limit',
+                data_type     => 'Time',
+            },
         ],
         template => 'airplane.zpt'
     },
@@ -283,6 +287,47 @@ $model->txn_do(sub {
     });
 
     is('' . $mech->find_xpath(qq{//p[text()="Frei"]}), '', "Reservation active for now");
+
+    $model->dbh->rollback;
+});
+
+$model->txn_do(sub {
+    # Update to test end time limit
+    $dimona->set_property(reservation_end_limit => '16:00');
+    $dimona->update;
+
+    my $now = DateTime->now->add(days => 1);
+    my $start = $now->clone->set_hour(15)->set_minute(0)->set_second(0);
+    my $end   = $now->clone->set_hour(16)->set_minute(15)->set_second(0);
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => $start->ymd,
+            start_time => $start->hms,
+            end        => $end->hms,
+            info       => 'late test',
+        },
+        button => 'save',
+    });
+    ok(
+        $mech->find_xpath('//span[text() = "too late"]'),
+        'error message for too late end time found',
+    );
+
+    $end->set_minute(0);
+    $mech->submit_form_ok({
+        with_fields => {
+            start_date => $start->ymd,
+            start_time => $start->hms,
+            end        => $end->hms,
+            info       => 'late test fixed',
+        },
+        button => 'save',
+    });
+    is(
+        '' . $mech->find_xpath('//span[text() = "too late"]'),
+        '',
+        'error message for too late date gone',
+    );
 
     $model->dbh->rollback;
 });

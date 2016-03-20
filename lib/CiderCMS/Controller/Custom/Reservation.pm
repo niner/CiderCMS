@@ -36,6 +36,7 @@ sub reserve : CiderCMS('reserve') {
 
             $errors = merge(
                 $self->check_time_limit($c, $start),
+                $self->check_end_limit($c, $params->{end}),
                 $self->check_conflicts($c, $start, $params->{end}),
             );
         }
@@ -87,6 +88,21 @@ sub check_time_limit {
         ->add(hours => $time_limit);
 
     return {start => ['too close']} if $start->datetime lt $limit->datetime;
+
+    return;
+}
+
+=head3 check_end_limit($c, $end)
+
+=cut
+
+sub check_end_limit {
+    my ($self, $c, $end) = @_;
+
+    my $end_limit = $c->stash->{context}->property('reservation_end_limit', undef);
+    return unless $end_limit;
+
+    return {end => ['too late']} if $end gt $end_limit;
 
     return;
 }
