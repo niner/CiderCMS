@@ -9,7 +9,9 @@
         reservations reservations_sorted/list;
         active_reservation_search reservations_attr/search --cancelled_by undef --start 'past' --start 'today' --end 'future';
         active_reservation active_reservation_search/list
-    ">
+    "
+    tal:attributes="data-end-limit context/property --reservation_end_limit undef; data-weekdays-limit context/property --reservation_weekdays_limit undef"
+    >
 
     <p tal:condition="false: active_reservation" class="no_active_reservation">Frei</p>
 
