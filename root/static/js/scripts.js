@@ -19,7 +19,7 @@ function cut(id) {
 }
 
 function paste(link, after) {
-    var ids = document.cookie.match(/\bid=(\d+(,\d+)+)/)[1].split(',');
+    var ids = document.cookie.match(/\bid=(\d+(,\d+)*)/)[1].split(',');
 
     var href = link.href;
     ids.forEach(function(id) {
