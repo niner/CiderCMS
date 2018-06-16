@@ -50,6 +50,7 @@ sub load {
     Catalyst::Exception->throw("Attribute $attribute cannot contain user objects")
         unless $attribute->can('filtered');
 
+    $authinfo->{$_} or delete $authinfo->{$_} foreach keys %$authinfo;
     my @users = $attribute->filtered(%$authinfo);
 
     return undef unless @users == 1;
