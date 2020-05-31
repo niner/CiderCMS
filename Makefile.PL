@@ -38,6 +38,7 @@ requires 'MIME::Lite';
 requires 'Email::Sender::Simple';
 requires 'Email::Stuffer';
 requires 'Regexp::Common::URI';
+requires 'Regexp::Common::Email::Address';
 catalyst_ignore('root'); # avoid copying root/static/instances
 catalyst;
 
