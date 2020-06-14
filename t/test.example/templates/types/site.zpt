@@ -1,0 +1,6 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="CiderCMS" tal:omit-tag="">
+    <div tal:condition="true: management" class="folder"><a tal:attributes="href self/uri_management" tal:content="self/property --title"/></div>
+    <div tal:condition="false: management" tal:repeat="child self/children" tal:omit-tag="">
+        <div tal:condition="true: child/type/page_element" tal:replace="structure child/render"/>
+    </div>
+</div>
